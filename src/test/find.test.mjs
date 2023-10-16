@@ -18,6 +18,11 @@ const fileABA1Path = fsPath.join(dirABAPath, 'fileABA-1.txt')
 
 describe('find', () => {
   test.each([
+    [ 
+      { root: dirAAPath },
+      'everything', 
+      [ dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path ]
+    ],
     // begin 'onlyFiles: true'
     [
       { onlyFiles : true, root : dirAPath },
@@ -71,6 +76,20 @@ describe('find', () => {
     expect(files).toEqual(expected)
   })
 
+  if (process.platform !== 'win32') {
+    test('blockDevicesOnly finds something in /dev', async () => {
+      const devPath = fsPath.sep + 'dev'
+      const files = await find({ depth: 1, onlyBlockDevices: true, root: devPath })
+      expect(files.length).toBeGreaterThan(0)
+    })
+
+    test('characterDevicesOnly finds something in /dev', async () => {
+      const devPath = fsPath.sep + 'dev'
+      const files = await find({ depth: 1, onlyCharacterDevices: true, root: devPath })
+      expect(files.length).toBeGreaterThan(0)
+    })
+  }
+
   test.each([
     [undefined, 'must specify root', /Must provide 'root'/],
     [
@@ -87,6 +106,12 @@ describe('find', () => {
       { atDepth : true, root : dirAPath },
       "must specify 'depth' with 'adDepth : true'",
       /Must provide.*depth.+atDepth/
+    ],
+    [ { onlyFiles: true, onlyDirs: true, root: dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/ ],
+    [ 
+      { onlyFiles: true, noRecurseFailed: true, root: dirAPath }, 
+      "cannot specify multilpe 'only' flags",
+      /'only' flag.+?'noRecurseFailed'/
     ]
   ])('%p %s', async(options, description, regex) => {
     try {

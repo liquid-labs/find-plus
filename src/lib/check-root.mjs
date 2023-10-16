@@ -1,6 +1,6 @@
 import { statSync } from 'node:fs'
 
-const checkRoot = ({ root = throw new Error("Must provide 'root' to checkRoot.") }) => {
+const checkRoot = ({ root }) => {
   const rootStat = statSync(root, { throwIfNoEntry : false })
   if (rootStat === undefined) {
     const e = new Error(`Did not find root directory at: ${root}`)

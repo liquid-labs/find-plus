@@ -9,9 +9,22 @@ const find = async({
   depth,
   depthFirstSort,
   excludeRoot = false,
+  noBlockDevices = false,
+  noCharacterDevices = false,
+  noDirs = false,
+  noFIFOs = false,
+  noFiles = false,
   noRecurseFailed = false,
+  noSockets = false,
+  noSpecials = false,
+  noSymbolicLinks = false,
+  onlyBlockDevices = false,
+  onlyCharacterDevices = false,
   onlyDirs = false,
+  onlyFIFOs = false,
   onlyFiles = false,
+  onlySockets = false,
+  onlySymbolicLinks = false,
   root = throw new Error("Must provide 'root' to find."),
   tests = []
 } = {}) => {
@@ -19,11 +32,46 @@ const find = async({
   if (atDepth === true && depth === undefined) {
     throw new Error("Must provide an explicit 'depth' when 'atDepth' is 'true'.")
   }
-  if (onlyDirs === true && onlyFiles === true) {
-    throw new Error("Cannot limit to both 'onlyDirs' and 'onlyFiles'.")
+  let onlyCount = 0
+  for (const flag of [
+    onlyBlockDevices,
+    onlyCharacterDevices,
+    onlyDirs,
+    onlyFIFOs,
+    onlyFiles,
+    onlySockets,
+    onlySymbolicLinks
+  ]) {
+    if (flag === true) {
+      onlyCount += 1
+    }
   }
-  if (onlyFiles === true && noRecurseFailed === true) {
-    throw new Error("Cannot set both 'onlyFiles' and 'noRecurseFailed' true; no directories would be searched.")
+  if (onlyCount > 1) {
+    throw new Error("Cannot specify multiple 'only' flags; nothing would be selected.")
+  }
+  if (onlyCount > 0 && noRecurseFailed === true && onlyDirs !== true) {
+    throw new Error("Cannot set an 'only' flag (other than 'onlyDirs') and 'noRecurseFailed' true; no directories would be searched.")
+  }
+  if (noDirs === true && noRecurseFailed === true) {
+    throw new Error("Cannot set 'noDirs' and 'noRecurseFailed' both true; nothing would be searched.")
+  }
+
+  if (noSpecials === true) {
+    noBlockDevices = true
+    noCharacterDevices = true
+    noFIFOs = true
+    noSockets = true
+  }
+
+  let noCount = 0
+  const noFlags = [noBlockDevices, noCharacterDevices, noDirs, noFIFOs, noFiles, noSockets, noSymbolicLinks]
+  for (const flag of noFlags) {
+    if (flag === true) {
+      noCount += 1
+    }
+  }
+  if (noCount === noFlags.length) {
+    throw new Error("Cannot set all 'no' flags to true; nothing would be searched.")
   }
 
   const myTests = [...tests]
@@ -41,6 +89,43 @@ const find = async({
   else if (onlyFiles === true) {
     myTests.unshift((f) => f.isFile())
   }
+  else if (onlyBlockDevices === true) {
+    myTests.unshift((f) => f.isBlockDevice())
+  }
+  else if (onlyCharacterDevices === true) {
+    myTests.unshift((f) => f.isCharacterDevice())
+  }
+  else if (onlyFIFOs === true) {
+    myTests.unshift((f) => f.isFIFO())
+  }
+  else if (onlySockets === true) {
+    myTests.unshift((f) => f.isSocket())
+  }
+  else if (onlySymbolicLinks === true) {
+    myTests.unshift((f) => f.isSymbolicLink())
+  }
+
+  if (noDirs === true) {
+    myTests.unshift((f) => !f.isDirectory())
+  }
+  else if (noFiles === true) {
+    myTests.unshift((f) => !f.isFile())
+  }
+  else if (noBlockDevices === true) {
+    myTests.unshift((f) => !f.isBlockDevice())
+  }
+  else if (noCharacterDevices === true) {
+    myTests.unshift((f) => !f.isCharacterDevice())
+  }
+  else if (!noFIFOs === true) {
+    myTests.unshift((f) => !f.isFIFO())
+  }
+  else if (noSockets === true) {
+    myTests.unshift((f) => !f.isSocket())
+  }
+  else if (noSymbolicLinks === true) {
+    myTests.unshift((f) => !f.isSymbolicLink())
+  }  
 
   const rootStat = checkRoot({ root })
   rootStat.path = fsPath.dirname(root)
