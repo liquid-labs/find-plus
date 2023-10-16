@@ -8,10 +8,10 @@ const find = async({
   atDepth = false,
   depth,
   depthFirstSort,
-  dirsOnly = false,
   excludeRoot = false,
-  filesOnly = false,
   noRecurseFailed = false,
+  onlyDirs = false,
+  onlyFiles = false,
   root = throw new Error("Must provide 'root' to find."),
   tests = []
 } = {}) => {
@@ -19,11 +19,11 @@ const find = async({
   if (atDepth === true && depth === undefined) {
     throw new Error("Must provide an explicit 'depth' when 'atDepth' is 'true'.")
   }
-  if (dirsOnly === true && filesOnly === true) {
-    throw new Error("Cannot limit to both 'dirsOnly' and 'filesOnly'.")
+  if (onlyDirs === true && onlyFiles === true) {
+    throw new Error("Cannot limit to both 'onlyDirs' and 'onlyFiles'.")
   }
-  if (filesOnly === true && noRecurseFailed === true) {
-    throw new Error("Cannot set both 'filesOnly' and 'noRecurseFailed' true; no directories would be searched.")
+  if (onlyFiles === true && noRecurseFailed === true) {
+    throw new Error("Cannot set both 'onlyFiles' and 'noRecurseFailed' true; no directories would be searched.")
   }
 
   const myTests = [...tests]
@@ -35,10 +35,10 @@ const find = async({
     })
   }
 
-  if (dirsOnly === true) {
+  if (onlyDirs === true) {
     myTests.unshift((f) => f.isDirectory())
   }
-  else if (filesOnly === true) {
+  else if (onlyFiles === true) {
     myTests.unshift((f) => f.isFile())
   }
 

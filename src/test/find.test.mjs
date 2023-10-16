@@ -18,35 +18,35 @@ const fileABA1Path = fsPath.join(dirABAPath, 'fileABA-1.txt')
 
 describe('find', () => {
   test.each([
-    // begin 'filesOnly: true'
+    // begin 'onlyFiles: true'
     [
-      { filesOnly : true, root : dirAPath },
+      { onlyFiles : true, root : dirAPath },
       'basic files only',
       [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
     ],
     // begin 'dirOnly: true' tests
     [
-      { dirsOnly : true, root : dirAPath },
+      { onlyDirs : true, root : dirAPath },
       'basic dirs only',
       [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
     ],
     [
-      { dirsOnly : true, excludeRoot : true, root : dirAPath },
+      { onlyDirs : true, excludeRoot : true, root : dirAPath },
       'basic dirs only, excluding root',
       [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
     ],
-    [{ depth : 1, dirsOnly : true, root : dirAPath }, 'limit to depth 1', [dirAPath, dirAAPath, dirABPath]],
+    [{ depth : 1, onlyDirs : true, root : dirAPath }, 'limit to depth 1', [dirAPath, dirAAPath, dirABPath]],
     [
-      { depth : 1, dirsOnly : true, excludeRoot : true, root : dirAPath },
+      { depth : 1, onlyDirs : true, excludeRoot : true, root : dirAPath },
       'limit to depth 1 aand exclude root',
       [dirAAPath, dirABPath]],
     [
-      { atDepth : true, depth : 1, dirsOnly : true, root : dirAPath },
+      { atDepth : true, depth : 1, onlyDirs : true, root : dirAPath },
       "limit to dirs 'atDepth' 1",
       [dirAAPath, dirABPath]
     ],
     [
-      { atDepth : true, depth : 2, dirsOnly : true, root : dirAPath },
+      { atDepth : true, depth : 2, onlyDirs : true, root : dirAPath },
       "limit to dirs to 'atDepth' 2",
       [dirAAAPath, dirAABPath, dirABAPath]
     ],
@@ -56,13 +56,13 @@ describe('find', () => {
       [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath]
     ],
     [
-      { dirsOnly : true, root : dirAPath, tests : [(f) => f.name.indexOf('B') > -1] },
+      { onlyDirs : true, root : dirAPath, tests : [(f) => f.name.indexOf('B') > -1] },
       'traverses failed directories',
       [dirAABPath, dirABPath, dirABAPath]
     ],
     // sorting tests
     [
-      { depthFirstSort: true, filesOnly : true, root : dirAPath },
+      { depthFirstSort: true, onlyFiles : true, root : dirAPath },
       'basic files only',
       [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path ]
     ],
