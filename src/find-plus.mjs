@@ -1,131 +1,34 @@
 import * as fs from 'node:fs/promises'
 import * as fsPath from 'node:path'
 
+import { addImpliedTests } from './lib/add-implied-tests'
 import { checkRoot } from './lib/check-root'
 import { breadthFirstSorter, depthFirstSorter } from './lib/sorters'
+import { verifyParams } from './lib/verify-params'
 
-const find = async({
-  atDepth = false,
-  depth,
-  depthFirstSort,
-  excludeRoot = false,
-  noBlockDevices = false,
-  noCharacterDevices = false,
-  noDirs = false,
-  noFIFOs = false,
-  noFiles = false,
-  noRecurseFailed = false,
-  noSockets = false,
-  noSpecials = false,
-  noSymbolicLinks = false,
-  onlyBlockDevices = false,
-  onlyCharacterDevices = false,
-  onlyDirs = false,
-  onlyFIFOs = false,
-  onlyFiles = false,
-  onlySockets = false,
-  onlySymbolicLinks = false,
-  root = throw new Error("Must provide 'root' to find."),
-  tests = []
-} = {}) => {
-  // check for confliction options
-  if (atDepth === true && depth === undefined) {
-    throw new Error("Must provide an explicit 'depth' when 'atDepth' is 'true'.")
-  }
-  let onlyCount = 0
-  for (const flag of [
-    onlyBlockDevices,
-    onlyCharacterDevices,
-    onlyDirs,
-    onlyFIFOs,
-    onlyFiles,
-    onlySockets,
-    onlySymbolicLinks
-  ]) {
-    if (flag === true) {
-      onlyCount += 1
-    }
-  }
-  if (onlyCount > 1) {
-    throw new Error("Cannot specify multiple 'only' flags; nothing would be selected.")
-  }
-  if (onlyCount > 0 && noRecurseFailed === true && onlyDirs !== true) {
-    throw new Error("Cannot set an 'only' flag (other than 'onlyDirs') and 'noRecurseFailed' true; no directories would be searched.")
-  }
-  if (noDirs === true && noRecurseFailed === true) {
-    throw new Error("Cannot set 'noDirs' and 'noRecurseFailed' both true; nothing would be searched.")
+const find = async(params = {}) => {
+  // we do this first so the values are correct for 'verifyParams'
+  if (params.noSpecials === true) {
+    params.noBlockDevices = true
+    params.noCharacterDevices = true
+    params.noFIFOs = true
+    params.noSockets = true
   }
 
-  if (noSpecials === true) {
-    noBlockDevices = true
-    noCharacterDevices = true
-    noFIFOs = true
-    noSockets = true
-  }
+  const {
+    depth,
+    depthFirstSort,
+    excludeRoot = false,
+    noRecurseFailed = false,
+    root = throw new Error("Must provide 'root' to find."),
+    tests = []
+  } = params
 
-  let noCount = 0
-  const noFlags = [noBlockDevices, noCharacterDevices, noDirs, noFIFOs, noFiles, noSockets, noSymbolicLinks]
-  for (const flag of noFlags) {
-    if (flag === true) {
-      noCount += 1
-    }
-  }
-  if (noCount === noFlags.length) {
-    throw new Error("Cannot set all 'no' flags to true; nothing would be searched.")
-  }
+  verifyParams(params)
 
   const myTests = [...tests]
 
-  if (atDepth === true) {
-    // myTests.unshift((f, currDepth) => currDepth === depth)
-    myTests.unshift((f, currDepth) => {
-      return currDepth === depth
-    })
-  }
-
-  if (onlyDirs === true) {
-    myTests.unshift((f) => f.isDirectory())
-  }
-  else if (onlyFiles === true) {
-    myTests.unshift((f) => f.isFile())
-  }
-  else if (onlyBlockDevices === true) {
-    myTests.unshift((f) => f.isBlockDevice())
-  }
-  else if (onlyCharacterDevices === true) {
-    myTests.unshift((f) => f.isCharacterDevice())
-  }
-  else if (onlyFIFOs === true) {
-    myTests.unshift((f) => f.isFIFO())
-  }
-  else if (onlySockets === true) {
-    myTests.unshift((f) => f.isSocket())
-  }
-  else if (onlySymbolicLinks === true) {
-    myTests.unshift((f) => f.isSymbolicLink())
-  }
-
-  if (noDirs === true) {
-    myTests.unshift((f) => !f.isDirectory())
-  }
-  else if (noFiles === true) {
-    myTests.unshift((f) => !f.isFile())
-  }
-  else if (noBlockDevices === true) {
-    myTests.unshift((f) => !f.isBlockDevice())
-  }
-  else if (noCharacterDevices === true) {
-    myTests.unshift((f) => !f.isCharacterDevice())
-  }
-  else if (!noFIFOs === true) {
-    myTests.unshift((f) => !f.isFIFO())
-  }
-  else if (noSockets === true) {
-    myTests.unshift((f) => !f.isSocket())
-  }
-  else if (noSymbolicLinks === true) {
-    myTests.unshift((f) => !f.isSymbolicLink())
-  }  
+  addImpliedTests({ ...params, myTests })
 
   const rootStat = checkRoot({ root })
   rootStat.path = fsPath.dirname(root)

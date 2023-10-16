@@ -18,10 +18,10 @@ const fileABA1Path = fsPath.join(dirABAPath, 'fileABA-1.txt')
 
 describe('find', () => {
   test.each([
-    [ 
-      { root: dirAAPath },
-      'everything', 
-      [ dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path ]
+    [
+      { root : dirAAPath },
+      'everything',
+      [dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path]
     ],
     // begin 'onlyFiles: true'
     [
@@ -67,25 +67,25 @@ describe('find', () => {
     ],
     // sorting tests
     [
-      { depthFirstSort: true, onlyFiles : true, root : dirAPath },
+      { depthFirstSort : true, onlyFiles : true, root : dirAPath },
       'basic files only',
-      [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path ]
-    ],
+      [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
+    ]
   ])('%p %s', async(options, description, expected) => {
     const files = await find(options)
     expect(files).toEqual(expected)
   })
 
   if (process.platform !== 'win32') {
-    test('blockDevicesOnly finds something in /dev', async () => {
+    test('blockDevicesOnly finds something in /dev', async() => {
       const devPath = fsPath.sep + 'dev'
-      const files = await find({ depth: 1, onlyBlockDevices: true, root: devPath })
+      const files = await find({ depth : 1, onlyBlockDevices : true, root : devPath })
       expect(files.length).toBeGreaterThan(0)
     })
 
-    test('characterDevicesOnly finds something in /dev', async () => {
+    test('characterDevicesOnly finds something in /dev', async() => {
       const devPath = fsPath.sep + 'dev'
-      const files = await find({ depth: 1, onlyCharacterDevices: true, root: devPath })
+      const files = await find({ depth : 1, onlyCharacterDevices : true, root : devPath })
       expect(files.length).toBeGreaterThan(0)
     })
   }
@@ -107,9 +107,9 @@ describe('find', () => {
       "must specify 'depth' with 'adDepth : true'",
       /Must provide.*depth.+atDepth/
     ],
-    [ { onlyFiles: true, onlyDirs: true, root: dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/ ],
-    [ 
-      { onlyFiles: true, noRecurseFailed: true, root: dirAPath }, 
+    [{ onlyFiles : true, onlyDirs : true, root : dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/],
+    [
+      { onlyFiles : true, noRecurseFailed : true, root : dirAPath },
       "cannot specify multilpe 'only' flags",
       /'only' flag.+?'noRecurseFailed'/
     ]
