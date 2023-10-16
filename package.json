@@ -1,17 +1,35 @@
 {
   "name": "@liquid-labs/find-plus",
   "version": "1.0.0-alpha.0",
-  "description": "",
+  "description": "A zero-dependency file finder with features similar to bash's find.",
   "main": "dist/find-plus.js",
+  "files": [
+    "./dist",
+    "README.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "make",
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "test": "make test",
+    "prepack": "make build",
+    "preversion": "make test && make lint",
+    "qa": "make qa"
   },
-  "keywords": [],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["file search", "files", "find", "find file", "find files", "search"],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "UNLICENSED",
   "repository": "git+ssh://git@github.com/liquid-labs/find-plus.git",
   "bugs": {
     "url": "https://github.com/liquid-labs/find-plus/issues"
   },
-  "homepage": "https://github.com/liquid-labs/find-plus#readme"
+  "homepage": "https://github.com/liquid-labs/find-plus#readme",
+  "devDependencies": {
+    "@liquid-labs/catalyst-resource-babel-and-rollup": "^1.0.0-alpha.3",
+    "@liquid-labs/catalyst-resource-eslint": "^1.0.0-alpha.1",
+    "@liquid-labs/catalyst-resource-jest": "^1.0.0-alpha.3"
+  }
 }
