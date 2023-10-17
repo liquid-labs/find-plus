@@ -3,7 +3,6 @@ import * as fsPath from 'node:path'
 
 import { addImpliedTests } from './lib/add-implied-tests'
 import { checkRoot } from './lib/check-root'
-import { getDirEntName } from './lib/get-dirent-name'
 import { alphaSorter, breadthFirstSorter, depthFirstSorter } from './lib/sorters'
 import { verifyParams } from './lib/verify-params'
 
@@ -58,10 +57,13 @@ const find = async(params = {}) => {
   while ((depth === undefined || depth >= currDepth) && frontier.length > 0) {
     const newFrontier = []
     for (const dirEnt of frontier) {
-      const dirPath = getDirEntName(dirEnt)
+      const dirPath = fsPath.join(dirEnt.path, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
         file.depth = currDepth
+        if (file.path === undefined) { // node 19.x workaround
+          file.path = dirPath
+        }
         const pass = !myTests.some((t) => !t(file, currDepth))
 
         if (file.isDirectory() && (pass || noTraverseFailed === false)) {
@@ -87,7 +89,7 @@ const find = async(params = {}) => {
     accumulator.sort(sorter)
   }
 
-  const result = accumulator.map(({ name, path }) => path === undefined ? name : fsPath.join(path, name))
+  const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
 
   return result
 }
