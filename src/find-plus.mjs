@@ -18,7 +18,7 @@ const find = async(params = {}) => {
   const {
     depth,
     excludeRoot = false,
-    noRecurseFailed = false,
+    noTraverseFailed = false,
     root = throw new Error("Must provide 'root' to find."),
     sortBreadthFirst,
     sortDepthFirst,
@@ -41,7 +41,7 @@ const find = async(params = {}) => {
   let currDepth = 0
 
   let frontier = []
-  if (excludeRoot === true && noRecurseFailed === false) { // no need for tests
+  if (excludeRoot === true && noTraverseFailed === false) { // no need for tests
     frontier.push(rootStat)
   }
   else {
@@ -49,7 +49,7 @@ const find = async(params = {}) => {
     if (excludeRoot === false && rootPasses) {
       accumulator.push(rootStat)
     }
-    if (rootPasses || noRecurseFailed === false) {
+    if (rootPasses || noTraverseFailed === false) {
       frontier.push(rootStat)
     }
   }
@@ -65,7 +65,7 @@ const find = async(params = {}) => {
         file.depth = currDepth
         const pass = !myTests.some((t) => !t(file, currDepth))
 
-        if (file.isDirectory() && (pass || noRecurseFailed === false)) {
+        if (file.isDirectory() && (pass || noTraverseFailed === false)) {
           newFrontier.push(file)
         }
         if (pass) {

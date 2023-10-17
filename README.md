@@ -23,12 +23,12 @@ console.log(`You have ${files.length} text files under your home directory.`)
 
 ## Options
 
-`find()` takes the following options (only the `root` option is required:
+`find()` takes the following options (only the `root` option is required):
 
 ### Key options
 
 - ___`root`___: (__required__, _string_) the path from which to begin the search.
-- ___`noRecurseFailed`___: (_boolean_, _default_: `false`) by default, `find` will traverse directories even if the directories themselves are not included in the results (e.g., when `onlyFiles` is set to `true`). When `noRecurseFailed` is `true`, then directories which fail the requirements are not traversed. `noRecurseFailed` cannot be combined with `noDirs` or any of the [`only`-options](#only-options) except `onlyDirs` because then the search would be trivially empty.
+- ___`noTraverseFailed`___: (_boolean_, _default_: `false`) by default, `find` will traverse directories even if the directories themselves are not included in the results (e.g., when `onlyFiles` is set to `true`). When `noTraverseFailed` is `true`, then directories which fail the requirements are not traversed. `noTraverseFailed` cannot be combined with `noDirs` or any of the [`only`-options](#only-options) except `onlyDirs` because then the search would be trivially empty.
 - ___`sort`___: (_string_, _default_: 'breadth') specifies the sort to apply to the results. Possible options are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk and is primarily useful to speed things slightly when you don't care about the order.
 - ___`tests`___: (_array of functions_, _default_: `[]`) an array of functions which take `(dirEnt, depth)` where `dirEnt` is a [`fs.DirEnt`](https://nodejs.org/api/fs.html#class-fsdirent)-like object (may be a `DirEnt` or modified [`fs.Stats`](https://nodejs.org/api/fs.html#class-fsstats) with `name` and `path` properties added) and `depth` is the depth of the file relative to the root (which is depth 0).
 
@@ -48,8 +48,8 @@ The following options default to `false` and may be set `true` to exclude the pa
 - ___`noDirs`___,
 - ___`noFIFOs`___,
 - ___`noFiles`___,
-- ___`noSockets`___,: equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`
-- ___`noSpecial`___,
+- ___`noSockets`___,
+- ___`noSpecial`___: equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`,
 - ___`noSymbolicLinks`___
 
 ## Only-options

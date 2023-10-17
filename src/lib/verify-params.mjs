@@ -6,9 +6,9 @@ const verifyParams = ({
   noDirs,
   noFIFOs,
   noFiles,
-  noRecurseFailed,
   noSockets,
   noSymbolicLinks,
+  noTraverseFailed,
   onlyBlockDevices,
   onlyCharacterDevices,
   onlyDirs,
@@ -38,11 +38,11 @@ const verifyParams = ({
   if (onlyCount > 1) {
     throw new Error("Cannot specify multiple 'only' flags; nothing would be selected.")
   }
-  if (onlyCount > 0 && noRecurseFailed === true && onlyDirs !== true) {
-    throw new Error("Cannot set an 'only' flag (other than 'onlyDirs') and 'noRecurseFailed' true; no directories would be searched.")
+  if (onlyCount > 0 && noTraverseFailed === true && onlyDirs !== true) {
+    throw new Error("Cannot set an 'only' flag (other than 'onlyDirs') and 'noTraverseFailed' true; no directories would be searched.")
   }
-  if (noDirs === true && noRecurseFailed === true) {
-    throw new Error("Cannot set 'noDirs' and 'noRecurseFailed' both true; nothing would be searched.")
+  if (noDirs === true && noTraverseFailed === true) {
+    throw new Error("Cannot set 'noDirs' and 'noTraverseFailed' both true; nothing would be searched.")
   }
 
   let noCount = 0

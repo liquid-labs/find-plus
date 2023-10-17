@@ -60,7 +60,7 @@ describe('find', () => {
       [dirAAAPath, dirAABPath, dirABAPath]
     ],
     [
-      { noRecurseFailed : true, root : dirAPath, tests : [(f) => f.name === 'data' || f.name.endsWith('A')] },
+      { noTraverseFailed : true, root : dirAPath, tests : [(f) => f.name === 'data' || f.name.endsWith('A')] },
       'traverses passing directories only',
       [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath]
     ],
@@ -202,14 +202,14 @@ describe('find', () => {
     ],
     [{ onlyFiles : true, onlyDirs : true, root : dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/],
     [
-      { onlyFiles : true, noRecurseFailed : true, root : dirAPath },
+      { onlyFiles : true, noTraverseFailed : true, root : dirAPath },
       "cannot specify multilpe 'only' flags",
-      /'only' flag.+?'noRecurseFailed'/
+      /'only' flag.+?'noTraverseFailed'/
     ],
     [
-      { noDirs: true, noRecurseFailed: true, root: dirAPath }, 
+      { noDirs: true, noTraverseFailed: true, root: dirAPath }, 
       "'noDirs' and 'noRecurseFail' invalid combination", 
-      /noDirs.+?noRecurseFailed/
+      /noDirs.+?noTraverseFailed/
     ],
     [
       { noSpecials: true, noDirs: true, noFiles: true, noSymbolicLinks: true, root: dirAAPath },
