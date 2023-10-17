@@ -56,7 +56,7 @@ const addImpliedTests = ({
   else if (noCharacterDevices === true) {
     myTests.unshift((f) => !f.isCharacterDevice())
   }
-  else if (!noFIFOs === true) {
+  else if (noFIFOs === true) {
     myTests.unshift((f) => !f.isFIFO())
   }
   else if (noSockets === true) {

@@ -1,9 +1,13 @@
 /* global describe expect test */
 import * as fsPath from 'node:path'
+import * as fs from 'node:fs/promises'
+
+import { tryExec } from '@liquid-labs/shell-toolkit'
 
 import { find } from '../find-plus'
 
-const dirAPath = fsPath.join(__dirname, 'data', 'dirA')
+const dirDataPath = fsPath.join(__dirname, 'data')
+const dirAPath = fsPath.join(dirDataPath, 'dirA')
 const fileA1Path = fsPath.join(dirAPath, 'fileA-1.txt')
 const dirAAPath = fsPath.join(dirAPath, 'dirAA')
 const dirAAAPath = fsPath.join(dirAAPath, 'dirAAA')
@@ -109,7 +113,36 @@ describe('find', () => {
     })
   }
 
+  // fifo test
+  describe('finding FIFOs', () => {
+    const fifoDir = fsPath.join(dirDataPath, 'dirFIFO')
+    const fifoPath = fsPath.join(fifoDir, 'fifoA')
+    let allFilesCount, fifosCount, nonFIFOsCount
 
+    beforeAll(async () => {
+      tryExec('mkfifo ' + fifoPath)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      const allFiles = await find({ root: fifoDir, sortNone: true })
+      const fifos = await find({ onlyFIFOs: true, root: fifoDir, sortNone: true })
+      const nonFIFOs = await find({ noFIFOs: true, root: fifoDir, sortNone: true })
+      console.log('nonFIFOs:', nonFIFOs)
+
+      allFilesCount = allFiles.length
+      fifosCount = fifos.length
+      nonFIFOsCount = nonFIFOs.length
+    })
+
+    afterAll(async () => {
+      await fs.rm(fifoPath)
+    })
+
+    test('counts FIFO with all files', () => expect(allFilesCount).toBe(4))
+
+    test("'onlyFIFO' counts only FIFO files", () => expect(fifosCount).toBe(1))
+
+    test("'noFIFO' skips FIFO files", () => expect(nonFIFOsCount).toBe(3))
+  })
 
   test.each([
     [undefined, 'must specify root', /Must provide 'root'/],
