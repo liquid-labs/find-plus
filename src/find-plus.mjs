@@ -87,7 +87,7 @@ const find = async(params = {}) => {
     accumulator.sort(sorter)
   }
 
-  const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
+  const result = accumulator.map(({ name, path }) => path === undefined ? name : fsPath.join(path, name))
 
   return result
 }
