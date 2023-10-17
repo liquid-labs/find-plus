@@ -21,4 +21,11 @@ const depthFirstSorter = (a, b) => {
   }
 }
 
-export { breadthFirstSorter, depthFirstSorter }
+const alphaSorter = (a, b) => {
+  const aPath = fsPath.join(a.path, a.name)
+  const bPath = fsPath.join(b.path, b.name)
+
+  return aPath.localeCompare(bPath)
+}
+
+export { alphaSorter, breadthFirstSorter, depthFirstSorter }

@@ -1,3 +1,5 @@
+const validSorts = ['alpha', 'breadth', 'depth', 'none']
+
 const verifyParams = ({
   atDepth,
   depth,
@@ -15,7 +17,8 @@ const verifyParams = ({
   onlyFIFOs,
   onlyFiles,
   onlySockets,
-  onlySymbolicLinks
+  onlySymbolicLinks,
+  sort
 }) => {
   // check for confliction options
   if (atDepth === true && depth === undefined) {
@@ -54,6 +57,10 @@ const verifyParams = ({
   }
   if (noCount === noFlags.length) {
     throw new Error("Cannot set all 'no' flags to true; nothing would be searched.")
+  }
+
+  if (sort !== undefined && !validSorts.includes(sort)) {
+    throw new Error(`Invalid sort '${sort}'; must be one of: '${validSorts.join("', '")}'`)
   }
 }
 

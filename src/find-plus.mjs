@@ -3,7 +3,7 @@ import * as fsPath from 'node:path'
 
 import { addImpliedTests } from './lib/add-implied-tests'
 import { checkRoot } from './lib/check-root'
-import { breadthFirstSorter, depthFirstSorter } from './lib/sorters'
+import { alphaSorter, breadthFirstSorter, depthFirstSorter } from './lib/sorters'
 import { verifyParams } from './lib/verify-params'
 
 const find = async(params = {}) => {
@@ -20,9 +20,7 @@ const find = async(params = {}) => {
     excludeRoot = false,
     noTraverseFailed = false,
     root = throw new Error("Must provide 'root' to find."),
-    sortBreadthFirst,
-    sortDepthFirst,
-    sortNone,
+    sort,
     tests = []
   } = params
 
@@ -79,8 +77,12 @@ const find = async(params = {}) => {
   }
 
   // results in depth-first sort of full directory paths
-  if (sortNone !== true) {
-    const sorter = sortDepthFirst === true ? depthFirstSorter : /* default */ breadthFirstSorter
+  if (sort !=='none') {
+    const sorter = sort === 'depth' === true 
+      ? depthFirstSorter
+      : sort === 'alpha'
+        ? alphaSorter
+        : /* default */ breadthFirstSorter
     accumulator.sort(sorter)
   }
 

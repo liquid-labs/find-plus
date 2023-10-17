@@ -75,9 +75,14 @@ describe('find', () => {
     [{ noFiles: true, root: dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
     // sorting tests
     [
-      { sortDepthFirst : true, onlyFiles : true, root : dirAPath },
+      { sort : 'depth', onlyFiles : true, root : dirAPath },
       'basic files only',
       [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
+    ],
+    [
+      { sort : 'alpha', onlyFiles : true, root : dirAPath },
+      'basic files only',
+      [fileAAAA1Path, fileAAB1Path, fileABA1Path, fileAB1Path, fileA1Path]
     ]
   ])('%p %s', async(options, description, expected) => {
     const files = await find(options)
@@ -131,9 +136,9 @@ describe('find', () => {
     beforeAll(async() => {
       tryExec('mkfifo ' + fifoPath)
 
-      const allFiles = await find({ root : fifoDir, sortNone : true })
-      const fifos = await find({ onlyFIFOs : true, root : fifoDir, sortNone : true })
-      const nonFIFOs = await find({ noFIFOs : true, root : fifoDir, sortNone : true })
+      const allFiles = await find({ root : fifoDir, sort : 'none' })
+      const fifos = await find({ onlyFIFOs : true, root : fifoDir, sort : 'none' })
+      const nonFIFOs = await find({ noFIFOs : true, root : fifoDir, sort : 'none' })
 
       allFilesCount = allFiles.length
       fifosCount = fifos.length
@@ -163,9 +168,9 @@ describe('find', () => {
     beforeAll(async() => {
       await fs.symlink(fileAPath, symLinkPath)
 
-      const allFiles = await find({ root : symLinkDir, sortNone : true })
-      const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sortNone : true })
-      const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sortNone : true })
+      const allFiles = await find({ root : symLinkDir, sort : 'none' })
+      const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sort : 'none' })
+      const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sort : 'none' })
 
       allFilesCount = allFiles.length
       symLinksCount = symLinks.length
@@ -215,7 +220,8 @@ describe('find', () => {
       { noSpecials: true, noDirs: true, noFiles: true, noSymbolicLinks: true, root: dirAAPath },
       'all "no"s are invalid',
       /all 'no'/
-    ]
+    ],
+    [ { sort: 'invalid-sort', root: dirAPath }, 'invalid sort detected', /^Invalid sort/]
   ])('%p %s', async(options, description, regex) => {
     try {
       await find(options)
