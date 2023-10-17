@@ -47,22 +47,22 @@ const addImpliedTests = ({
   if (noDirs === true) {
     myTests.unshift((f) => !f.isDirectory())
   }
-  else if (noFiles === true) {
+  if (noFiles === true) {
     myTests.unshift((f) => !f.isFile())
   }
-  else if (noBlockDevices === true) {
+  if (noBlockDevices === true) {
     myTests.unshift((f) => !f.isBlockDevice())
   }
-  else if (noCharacterDevices === true) {
+  if (noCharacterDevices === true) {
     myTests.unshift((f) => !f.isCharacterDevice())
   }
-  else if (noFIFOs === true) {
+  if (noFIFOs === true) {
     myTests.unshift((f) => !f.isFIFO())
   }
-  else if (noSockets === true) {
+  if (noSockets === true) {
     myTests.unshift((f) => !f.isSocket())
   }
-  else if (noSymbolicLinks === true) {
+  if (noSymbolicLinks === true) {
     myTests.unshift((f) => !f.isSymbolicLink())
   }
 }
