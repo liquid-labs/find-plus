@@ -5,6 +5,7 @@
   "main": "dist/find-plus.js",
   "files": [
     "./dist",
+    "LICENSE.txt",
     "README.md"
   ],
   "scripts": {
@@ -29,7 +30,7 @@
     "search"
   ],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "repository": "git+ssh://git@github.com/liquid-labs/find-plus.git",
   "bugs": {
     "url": "https://github.com/liquid-labs/find-plus/issues"
