@@ -17,7 +17,6 @@ const find = async(params = {}) => {
 
   const {
     depth,
-    
     excludeRoot = false,
     noRecurseFailed = false,
     root = throw new Error("Must provide 'root' to find."),
@@ -84,7 +83,7 @@ const find = async(params = {}) => {
     const sorter = sortDepthFirst === true ? depthFirstSorter : /* default */ breadthFirstSorter
     accumulator.sort(sorter)
   }
-  
+
   const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
 
   return result
