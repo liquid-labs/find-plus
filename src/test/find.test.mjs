@@ -70,9 +70,9 @@ describe('find', () => {
       [dirAABPath, dirABPath, dirABAPath]
     ],
     // noDirs
-    [{ noDirs: true, root: dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
+    [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
     // noFiles
-    [{ noFiles: true, root: dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
+    [{ noFiles : true, root : dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
     // sorting tests
     [
       { sort : 'depth', onlyFiles : true, root : dirAPath },
@@ -99,7 +99,6 @@ describe('find', () => {
         const blockDevs = await find({ depth : 1, onlyBlockDevices : true, noSort : true, root : devPath })
         const charDevs = await find({ depth : 1, onlyCharacterDevices : true, noSort : true, root : devPath })
         const nonSpecials = await find({ depth : 1, noSpecials : true, noSort : true, root : devPath })
-        const nonDevs = await find({ depth : 1, noBlockDevices : true, noCharacterDevices : true, noSort : true, root : devPath })
 
         allFilesCount = allFiles.length
         blockDevsCount = blockDevs.length
@@ -120,7 +119,7 @@ describe('find', () => {
       })
 
       test('noCharacterDevices skips character devices in /dev', async() => {
-        const noCharDevs = await find({ depth : 1, root : devPath, noCharacterDevices : true, noSort: true })
+        const noCharDevs = await find({ depth : 1, root : devPath, noCharacterDevices : true, noSort : true })
         const noCharDevCount = noCharDevs.length
         expect(noCharDevCount).toBe(allFilesCount - charDevsCount)
       })
@@ -212,16 +211,16 @@ describe('find', () => {
       /'only' flag.+?'noTraverseFailed'/
     ],
     [
-      { noDirs: true, noTraverseFailed: true, root: dirAPath }, 
-      "'noDirs' and 'noRecurseFail' invalid combination", 
+      { noDirs : true, noTraverseFailed : true, root : dirAPath },
+      "'noDirs' and 'noRecurseFail' invalid combination",
       /noDirs.+?noTraverseFailed/
     ],
     [
-      { noSpecials: true, noDirs: true, noFiles: true, noSymbolicLinks: true, root: dirAAPath },
+      { noSpecials : true, noDirs : true, noFiles : true, noSymbolicLinks : true, root : dirAAPath },
       'all "no"s are invalid',
       /all 'no'/
     ],
-    [ { sort: 'invalid-sort', root: dirAPath }, 'invalid sort detected', /^Invalid sort/]
+    [{ sort : 'invalid-sort', root : dirAPath }, 'invalid sort detected', /^Invalid sort/]
   ])('%p %s', async(options, description, regex) => {
     try {
       await find(options)

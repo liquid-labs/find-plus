@@ -77,8 +77,8 @@ const find = async(params = {}) => {
   }
 
   // results in depth-first sort of full directory paths
-  if (sort !=='none') {
-    const sorter = sort === 'depth' === true 
+  if (sort !== 'none') {
+    const sorter = sort === 'depth' === true
       ? depthFirstSorter
       : sort === 'alpha'
         ? alphaSorter
