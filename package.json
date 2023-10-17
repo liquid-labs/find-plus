@@ -1,7 +1,7 @@
 {
   "name": "@liquid-labs/find-plus",
   "version": "1.0.0-alpha.0",
-  "description": "A zero-dependency file finder with features similar to bash's find.",
+  "description": "A zero-dependency file finder with features similar to Linux find.",
   "main": "dist/find-plus.js",
   "files": [
     "./dist",
