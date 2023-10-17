@@ -61,7 +61,7 @@ const find = async(params = {}) => {
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
         file.depth = currDepth
-        if (file.path === undefined) { // node 19.x workaround
+        if (file.path === undefined) { // node 19.x workaround; DirEnt's don't have '.path'
           file.path = dirPath
         }
         const pass = !myTests.some((t) => !t(file, currDepth))
