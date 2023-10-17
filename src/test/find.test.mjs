@@ -1,6 +1,5 @@
-/* global describe expect test */
+/* global afterAll beforeAll describe expect test */
 import * as fsPath from 'node:path'
-import { createReadStream } from 'node:fs'
 import * as fs from 'node:fs/promises'
 
 import { tryExec } from '@liquid-labs/shell-toolkit'
@@ -34,7 +33,7 @@ describe('find', () => {
       'basic files only',
       [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
     ],
-    // begin 'dirOnly: true' tests
+    // begin 'onlyDirs: true' tests
     [
       { onlyDirs : true, root : dirAPath },
       'basic dirs only',
@@ -70,6 +69,10 @@ describe('find', () => {
       'traverses failed directories',
       [dirAABPath, dirABPath, dirABAPath]
     ],
+    // noDirs
+    [{ noDirs: true, root: dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
+    // noFiles
+    [{ noFiles: true, root: dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
     // sorting tests
     [
       { sortDepthFirst : true, onlyFiles : true, root : dirAPath },
@@ -84,30 +87,35 @@ describe('find', () => {
   if (process.platform !== 'win32') {
     describe('finding devices', () => {
       const devPath = fsPath.sep + 'dev'
-      let allFilesCount, blockDevsCount, charDevsCount
+      let allFilesCount, blockDevsCount, charDevsCount, nonSpecialsCount
 
-      beforeAll(async () => {
-        const allFiles = await find({ depth : 1, noSort: true, root : devPath })
-        const blockDevs = await find({ depth : 1, onlyBlockDevices : true, noSort: true, root : devPath })
-        const charDevs = await find({ depth : 1, onlyCharacterDevices : true, noSort: true, root : devPath })
-        
+      beforeAll(async() => {
+        const allFiles = await find({ depth : 1, noSort : true, root : devPath })
+        const blockDevs = await find({ depth : 1, onlyBlockDevices : true, noSort : true, root : devPath })
+        const charDevs = await find({ depth : 1, onlyCharacterDevices : true, noSort : true, root : devPath })
+        const nonSpecials = await find({ depth : 1, noSpecials : true, noSort : true, root : devPath })
+        const nonDevs = await find({ depth : 1, noBlockDevices : true, noCharacterDevices : true, noSort : true, root : devPath })
+
         allFilesCount = allFiles.length
         blockDevsCount = blockDevs.length
         charDevsCount = charDevs.length
+        nonSpecialsCount = nonSpecials.length
       })
 
       test('onlyBlockDevices finds something in /dev', () => expect(blockDevsCount).toBeGreaterThan(0))
 
       test('onlyCharacterDevices finds something in /dev', () => expect(charDevsCount).toBeGreaterThan(0))
 
+      test('noSpecials skips both block and character devices in /dev', () => expect(nonSpecialsCount).toBe(allFilesCount - blockDevsCount - charDevsCount))
+
       test('noBlockDevices skips block devices in /dev', async() => {
-        const noBlockDevs = await find({ depth: 1, root: devPath, noBlockDevices : true })
+        const noBlockDevs = await find({ depth : 1, root : devPath, noBlockDevices : true })
         const noBlockDevCount = noBlockDevs.length
         expect(noBlockDevCount).toBe(allFilesCount - blockDevsCount)
       })
 
       test('noCharacterDevices skips character devices in /dev', async() => {
-        const noCharDevs = await find({ depth: 1, root: devPath, noCharacterDevices : true })
+        const noCharDevs = await find({ depth : 1, root : devPath, noCharacterDevices : true, noSort: true })
         const noCharDevCount = noCharDevs.length
         expect(noCharDevCount).toBe(allFilesCount - charDevsCount)
       })
@@ -120,19 +128,19 @@ describe('find', () => {
     const fifoPath = fsPath.join(fifoDir, 'fifoA')
     let allFilesCount, fifosCount, nonFIFOsCount
 
-    beforeAll(async () => {
+    beforeAll(async() => {
       tryExec('mkfifo ' + fifoPath)
 
-      const allFiles = await find({ root: fifoDir, sortNone: true })
-      const fifos = await find({ onlyFIFOs: true, root: fifoDir, sortNone: true })
-      const nonFIFOs = await find({ noFIFOs: true, root: fifoDir, sortNone: true })
+      const allFiles = await find({ root : fifoDir, sortNone : true })
+      const fifos = await find({ onlyFIFOs : true, root : fifoDir, sortNone : true })
+      const nonFIFOs = await find({ noFIFOs : true, root : fifoDir, sortNone : true })
 
       allFilesCount = allFiles.length
       fifosCount = fifos.length
       nonFIFOsCount = nonFIFOs.length
     })
 
-    afterAll(async () => {
+    afterAll(async() => {
       await fs.rm(fifoPath)
     })
 
@@ -150,21 +158,21 @@ describe('find', () => {
     const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink')
     const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
     const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
-    let allFilesCount, nonSymLinksCount, symLink, symLinksCount
+    let allFilesCount, nonSymLinksCount, symLinksCount
 
-    beforeAll(async () => {
+    beforeAll(async() => {
       await fs.symlink(fileAPath, symLinkPath)
 
-      const allFiles = await find({ root: symLinkDir, sortNone: true })
-      const symLinks = await find({ onlySymbolicLinks: true, root: symLinkDir, sortNone: true })
-      const nonSymLinks = await find({ noSymbolicLinks: true, root: symLinkDir, sortNone: true })
+      const allFiles = await find({ root : symLinkDir, sortNone : true })
+      const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sortNone : true })
+      const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sortNone : true })
 
       allFilesCount = allFiles.length
       symLinksCount = symLinks.length
       nonSymLinksCount = nonSymLinks.length
     })
 
-    afterAll(async () => {
+    afterAll(async() => {
       await fs.rm(symLinkPath)
     })
 
@@ -197,6 +205,16 @@ describe('find', () => {
       { onlyFiles : true, noRecurseFailed : true, root : dirAPath },
       "cannot specify multilpe 'only' flags",
       /'only' flag.+?'noRecurseFailed'/
+    ],
+    [
+      { noDirs: true, noRecurseFailed: true, root: dirAPath }, 
+      "'noDirs' and 'noRecurseFail' invalid combination", 
+      /noDirs.+?noRecurseFailed/
+    ],
+    [
+      { noSpecials: true, noDirs: true, noFiles: true, noSymbolicLinks: true, root: dirAAPath },
+      'all "no"s are invalid',
+      /all 'no'/
     ]
   ])('%p %s', async(options, description, regex) => {
     try {
