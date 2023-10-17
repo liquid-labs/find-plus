@@ -1,5 +1,6 @@
 /* global describe expect test */
 import * as fsPath from 'node:path'
+import { createReadStream } from 'node:fs'
 import * as fs from 'node:fs/promises'
 
 import { tryExec } from '@liquid-labs/shell-toolkit'
@@ -121,12 +122,10 @@ describe('find', () => {
 
     beforeAll(async () => {
       tryExec('mkfifo ' + fifoPath)
-      await new Promise(resolve => setTimeout(resolve, 1000))
 
       const allFiles = await find({ root: fifoDir, sortNone: true })
       const fifos = await find({ onlyFIFOs: true, root: fifoDir, sortNone: true })
       const nonFIFOs = await find({ noFIFOs: true, root: fifoDir, sortNone: true })
-      console.log('nonFIFOs:', nonFIFOs)
 
       allFilesCount = allFiles.length
       fifosCount = fifos.length
@@ -142,6 +141,38 @@ describe('find', () => {
     test("'onlyFIFO' counts only FIFO files", () => expect(fifosCount).toBe(1))
 
     test("'noFIFO' skips FIFO files", () => expect(nonFIFOsCount).toBe(3))
+  })
+
+  // TODO: symLink test; no luck after a little googling
+
+  // symlink test
+  describe('finding Sockets', () => {
+    const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink')
+    const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
+    const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
+    let allFilesCount, nonSymLinksCount, symLink, symLinksCount
+
+    beforeAll(async () => {
+      await fs.symlink(fileAPath, symLinkPath)
+
+      const allFiles = await find({ root: symLinkDir, sortNone: true })
+      const symLinks = await find({ onlySymbolicLinks: true, root: symLinkDir, sortNone: true })
+      const nonSymLinks = await find({ noSymbolicLinks: true, root: symLinkDir, sortNone: true })
+
+      allFilesCount = allFiles.length
+      symLinksCount = symLinks.length
+      nonSymLinksCount = nonSymLinks.length
+    })
+
+    afterAll(async () => {
+      await fs.rm(symLinkPath)
+    })
+
+    test('counts symbolic links with all files', () => expect(allFilesCount).toBe(4))
+
+    test("'onlySymbolicLinks' counts only symbolic links", () => expect(symLinksCount).toBe(1))
+
+    test("'noSymbolicLinks' skips symbolic link files", () => expect(nonSymLinksCount).toBe(3))
   })
 
   test.each([
