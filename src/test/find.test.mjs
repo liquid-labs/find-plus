@@ -67,7 +67,7 @@ describe('find', () => {
     ],
     // sorting tests
     [
-      { depthFirstSort : true, onlyFiles : true, root : dirAPath },
+      { sortDepthFirst : true, onlyFiles : true, root : dirAPath },
       'basic files only',
       [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
     ]
@@ -77,18 +77,39 @@ describe('find', () => {
   })
 
   if (process.platform !== 'win32') {
-    test('blockDevicesOnly finds something in /dev', async() => {
+    describe('finding devices', () => {
       const devPath = fsPath.sep + 'dev'
-      const files = await find({ depth : 1, onlyBlockDevices : true, root : devPath })
-      expect(files.length).toBeGreaterThan(0)
-    })
+      let allFilesCount, blockDevsCount, charDevsCount
 
-    test('characterDevicesOnly finds something in /dev', async() => {
-      const devPath = fsPath.sep + 'dev'
-      const files = await find({ depth : 1, onlyCharacterDevices : true, root : devPath })
-      expect(files.length).toBeGreaterThan(0)
+      beforeAll(async () => {
+        const allFiles = await find({ depth : 1, noSort: true, root : devPath })
+        const blockDevs = await find({ depth : 1, onlyBlockDevices : true, noSort: true, root : devPath })
+        const charDevs = await find({ depth : 1, onlyCharacterDevices : true, noSort: true, root : devPath })
+        
+        allFilesCount = allFiles.length
+        blockDevsCount = blockDevs.length
+        charDevsCount = charDevs.length
+      })
+
+      test('onlyBlockDevices finds something in /dev', () => expect(blockDevsCount).toBeGreaterThan(0))
+
+      test('onlyCharacterDevices finds something in /dev', () => expect(charDevsCount).toBeGreaterThan(0))
+
+      test('noBlockDevices skips block devices in /dev', async() => {
+        const noBlockDevs = await find({ depth: 1, root: devPath, noBlockDevices : true })
+        const noBlockDevCount = noBlockDevs.length
+        expect(noBlockDevCount).toBe(allFilesCount - blockDevsCount)
+      })
+
+      test('noCharacterDevices skips character devices in /dev', async() => {
+        const noCharDevs = await find({ depth: 1, root: devPath, noCharacterDevices : true })
+        const noCharDevCount = noCharDevs.length
+        expect(noCharDevCount).toBe(allFilesCount - charDevsCount)
+      })
     })
   }
+
+
 
   test.each([
     [undefined, 'must specify root', /Must provide 'root'/],

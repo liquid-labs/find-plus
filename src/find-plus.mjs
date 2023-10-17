@@ -17,10 +17,13 @@ const find = async(params = {}) => {
 
   const {
     depth,
-    depthFirstSort,
+    
     excludeRoot = false,
     noRecurseFailed = false,
     root = throw new Error("Must provide 'root' to find."),
+    sortBreadthFirst,
+    sortDepthFirst,
+    sortNone,
     tests = []
   } = params
 
@@ -77,9 +80,12 @@ const find = async(params = {}) => {
   }
 
   // results in depth-first sort of full directory paths
-  const sorter = depthFirstSort === true ? depthFirstSorter : /* default */ breadthFirstSorter
-
-  const result = accumulator.sort(sorter).map(({ name, path }) => fsPath.join(path, name))
+  if (sortNone !== true) {
+    const sorter = sortDepthFirst === true ? depthFirstSorter : /* default */ breadthFirstSorter
+    accumulator.sort(sorter)
+  }
+  
+  const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
 
   return result
 }
