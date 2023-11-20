@@ -44,5 +44,8 @@
     "@liquid-labs/catalyst-resource-eslint": "^1.0.0-alpha.1",
     "@liquid-labs/catalyst-resource-jest": "^1.0.0-alpha.3",
     "@liquid-labs/shell-toolkit": "^1.0.0-alpha.7"
+  },
+  "_comply": {
+    "orgKey": "@liquid-labs"
   }
 }
