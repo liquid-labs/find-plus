@@ -1,5 +1,5 @@
 {
-  "name": "@liquid-labs/find-plus",
+  "name": "find-plus",
   "version": "1.0.1",
   "description": "A zero-dependency file finder with features similar to Linux find.",
   "main": "dist/find-plus.js",
@@ -31,7 +31,10 @@
   ],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
   "license": "Apache-2.0",
-  "repository": "git+ssh://git@github.com/liquid-labs/find-plus.git",
+  "repository": {
+    "url": "git+ssh://git@github.com/liquid-labs/find-plus.git",
+    "type": "git"
+  },
   "bugs": {
     "url": "https://github.com/liquid-labs/find-plus/issues"
   },
@@ -41,5 +44,8 @@
     "@liquid-labs/catalyst-resource-eslint": "^1.0.0-alpha.1",
     "@liquid-labs/catalyst-resource-jest": "^1.0.0-alpha.3",
     "@liquid-labs/shell-toolkit": "^1.0.0-alpha.7"
+  },
+  "_comply": {
+    "orgKey": "@liquid-labs"
   }
 }
