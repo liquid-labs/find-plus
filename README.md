@@ -6,14 +6,14 @@ A zero-dependency file finder with features similar to Linux find.
 ## Instalation
 
 ```bash
-npm i @liquid-labs/find-plus
+npm i find-plus
 ```
 
 ## Usage
 
 ```javascript
-import { find } from '@liquid-labs/find-plus' // ESM
-// const { find } = require('@liquid-labs/find-plus')  // CJS
+import { find } from 'find-plus' // ESM
+// const { find } = require('find-plus')  // CJS
 
 const isaTXTFile = (f) => f.name.endsWith('.txt')
 const files = await find({ filesOnly: true, root: process.env.HOME, tests: [isaTXTFile] }
