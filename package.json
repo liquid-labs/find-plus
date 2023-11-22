@@ -1,6 +1,6 @@
 {
   "name": "find-plus",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A zero-dependency file finder with features similar to Linux find.",
   "main": "dist/find-plus.js",
   "files": [
