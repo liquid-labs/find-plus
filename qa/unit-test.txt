@@ -1,0 +1,67 @@
+Test git rev: 7b4af3be5958191d7937f7c4e00e4ddddb5176de
+PASS test/find.test.js
+  find
+    ✓ {"root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA/dirAA"} everything (10 ms)
+    ✓ {"onlyFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} basic files only (1 ms)
+    ✓ {"onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} basic dirs only
+    ✓ {"excludeRoot": true, "onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} basic dirs only, excluding root (1 ms)
+    ✓ {"depth": 1, "onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} limit to depth 1
+    ✓ {"depth": 1, "excludeRoot": true, "onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} limit to depth 1 aand exclude root
+    ✓ {"atDepth": true, "depth": 1, "onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} limit to dirs 'atDepth' 1
+    ✓ {"atDepth": true, "depth": 2, "onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} limit to dirs to 'atDepth' 2 (2 ms)
+    ✓ {"noTraverseFailed": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA", "tests": [Array]} traverses passing directories only
+    ✓ {"onlyDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA", "tests": [Array]} traverses failed directories
+    ✓ {"noDirs": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA/dirAA"} 'noDirs' test
+    ✓ {"noFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA/dirAA"} 'noFiles' test (1 ms)
+    ✓ {"onlyFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA", "sort": "depth"} basic files only
+    ✓ {"onlyFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA", "sort": "alpha"} basic files only
+    ✓ undefined must specify root
+    ✓ {"root": "/Users/zane/playground/find-plus/test-staging/test/some-random-name"} must specify extant root
+    ✓ {"root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA/dirAB/fileAB-1.txt"} root cannot be a file
+    ✓ {"atDepth": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} must specify 'depth' with 'adDepth : true'
+    ✓ {"onlyDirs": true, "onlyFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} cannot specify multilpe 'only' flags
+    ✓ {"noTraverseFailed": true, "onlyFiles": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} cannot specify multilpe 'only' flags
+    ✓ {"noDirs": true, "noTraverseFailed": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA"} 'noDirs' and 'noRecurseFail' invalid combination
+    ✓ {"noDirs": true, "noFiles": true, "noSpecials": true, "noSymbolicLinks": true, "root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA/dirAA"} all "no"s are invalid
+    ✓ {"root": "/Users/zane/playground/find-plus/test-staging/test/data/dirA", "sort": "invalid-sort"} invalid sort detected (1 ms)
+    path matching
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA/fileA-1.txt"] (4 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"]
+      ✓ {"excludePaths": [Array], "paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+      ✓ {"paths": [Array]} matches ["/Users/zane/playground/find-plus/test-staging/test/data/dirA", "/Users/zane/playground/find-plus/test-staging/test/data/dirFIFO", "/Users/zane/playground/find-plus/test-staging/test/data/dirSymLink"] (1 ms)
+    finding devices
+      ✓ onlyBlockDevices finds something in /dev (1 ms)
+      ✓ onlyCharacterDevices finds something in /dev
+      ✓ noSpecials skips both block and character devices in /dev
+      ✓ noBlockDevices skips block devices in /dev (1 ms)
+      ✓ noCharacterDevices skips character devices in /dev
+    finding FIFOs
+      ✓ counts FIFO with all files
+      ✓ 'onlyFIFO' counts only FIFO files
+      ✓ 'noFIFO' skips FIFO files
+    finding Sockets
+      ✓ counts symbolic links with all files
+      ✓ 'onlySymbolicLinks' counts only symbolic links
+      ✓ 'noSymbolicLinks' skips symbolic link files
+
+------------------------|---------|----------|---------|---------|-------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------------------|---------|----------|---------|---------|-------------------
+All files               |   97.77 |    96.15 |   96.87 |   98.11 |                   
+ src                    |   98.27 |    97.22 |     100 |   98.14 |                   
+  find-plus.mjs         |   98.27 |    97.22 |     100 |   98.14 | 65                
+ src/lib                |   97.54 |    95.58 |   96.15 |   98.09 |                   
+  add-implied-tests.mjs |   96.96 |    96.66 |      95 |      98 | 48                
+  check-root.mjs        |     100 |      100 |     100 |     100 |                   
+  sorters.mjs           |   95.23 |    88.88 |     100 |      95 | 13                
+  verify-params.mjs     |     100 |      100 |     100 |     100 |                   
+------------------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       42 passed, 42 total
+Snapshots:   0 total
+Time:        0.274 s, estimated 1 s
+Ran all test suites.
