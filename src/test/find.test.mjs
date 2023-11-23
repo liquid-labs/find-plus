@@ -98,14 +98,14 @@ describe('find', () => {
 
   describe('path matching', () => {
     test.each([
-      [ { paths: ['**/dirA/*.txt'] }, [fileA1Path]],
-      [ { paths: ['**/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [ { excludePaths: ['**/dirA/**'], paths: ['**/data/*'] }, [fifoDir, symLinkDir]],
-      [ { paths: ['**/d+(a|t)/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [ { paths: ['**/d@(ata)/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [ { paths: ['**/d*(ata)ata/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [ { paths: ['**/d?ta/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [ { paths: ['**/d+([at])/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
+      [{ paths : ['**/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ excludePaths : ['**/dirA/**'], paths : ['**/data/*'] }, [fifoDir, symLinkDir]],
+      [{ paths : ['**/d+(a|t)/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d@(ata)/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d*(ata)ata/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d?ta/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d+([at])/*'] }, [dirAPath, fifoDir, symLinkDir]]
     ])('%p matches %p', async(options, expected) => {
       options.root = dirDataPath
       const files = await find(options)
