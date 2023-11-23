@@ -7,8 +7,10 @@ import { tryExec } from '@liquid-labs/shell-toolkit'
 import { find } from '../find-plus'
 
 const dirDataPath = fsPath.join(__dirname, 'data')
+
 const dirAPath = fsPath.join(dirDataPath, 'dirA')
 const fileA1Path = fsPath.join(dirAPath, 'fileA-1.txt')
+
 const dirAAPath = fsPath.join(dirAPath, 'dirAA')
 const dirAAAPath = fsPath.join(dirAAPath, 'dirAAA')
 const dirAAAAPath = fsPath.join(dirAAAPath, 'dirAAAA')
@@ -19,6 +21,11 @@ const dirABPath = fsPath.join(dirAPath, 'dirAB')
 const fileAB1Path = fsPath.join(dirABPath, 'fileAB-1.txt')
 const dirABAPath = fsPath.join(dirABPath, 'dirABA')
 const fileABA1Path = fsPath.join(dirABAPath, 'fileABA-1.txt')
+
+const fifoDir = fsPath.join(dirDataPath, 'dirFIFO')
+const fifoPath = fsPath.join(fifoDir, 'fifoA')
+
+const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink')
 
 describe('find', () => {
   test.each([
@@ -89,6 +96,23 @@ describe('find', () => {
     expect(files).toEqual(expected)
   })
 
+  describe('path matching', () => {
+    test.each([
+      [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
+      [{ paths : ['**/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ excludePaths : ['**/dirA/**'], paths : ['**/data/*'] }, [fifoDir, symLinkDir]],
+      [{ paths : ['**/d+(a|t)/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d@(ata)/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d*(ata)ata/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d?ta/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['**/d+([at])/*'] }, [dirAPath, fifoDir, symLinkDir]]
+    ])('%p matches %p', async(options, expected) => {
+      options.root = dirDataPath
+      const files = await find(options)
+      expect(files).toEqual(expected)
+    })
+  })
+
   if (process.platform !== 'win32') {
     describe('finding devices', () => {
       const devPath = fsPath.sep + 'dev'
@@ -128,8 +152,6 @@ describe('find', () => {
 
   // fifo test
   describe('finding FIFOs', () => {
-    const fifoDir = fsPath.join(dirDataPath, 'dirFIFO')
-    const fifoPath = fsPath.join(fifoDir, 'fifoA')
     let allFilesCount, fifosCount, nonFIFOsCount
 
     beforeAll(async() => {
@@ -159,7 +181,6 @@ describe('find', () => {
 
   // symlink test
   describe('finding Sockets', () => {
-    const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink')
     const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
     const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
     let allFilesCount, nonSymLinksCount, symLinksCount
