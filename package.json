@@ -1,7 +1,7 @@
 {
   "name": "find-plus",
   "version": "1.0.4",
-  "description": "A zero-dependency file finder with features similar to Linux find.",
+  "description": "A file finding utility patterned after Linux find.",
   "main": "dist/find-plus.js",
   "files": [
     "./dist",
@@ -47,5 +47,8 @@
   },
   "_comply": {
     "orgKey": "@liquid-labs"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3"
   }
 }

@@ -1,7 +1,7 @@
 # find-plus
 [![coverage: 98%](./.readme-assets/coverage.svg)](https://github.com/liquid-labs/find-plus/pulls?q=is%3Apr+is%3Aclosed) [![Unit tests](https://github.com/liquid-labs/find-plus/actions/workflows/unit-tests-node.yaml/badge.svg)](https://github.com/liquid-labs/find-plus/actions/workflows/unit-tests-node.yaml)
 
-A zero-dependency file finder with features similar to Linux find.
+A file finding utility patterned after Linux find.
 
 ## Instalation
 
@@ -30,9 +30,32 @@ console.log(`You have ${files.length} text files under your home directory.`)
 - ___`root`___: (__required__, _string_) the path from which to begin the search.
 - ___`noTraverseFailed`___: (_boolean_, _default_: `false`) by default, `find` will traverse directories even if the directories themselves are not included in the results (e.g., when `onlyFiles` is set to `true`). When `noTraverseFailed` is `true`, then directories which fail the requirements are not traversed. `noTraverseFailed` cannot be combined with `noDirs` or any of the [`only`-options](#only-options) except `onlyDirs` because then the search would be trivially empty.
 - ___`sort`___: (_string_, _default_: 'breadth') specifies the sort to apply to the results. Possible options are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk and is primarily useful to speed things slightly when you don't care about the order.
-- ___`tests`___: (_array of functions_, _default_: `[]`) an array of functions which take `(dirEnt, depth)`; each test function must return `true` for a file to be considered in the results. Or-ed tests must be implemented in a single function. `dirEnt` is a [`fs.DirEnt`](https://nodejs.org/api/fs.html#class-fsdirent)-like* object (may be a `DirEnt` or modified [`fs.Stats`](https://nodejs.org/api/fs.html#class-fsstats) with `name` and `path` properties added) and `depth` is the depth of the file relative to the root (which is depth 0).
+- ___`tests`___: (_array of functions_, _default_: `[]`) an array of functions which take `(dirEnt, depth)`; each test function must return `true` for a file to be considered in the results. Or-ed tests must be implemented in a single function. `dirEnt` is a [`fs.DirEnt`](https://nodejs.org/api/fs.html#class-fsdirent)-like* object (may be a `DirEnt` or modified [`fs.Stats`](https://nodejs.org/api/fs.html#class-fsstats) with `name` and `path` properties added) and `depth` is the depth of the file relative to the root (which is depth 0). The `tests` are executed after all the built in tests (like `atDepth`, `paths`, `onlyFiles`, etc.) have been passed. This limits the range of inputs the custom `tests` need to deal with.
 
 *: In Node 19.x, `DirEnt`s lack the `path` field, but we normalize all `DirEnt`s to include this field in all versions.
+
+### Path matching
+
+Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full path, which differs from the `dirEnt.path` which lacks the file basename (`dirEnt.name`). In addition, directories are suffixed with the file system seperator. E.g., `/users/jane/`, which would match the path `**/jane/**` (which would fail without the trailing '/').
+
+Globbing basics:
+- ___*___: matches any string or nothing except '/' (file separator)
+- ___**___: matches any string or nothing
+- ___?___: matches one character or nothing
+- ___[abc]___: matches one of the characters
+- ___[a-z]___: matches a character range
+- ___[[:alpha:]]___: matches a [POSIX character class](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html)
+- ___{a,b}___: matches one of the patterns, separated by commas, equivalent to '@(a|b)'
+- ___?(a|b)___: matches zero or one of the patterns, separated by pipes
+- ___*(a|b)___: matches zero or more of the patterns
+- ___+(a|b)___: matches one or more of the patterns
+- ___@(a|b)___: matches exactly one of the patterns
+- ___!(a|b)___: matches anything except the patterns
+
+The 'or' constructs can be combined with other special patterns; e.g., '+([abc])' would match 'abccba'.
+
+- ___`excludePaths`___: (_array of strings_) any files with a path matching an excluded path are excluded from the results.
+- ___`paths`___: (_array of strings_) a file path must match each path to be included in the results.
 
 ### Depth and root handling options
 

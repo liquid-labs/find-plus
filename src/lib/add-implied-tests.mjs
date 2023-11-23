@@ -1,6 +1,12 @@
+import * as fsPath from 'node:path'
+
+import { minimatch } from 'minimatch'
+
 const addImpliedTests = ({
   atDepth,
   depth,
+  excludePaths,
+  minimatchOptions,
   myTests,
   noBlockDevices,
   noCharacterDevices,
@@ -16,7 +22,8 @@ const addImpliedTests = ({
   onlyFIFOs,
   onlyFiles,
   onlySockets,
-  onlySymbolicLinks
+  onlySymbolicLinks,
+  paths
 }) => {
   if (atDepth === true) {
     myTests.unshift((f, currDepth) => currDepth === depth)
@@ -65,6 +72,34 @@ const addImpliedTests = ({
   if (noSymbolicLinks === true) {
     myTests.unshift((f) => !f.isSymbolicLink())
   }
+
+  if (paths !== undefined) {
+    for (const globMatch of paths) {
+      myTests.unshift((dirEnt) => {
+        const fullPath = makeFullPath(dirEnt)
+        return minimatch(fullPath, globMatch, minimatchOptions)
+      })
+    }
+  }
+
+  if (excludePaths !== undefined) {
+    for (const globMatch of excludePaths) {
+      myTests.unshift((dirEnt) => {
+        const fullPath = makeFullPath(dirEnt)
+        return !minimatch(fullPath, globMatch, minimatchOptions)
+      })
+    }
+  }
+}
+
+const makeFullPath = (dirEnt) => {
+  const { path, name } = dirEnt
+  let fullPath = fsPath.join(path, name)
+  if (dirEnt.isDirectory()) {
+    fullPath += fsPath.sep
+  }
+
+  return fullPath
 }
 
 export { addImpliedTests }
