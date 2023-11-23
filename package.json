@@ -1,6 +1,6 @@
 {
   "name": "find-plus",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A file finding utility patterned after Linux find.",
   "main": "dist/find-plus.js",
   "files": [
