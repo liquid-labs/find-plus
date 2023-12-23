@@ -16,7 +16,7 @@ import { find } from 'find-plus' // ESM
 // const { find } = require('find-plus')  // CJS
 
 const isaTXTFile = (f) => f.name.endsWith('.txt')
-const files = await find({ filesOnly: true, root: process.env.HOME, tests: [isaTXTFile] }
+const files = await find({ onlyFiles: true, root: process.env.HOME, tests: [isaTXTFile] }
 
 console.log(`You have ${files.length} text files under your home directory.`)
 ```
