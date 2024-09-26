@@ -24,7 +24,7 @@ const addImpliedTests = ({
   onlySockets,
   onlySymbolicLinks,
   paths,
-  root = process.cwd(),
+  root = process.cwd()
 }) => {
   if (atDepth === true) {
     myTests.unshift((f, currDepth) => currDepth === depth)
@@ -83,7 +83,6 @@ const addImpliedTests = ({
         const rootedGlobMatch = globMatch.startsWith('/')
           ? globMatch
           : `${root}/${globMatch}`
-        console.log('root:', root, 'fullPath:', fullPath, 'rootedGlobMatch:', rootedGlobMatch) // DEBUG
         return minimatch(fullPath, rootedGlobMatch, minimatchOptions)
       })
     }

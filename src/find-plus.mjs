@@ -19,7 +19,6 @@ const find = async(params = {}) => {
     depth,
     excludeRoot = false,
     noTraverseFailed = false,
-    paths = [],
     root = throw new Error("Must provide 'root' to find."),
     sort,
     tests = []

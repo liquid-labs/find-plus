@@ -98,8 +98,8 @@ describe('find', () => {
 
   describe('absolute paths', () => {
     test.each([
-      [ { paths: [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
-    ])('%p finds %p', async (options, expected) => {
+      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
+    ])('%p finds %p', async(options, expected) => {
       options.root = dirDataPath
       const files = await find(options)
       expect(files).toEqual(expected)
@@ -119,9 +119,9 @@ describe('find', () => {
       [{ paths : ['d*(ir)*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ paths : ['d+([ir])*'] }, [dirAPath, fifoDir, symLinkDir]],
       // additional tests with different roots
-      [{ root: '.', paths: ['test/data/dirA/*.txt'] }, [fileA1Path]],
-      [{ root: process.cwd(), paths: ['test/data/dirA/*.txt'] }, [fileA1Path]],
-      [{ root: '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ root : '.', paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
+      [{ root : process.cwd(), paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
+      [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
