@@ -1,22 +1,28 @@
 import * as fs from 'node:fs/promises'
 import * as fsPath from 'node:path'
 
+import { checkRoot } from './check-root'
+
 const traverseDirs = async({
+  _traversedDirs,
   depth,
   excludeRoot = false,
   noTraverseFailed = false,
   root,
   tests
 }) => {
+  const rootStat = await checkRoot({ root })
+
   const accumulator = []
   let currDepth = 0
 
   let frontier = []
   if (excludeRoot === true && noTraverseFailed === false) { // no need for tests
-    frontier.push(root)
+    frontier.push(rootStat)
+    _traversedDirs?.push(rootStat)
   }
   else {
-    testForInclusionAndFrontier({ accumulator, file : root, frontier, noTraverseFailed, tests })
+    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, noTraverseFailed, tests })
   }
   currDepth += 1
 
@@ -34,7 +40,7 @@ const traverseDirs = async({
           file.parentPath = dirPath
         }
 
-        testForInclusionAndFrontier({ accumulator, currDepth, file, frontier : newFrontier, noTraverseFailed, tests })
+        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, file, frontier : newFrontier, noTraverseFailed, tests })
       }
     }
     frontier = newFrontier
@@ -45,11 +51,12 @@ const traverseDirs = async({
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ accumulator, currDepth, file, frontier, noTraverseFailed, tests }) => {
+const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, file, frontier, noTraverseFailed, tests }) => {
   const pass = !tests.some((t) => !t(file, currDepth))
 
   if (file.isDirectory() && (pass || noTraverseFailed === false)) {
     frontier.push(file)
+    _traversedDirs?.push(file)
   }
   if (pass) {
     accumulator.push(file)
