@@ -19,6 +19,7 @@ const find = async(params = {}) => {
     depth,
     excludeRoot = false,
     noTraverseFailed = false,
+    paths = [],
     root = throw new Error("Must provide 'root' to find."),
     sort,
     tests = []
@@ -89,7 +90,7 @@ const find = async(params = {}) => {
     accumulator.sort(sorter)
   }
 
-  const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
+  const result = accumulator.map(({ name, path }) => fsPath.resolve(path, name))
 
   return result
 }

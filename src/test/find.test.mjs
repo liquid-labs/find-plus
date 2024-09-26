@@ -96,18 +96,34 @@ describe('find', () => {
     expect(files).toEqual(expected)
   })
 
+  describe('absolute paths', () => {
+    test.each([
+      [ { paths: [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
+    ])('%p finds %p', async (options, expected) => {
+      options.root = dirDataPath
+      const files = await find(options)
+      expect(files).toEqual(expected)
+    })
+  })
+
   describe('path matching', () => {
     test.each([
+      // regular '**', '*', and '?' glob matching
       [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
-      [{ paths : ['**/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ excludePaths : ['**/dirA/**'], paths : ['**/data/*'] }, [fifoDir, symLinkDir]],
-      [{ paths : ['**/d+(a|t)/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['**/d@(ata)/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['**/d*(ata)ata/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['**/d?ta/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['**/d+([at])/*'] }, [dirAPath, fifoDir, symLinkDir]]
+      [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
+      [{ paths : ['d?r*'] }, [dirAPath, fifoDir, symLinkDir]],
+      // extglob syntax
+      [{ paths : ['d+(i|r)*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d@(ir)*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d*(ir)*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d+([ir])*'] }, [dirAPath, fifoDir, symLinkDir]],
+      // additional tests with different roots
+      [{ root: '.', paths: ['test/data/dirA/*.txt'] }, [fileA1Path]],
+      [{ root: process.cwd(), paths: ['test/data/dirA/*.txt'] }, [fileA1Path]],
+      [{ root: '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
     ])('%p matches %p', async(options, expected) => {
-      options.root = dirDataPath
+      options.root = options.root || dirDataPath
       const files = await find(options)
       expect(files).toEqual(expected)
     })
