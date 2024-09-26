@@ -57,11 +57,15 @@ const find = async(params = {}) => {
   while ((depth === undefined || depth >= currDepth) && frontier.length > 0) {
     const newFrontier = []
     for (const dirEnt of frontier) {
+      console.log('dirEnt:', dirEnt) // DEBUG
       const dirPath = fsPath.join(dirEnt.path, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
+        console.log('file:', file) // DEBUG
         file.depth = currDepth
-        if (file.path === undefined) { // node 19.x workaround; DirEnt's don't have '.path'
+        // node 19.x workaround; DirEnt's don't have '.path'; we always set '.path' on the root entry, so this becomes 
+        // self-perpetuating and we expect all frontier entries to have '.path' set
+        if (file.path === undefined) {
           file.path = dirPath
         }
         const pass = !myTests.some((t) => !t(file, currDepth))
