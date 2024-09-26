@@ -36,7 +36,7 @@ console.log(`You have ${files.length} text files under your home directory.`)
 
 ### Path matching
 
-Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full path, which differs from the `dirEnt.path` which lacks the file basename (`dirEnt.name`). In addition, directories are suffixed with the file system seperator. E.g., `/users/jane/`, which would match the path `**/jane/**` (which would fail without the trailing '/').
+Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full file path. In addition, directories are suffixed with the file system seperator. E.g., `/users/jane/`, which would match the path `**/jane/**` (which would fail without the trailing '/').
 
 Globbing syntax:
 - ___*___: matches any string or nothing except '/' (file separator)

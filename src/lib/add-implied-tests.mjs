@@ -102,8 +102,8 @@ const addImpliedTests = ({
 }
 
 const makeFullPath = (dirEnt) => {
-  const { path, name } = dirEnt
-  let fullPath = fsPath.resolve(path, name)
+  const { parentPath, name } = dirEnt
+  let fullPath = fsPath.resolve(parentPath, name)
   if (dirEnt.isDirectory()) {
     fullPath += fsPath.sep
   }
