@@ -60,9 +60,6 @@ const find = async(params = {}) => {
       const dirPath = fsPath.join(dirEnt.path, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
-        if (file.parentPath === file.path) {
-          continue
-        }
         file.depth = currDepth
         // node 19.x workaround; DirEnt's don't have '.path'; we always set '.path' on the root entry, so this becomes 
         // self-perpetuating and we expect all frontier entries to have '.path' set
@@ -71,7 +68,7 @@ const find = async(params = {}) => {
         }
         const pass = !myTests.some((t) => !t(file, currDepth))
 
-        if (file.isDirectory() && (pass || noTraverseFailed === false)) {
+        if (file.isDirectory() && (pass || noTraverseFailed === false) && file.parentPath !== file.path) {
           newFrontier.push(file)
         }
         if (pass) {
