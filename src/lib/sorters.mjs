@@ -1,8 +1,8 @@
 import * as fsPath from 'node:path'
 
 const breadthFirstSorter = (a, b) => {
-  const aDir = a.isDirectory() ? fsPath.join(a.path, a.name) : a.path
-  const bDir = b.isDirectory() ? fsPath.join(b.path, b.name) : b.path
+  const aDir = a.isDirectory() ? fsPath.join(a.parentPath, a.name) : a.parentPath
+  const bDir = b.isDirectory() ? fsPath.join(b.parentPath, b.name) : b.parentPath
 
   const dirComp = aDir.localeCompare(bDir)
   return dirComp !== 0 ? dirComp : a.name.localeCompare(b.name)
@@ -16,14 +16,14 @@ const depthFirstSorter = (a, b) => {
     return 1
   }
   else {
-    const pathCompare = a.path.localeCompare(b.path)
+    const pathCompare = a.parentPath.localeCompare(b.paretPath)
     return pathCompare === 0 ? 0 : a.name.localeCompare(b.name)
   }
 }
 
 const alphaSorter = (a, b) => {
-  const aPath = fsPath.join(a.path, a.name)
-  const bPath = fsPath.join(b.path, b.name)
+  const aPath = fsPath.join(a.parentPath, a.name)
+  const bPath = fsPath.join(b.parentPath, b.name)
 
   return aPath.localeCompare(bPath)
 }

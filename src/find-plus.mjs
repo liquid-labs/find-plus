@@ -31,7 +31,7 @@ const find = async(params = {}) => {
   addImpliedTests({ ...params, myTests })
 
   const rootStat = checkRoot({ root })
-  rootStat.path = fsPath.dirname(root)
+  rootStat.parentPath = fsPath.dirname(root)
   rootStat.name = fsPath.basename(root)
   rootStat.depth = 0
 
@@ -57,16 +57,20 @@ const find = async(params = {}) => {
   while ((depth === undefined || depth >= currDepth) && frontier.length > 0) {
     const newFrontier = []
     for (const dirEnt of frontier) {
-      const dirPath = fsPath.join(dirEnt.path, dirEnt.name)
+      const dirPath = fsPath.join(dirEnt.parentPath, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
         file.depth = currDepth
-        if (file.path === undefined) { // node 19.x workaround; DirEnt's don't have '.path'
-          file.path = dirPath
+
+        // node 19.x DirEnt's lack parent path
+        if (file.parentPath === undefined) {
+          file.parentPath = dirPath
         }
+
         const pass = !myTests.some((t) => !t(file, currDepth))
 
         if (file.isDirectory() && (pass || noTraverseFailed === false)) {
+          console.log('dirPath:', dirPath, 'adding frontier:', file) // DEBUG
           newFrontier.push(file)
         }
         if (pass) {
@@ -89,7 +93,7 @@ const find = async(params = {}) => {
     accumulator.sort(sorter)
   }
 
-  const result = accumulator.map(({ name, path }) => fsPath.join(path, name))
+  const result = accumulator.map(({ name, parentPath }) => fsPath.resolve(parentPath, name))
 
   return result
 }

@@ -23,7 +23,8 @@ const addImpliedTests = ({
   onlyFiles,
   onlySockets,
   onlySymbolicLinks,
-  paths
+  paths,
+  root = process.cwd()
 }) => {
   if (atDepth === true) {
     myTests.unshift((f, currDepth) => currDepth === depth)
@@ -73,11 +74,16 @@ const addImpliedTests = ({
     myTests.unshift((f) => !f.isSymbolicLink())
   }
 
+  root = fsPath.resolve(root)
+
   if (paths !== undefined) {
     for (const globMatch of paths) {
       myTests.unshift((dirEnt) => {
         const fullPath = makeFullPath(dirEnt)
-        return minimatch(fullPath, globMatch, minimatchOptions)
+        const rootedGlobMatch = globMatch.startsWith('/')
+          ? globMatch
+          : `${root}/${globMatch}`
+        return minimatch(fullPath, rootedGlobMatch, minimatchOptions)
       })
     }
   }
@@ -86,15 +92,18 @@ const addImpliedTests = ({
     for (const globMatch of excludePaths) {
       myTests.unshift((dirEnt) => {
         const fullPath = makeFullPath(dirEnt)
-        return !minimatch(fullPath, globMatch, minimatchOptions)
+        const rootedGlobMatch = globMatch.startsWith('/')
+          ? globMatch
+          : `${root}/${globMatch}`
+        return !minimatch(fullPath, rootedGlobMatch, minimatchOptions)
       })
     }
   }
 }
 
 const makeFullPath = (dirEnt) => {
-  const { path, name } = dirEnt
-  let fullPath = fsPath.join(path, name)
+  const { parentPath, name } = dirEnt
+  let fullPath = fsPath.resolve(parentPath, name)
   if (dirEnt.isDirectory()) {
     fullPath += fsPath.sep
   }

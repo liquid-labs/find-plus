@@ -36,9 +36,9 @@ console.log(`You have ${files.length} text files under your home directory.`)
 
 ### Path matching
 
-Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full path, which differs from the `dirEnt.path` which lacks the file basename (`dirEnt.name`). In addition, directories are suffixed with the file system seperator. E.g., `/users/jane/`, which would match the path `**/jane/**` (which would fail without the trailing '/').
+Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full file path. In addition, directories are suffixed with the file system seperator. E.g., `/users/jane/`, which would match the path `**/jane/**` (which would fail without the trailing '/').
 
-Globbing basics:
+Globbing syntax:
 - ___*___: matches any string or nothing except '/' (file separator)
 - ___**___: matches any string or nothing
 - ___?___: matches one character or nothing
@@ -54,8 +54,8 @@ Globbing basics:
 
 The 'or' constructs can be combined with other special patterns; e.g., '+([abc])' would match 'abccba'.
 
-- ___`excludePaths`___: (_array of strings_) any files with a path matching an excluded path are excluded from the results.
-- ___`paths`___: (_array of strings_) a file path must match each path to be included in the results.
+- ___`excludePaths`___: (_array of strings_) any files with a path matching an excluded path are excluded from the results. Paths are considered absolute if they start with '/' and otherwise are considered relative to `root`.
+- ___`paths`___: (_array of strings_) a file path must match each path to be included in the results. Paths are considered absolute if they start with '/' and otherwise are considered relative to `root`.
 
 ### Depth and root handling options
 
