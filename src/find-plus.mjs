@@ -61,6 +61,12 @@ const find = async(params = {}) => {
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
         file.depth = currDepth
+
+        // node 19.x DirEnt's lack parent path
+        if (file.parentPath === undefined) {
+          file.parentPath = dirPath
+        }
+
         const pass = !myTests.some((t) => !t(file, currDepth))
 
         if (file.isDirectory() && (pass || noTraverseFailed === false)) {
