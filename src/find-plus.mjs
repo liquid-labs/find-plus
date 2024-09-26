@@ -68,7 +68,8 @@ const find = async(params = {}) => {
         }
         const pass = !myTests.some((t) => !t(file, currDepth))
 
-        if (file.isDirectory() && (pass || noTraverseFailed === false) && file.parentPath !== file.path) {
+        if (file.isDirectory() && (pass || noTraverseFailed === false)) {
+          console.log('dirPath:', dirPath, 'adding frontier:', file) // DEBUG
           newFrontier.push(file)
         }
         if (pass) {
