@@ -1,5 +1,3 @@
-import * as fsPath from 'node:path'
-
 import { addImpliedTests } from './lib/add-implied-tests'
 import { dirEntToFilePath } from './lib/dir-ent-to-file-path'
 import { alphaSorter, breadthFirstSorter, depthFirstSorter } from './lib/sorters'

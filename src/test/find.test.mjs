@@ -108,7 +108,7 @@ describe('find', () => {
 
   describe('path matching', () => {
     test.each([
-      //regular '**', '*', and '?' glob matching
+      // regular '**', '*', and '?' glob matching
       [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
       [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],

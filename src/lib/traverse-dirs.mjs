@@ -65,16 +65,16 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
 
     // can we exclude a possible search branch based on the exclude paths?
     let exclude = excludePaths?.some((p) => {
-      const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath: p })
+      const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
       return minimatch(matchPath, p)
     }) || false
 
     // then' let's see if we can exclude the branch based on the paths
     if (exclude === false && paths?.length > 0) {
-      // is there some path 'p' of 'paths' which could possible match the current directory in question (represented by 
+      // is there some path 'p' of 'paths' which could possible match the current directory in question (represented by
       // fullpath)?
       exclude = !paths.some((p) => {
-        const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath: p })
+        const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
         const matchPathBits = p.split('/')
         const matchPathIsAbsolute = matchPathBits[0] === ''
 
@@ -82,7 +82,7 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
           const absRootBits = absRoot.split('/')
           for (const rootBit of absRootBits) {
             const matchPathBit = matchPathBits.shift()
-            // in theory, we could do a partial match like we do with the post-root bits below, but the possible 
+            // in theory, we could do a partial match like we do with the post-root bits below, but the possible
             // matches will resolve quickly enough without the extra logic so we punt for now
             if (matchPathBit.includes('**')) {
               return true
