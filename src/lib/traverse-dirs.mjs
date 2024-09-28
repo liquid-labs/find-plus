@@ -63,29 +63,61 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
     const fullPath = dirEntToFilePath(file)
     const absRoot = fsPath.resolve(root)
 
+    // can we exclude a possible search branch based on the exclude paths?
     let exclude = excludePaths?.some((p) => {
       const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath: p })
       return minimatch(matchPath, p)
     }) || false
 
-    /*if (exclude === false) {
+    // then' let's see if we can exclude the branch based on the paths
+    if (exclude === false && paths?.length > 0) {
+      // is there some path 'p' of 'paths' which could possible match the current directory in question (represented by 
+      // fullpath)?
+      exclude = !paths.some((p) => {
+        const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath: p })
+        const matchPathBits = p.split('/')
+        const matchPathIsAbsolute = matchPathBits[0] === ''
 
-    }*/
+        if (matchPathIsAbsolute === true) { // then it's an absolute path and we have to sync with the absRoot
+          const absRootBits = absRoot.split('/')
+          for (const rootBit of absRootBits) {
+            const matchPathBit = matchPathBits.shift()
+            // in theory, we could do a partial match like we do with the post-root bits below, but the possible 
+            // matches will resolve quickly enough without the extra logic so we punt for now
+            if (matchPathBit.includes('**')) {
+              return true
+            }
+            if (minimatch(rootBit, matchPathBit) === false) {
+              return false
+            }
+          }
+        }
 
-    /*
-    if (paths === undefined || paths.some((p) => {
-      const [requiredPrefix] = p.split('**')
+        let minPrefix = matchPathIsAbsolute === true ? absRoot + fsPath.sep : ''
+        for (let i = 0; i < currDepth && i < matchPathBits.length; i += 1) {
+          const nextBit = matchPathBits[i]
+          if (nextBit === '**') {
+            return true
+          }
+          else if (nextBit.includes('**')) {
+            if (i === currDepth - 1) { // we terminate at the same level
+              // then we can still attempt a match for the current dirs based on the part before the '**'
+              minPrefix += nextBit.replace(/\*\*.*/, '')
+            }
+            else { // if we haven't hit the curr depth, then any match is possible
+              return true
+            }
+          }
+          else {
+            minPrefix += nextBit + '/'
+          }
+        }
 
+        minPrefix += '**'
 
-      const [prefix] = p.split('**')
-      // return fullPath.endsWith(prefix)
-      const traverse = fullPath.endsWith(prefix)
-      console.log('path:', p, 'fullPath:', fullPath, 'traverse:', traverse) // DEBUG
-      return traverse
-    })) {
-      frontier.push(file)
-      _traversedDirs?.push(fullPath)
-    }*/
+        return minimatch(matchPath, minPrefix)
+      })
+    }
 
     if (exclude !== true) {
       frontier.push(file)
