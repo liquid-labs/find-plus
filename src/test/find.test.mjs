@@ -224,12 +224,12 @@ describe('find', () => {
     test("'noSymbolicLinks' skips symbolic link files", () => expect(nonSymLinksCount).toBe(3))
   })
 
-  test.each([
+  test.each([ // error conditions
     [undefined, 'must specify root', /Must provide 'root'/],
     [
       { root : fsPath.join(__dirname, 'some-random-name') },
       'must specify extant root',
-      /Did not find.+?some-random-name/
+      /^Did not find root directory at: .+some-random-name$/
     ],
     [
       { root : fsPath.join(__dirname, 'data', 'dirA', 'dirAB', 'fileAB-1.txt') },
