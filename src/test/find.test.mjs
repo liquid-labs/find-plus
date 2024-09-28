@@ -6,26 +6,26 @@ import { tryExec } from '@liquid-labs/shell-toolkit'
 
 import { find } from '../find-plus'
 
-const dirDataPath = fsPath.join(__dirname, 'data')
+const dirDataPath = fsPath.join(__dirname, 'data') + fsPath.sep
 
-const dirAPath = fsPath.join(dirDataPath, 'dirA')
+const dirAPath = fsPath.join(dirDataPath, 'dirA') + fsPath.sep
 const fileA1Path = fsPath.join(dirAPath, 'fileA-1.txt')
 
-const dirAAPath = fsPath.join(dirAPath, 'dirAA')
-const dirAAAPath = fsPath.join(dirAAPath, 'dirAAA')
-const dirAAAAPath = fsPath.join(dirAAAPath, 'dirAAAA')
+const dirAAPath = fsPath.join(dirAPath, 'dirAA') + fsPath.sep
+const dirAAAPath = fsPath.join(dirAAPath, 'dirAAA') + fsPath.sep
+const dirAAAAPath = fsPath.join(dirAAAPath, 'dirAAAA') + fsPath.sep
 const fileAAAA1Path = fsPath.join(dirAAAAPath, 'fileAAAA-1.txt')
-const dirAABPath = fsPath.join(dirAAPath, 'dirAAB')
+const dirAABPath = fsPath.join(dirAAPath, 'dirAAB') + fsPath.sep
 const fileAAB1Path = fsPath.join(dirAABPath, 'fileAAB-1.txt')
-const dirABPath = fsPath.join(dirAPath, 'dirAB')
+const dirABPath = fsPath.join(dirAPath, 'dirAB') + fsPath.sep
 const fileAB1Path = fsPath.join(dirABPath, 'fileAB-1.txt')
-const dirABAPath = fsPath.join(dirABPath, 'dirABA')
+const dirABAPath = fsPath.join(dirABPath, 'dirABA') + fsPath.sep
 const fileABA1Path = fsPath.join(dirABAPath, 'fileABA-1.txt')
 
-const fifoDir = fsPath.join(dirDataPath, 'dirFIFO')
+const fifoDir = fsPath.join(dirDataPath, 'dirFIFO') + fsPath.sep
 const fifoPath = fsPath.join(fifoDir, 'fifoA')
 
-const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink')
+const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink') + fsPath.sep
 
 describe('find', () => {
   test.each([
@@ -108,7 +108,7 @@ describe('find', () => {
 
   describe('path matching', () => {
     test.each([
-      // regular '**', '*', and '?' glob matching
+      //regular '**', '*', and '?' glob matching
       [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
       [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],

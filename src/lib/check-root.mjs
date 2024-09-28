@@ -2,13 +2,26 @@ import { stat } from 'node:fs/promises'
 import * as fsPath from 'node:path'
 
 const checkRoot = async ({ root }) => {
-  const rootStat = await stat(root, { throwIfNoEntry : false })
-  if (rootStat === undefined) {
-    const e = new Error(`Did not find root directory at: ${root}`)
-    e.code = 'ENOENT'
-    throw e
+  let rootStat
+  try {
+    rootStat = await stat(root, { throwIfNoEntry : false })
+    if (rootStat === undefined) {
+      const newE = new Error(`Did not find root directory at: ${root}`)
+      newE.code = 'ENOENT'
+      throw newE
+    }
   }
-  else if (!rootStat.isDirectory()) {
+  catch (e) {
+    if (e.code === 'ENOENT') {
+      const newE = new Error(`Did not find root directory at: ${root}`, { cause: e })
+      newE.code = 'ENOENT'
+      throw newE
+    } // else
+    throw (e)
+  }
+
+
+  if (!rootStat.isDirectory()) {
     throw new Error(`Root '${root}' does not point to a directory as required.`)
   }
 

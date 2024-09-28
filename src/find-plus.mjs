@@ -1,6 +1,7 @@
 import * as fsPath from 'node:path'
 
 import { addImpliedTests } from './lib/add-implied-tests'
+import { dirEntToFilePath } from './lib/dir-ent-to-file-path'
 import { alphaSorter, breadthFirstSorter, depthFirstSorter } from './lib/sorters'
 import { traverseDirs } from './lib/traverse-dirs'
 import { verifyParams } from './lib/verify-params'
@@ -23,7 +24,6 @@ const find = async(params = {}) => {
   verifyParams(params)
 
   const myTests = [...tests]
-// 
   addImpliedTests({ ...params, myTests })
 
   // params need to come first, we override root and tests
@@ -39,7 +39,7 @@ const find = async(params = {}) => {
     matchedFiles.sort(sorter)
   }
 
-  const result = matchedFiles.map(({ name, parentPath }) => fsPath.resolve(parentPath, name))
+  const result = matchedFiles.map(dirEntToFilePath)
 
   return result
 }

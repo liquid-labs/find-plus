@@ -1,13 +1,18 @@
 import * as fs from 'node:fs/promises'
 import * as fsPath from 'node:path'
 
+import { minimatch } from 'minimatch'
+
 import { checkRoot } from './check-root'
+import { dirEntToFilePath } from './dir-ent-to-file-path'
 
 const traverseDirs = async({
   _traversedDirs,
   depth,
+  excludePaths,
   excludeRoot = false,
   noTraverseFailed = false,
+  paths,
   root,
   tests
 }) => {
@@ -19,10 +24,10 @@ const traverseDirs = async({
   let frontier = []
   if (excludeRoot === true && noTraverseFailed === false) { // no need for tests
     frontier.push(rootStat)
-    _traversedDirs?.push(rootStat)
+    _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, noTraverseFailed, tests })
+    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, noTraverseFailed, root, tests })
   }
   currDepth += 1
 
@@ -40,7 +45,7 @@ const traverseDirs = async({
           file.parentPath = dirPath
         }
 
-        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, file, frontier : newFrontier, noTraverseFailed, tests })
+        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, noTraverseFailed, paths, root, tests })
       }
     }
     frontier = newFrontier
@@ -51,13 +56,48 @@ const traverseDirs = async({
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, file, frontier, noTraverseFailed, tests }) => {
+const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier, noTraverseFailed, paths, root, tests }) => {
   const pass = !tests.some((t) => !t(file, currDepth))
-
+  // test if the file is a dir and should be added to frontier
   if (file.isDirectory() && (pass || noTraverseFailed === false)) {
-    frontier.push(file)
-    _traversedDirs?.push(file)
+    const fullPath = dirEntToFilePath(file)
+    const absRoot = fsPath.resolve(root)
+
+    let exclude = excludePaths?.some((p) => {
+      if (p.startsWith('/')) {
+        return minimatch(fullPath, p)
+      }
+      else {
+        let relPath = fullPath.slice(absRoot.length)
+        if (relPath.startsWith(fsPath.sep)) {
+          relPath = relPath.slice(1)
+        }
+
+        return minimatch(relPath, p)
+      }
+    }) || false
+
+    /*
+    if (paths === undefined || paths.some((p) => {
+      const [requiredPrefix] = p.split('**')
+
+
+      const [prefix] = p.split('**')
+      // return fullPath.endsWith(prefix)
+      const traverse = fullPath.endsWith(prefix)
+      console.log('path:', p, 'fullPath:', fullPath, 'traverse:', traverse) // DEBUG
+      return traverse
+    })) {
+      frontier.push(file)
+      _traversedDirs?.push(fullPath)
+    }*/
+
+    if (exclude !== true) {
+      frontier.push(file)
+      _traversedDirs?.push(fullPath)
+    }
   }
+  // test if the file passes the test
   if (pass) {
     accumulator.push(file)
   }
