@@ -64,6 +64,10 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
     const absRoot = fsPath.resolve(root)
 
     let exclude = excludePaths?.some((p) => {
+      const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath: p })
+      console.log('matchPath:', matchPath, 'p:', p, 'matches:', minimatch(matchPath, p)) // DEBUG
+      return minimatch(matchPath, p)
+      /* deprecated by use of absOrRelPathForMatch - delete after testing
       if (p.startsWith('/')) {
         return minimatch(fullPath, p)
       }
@@ -74,8 +78,12 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
         }
 
         return minimatch(relPath, p)
-      }
+      }*/
     }) || false
+
+    /*if (exclude === false) {
+
+    }*/
 
     /*
     if (paths === undefined || paths.some((p) => {
@@ -101,6 +109,19 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
   if (pass) {
     accumulator.push(file)
   }
+}
+
+const absOrRelPathForMatch = ({ absRoot, fullPath, matchPath }) => {
+  if (matchPath.startsWith('/')) {
+    return fullPath
+  } // else
+
+  let relPath = fullPath.slice(absRoot.length)
+  if (relPath.startsWith(fsPath.sep)) {
+    relPath = relPath.slice(1)
+  }
+
+  return relPath
 }
 
 export { traverseDirs }
