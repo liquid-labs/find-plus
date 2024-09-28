@@ -5,11 +5,13 @@ const checkRoot = async({ root }) => {
   let rootStat
   try {
     rootStat = await stat(root, { throwIfNoEntry : false })
+    /* TODO: verify whether this is necessary on some node versions
     if (rootStat === undefined) {
       const newE = new Error(`Did not find root directory at: ${root}`)
       newE.code = 'ENOENT'
       throw newE
     }
+    */
   }
   catch (e) {
     if (e.code === 'ENOENT') {
