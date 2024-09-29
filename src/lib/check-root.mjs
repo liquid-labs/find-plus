@@ -22,7 +22,7 @@ const checkRoot = async({ absRoot, root }) => {
   }
 
   rootStat.name = fsPath.basename(absRoot)
-  addFieldsToFile(rootStat, { absRoot, depth: 0, parentPath: fsPath.dirname(absRoot) })
+  addFieldsToFile(rootStat, { absRoot, depth : 0, parentPath : fsPath.dirname(absRoot) })
 
   return rootStat
 }

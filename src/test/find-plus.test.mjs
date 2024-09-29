@@ -39,7 +39,7 @@ describe('find', () => {
       [
         { onlyFiles : true, root : dirAPath },
         'basic files only',
-        [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path,]
+        [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
       ],
       // begin 'onlyDirs: true' tests
       [
@@ -123,9 +123,9 @@ describe('find', () => {
       // excludePaths
       [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
       // includes matching paths below excluded directory
-      [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs: true }, [dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]],
+      [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs : true }, [dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]],
       // absolute paths
-      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
+      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
@@ -230,9 +230,9 @@ describe('find', () => {
 
   describe('argument errors', () => {
     test.each([ // error conditions
-      [{ root: undefined }, 'must specify root', /The 'root' must be explicitly set,/],
-      [{ root: null }, 'must specify root', /The 'root' must be explicitly set,/],
-      [{ root: '' }, 'must specify root', /The 'root' must be explicitly set,/],
+      [{ root : undefined }, 'must specify root', /The 'root' must be explicitly set,/],
+      [{ root : null }, 'must specify root', /The 'root' must be explicitly set,/],
+      [{ root : '' }, 'must specify root', /The 'root' must be explicitly set,/],
       [
         { root : fsPath.join(__dirname, 'some-random-name') },
         'must specify extant root',

@@ -12,12 +12,12 @@ const traverseDirs = async(options) => {
     _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
     depth,
     excludeRoot = false,
-    root,
+    root
   } = options
 
   const absRoot = fsPath.resolve(root)
   const rootStat = await checkRoot({ absRoot, root })
-  // we expect our received options to be independent of the users original 'options' passed to 'find', so it's OK to 
+  // we expect our received options to be independent of the users original 'options' passed to 'find', so it's OK to
   // modify here TODO: test input options are not modified when 'find()' is called.
   options.absRoot = absRoot
 
@@ -40,7 +40,7 @@ const traverseDirs = async(options) => {
       const dirPath = fsPath.join(dirEnt.parentPath, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
-        addFieldsToFile(file, { absRoot, depth: currDepth, parentPath: dirPath, root })
+        addFieldsToFile(file, { absRoot, depth : currDepth, parentPath : dirPath, root })
 
         testForInclusionAndFrontier({ accumulator, file, frontier : newFrontier }, options)
       }
@@ -54,7 +54,7 @@ const traverseDirs = async(options) => {
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ accumulator, file, frontier, }, options) => {
+const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options) => {
   const {
     _traversedDirs,
     excludePaths,

@@ -15,13 +15,12 @@ const addFieldsToFile = (file, { absRoot, depth, parentPath }) => {
       file.relPath = file.relPath.slice(0, -1)
     }
     if (file.relPath === '') {
-      file.relPath = '.' 
+      file.relPath = '.'
     }
   }
   else {
     file.relPath = null
   }
-  
 
   return file
 }

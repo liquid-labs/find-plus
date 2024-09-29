@@ -29,10 +29,10 @@ const alphaSorter = (a, b) => {
 }
 
 const validSorts = {
-  alpha: alphaSorter,
-  breadth: breadthFirstSorter,
-  depth: depthFirstSorter,
-  none: undefined,
+  alpha   : alphaSorter,
+  breadth : breadthFirstSorter,
+  depth   : depthFirstSorter,
+  none    : undefined
 }
 
 export { alphaSorter, breadthFirstSorter, depthFirstSorter, validSorts }
