@@ -1,6 +1,7 @@
 const validSorts = ['alpha', 'breadth', 'depth', 'none']
 
 const verifyParams = ({
+  root,
   atDepth,
   depth,
   noBlockDevices,
@@ -20,6 +21,11 @@ const verifyParams = ({
   onlySymbolicLinks,
   sort
 }) => {
+  // additional 'root' constraints checked by 'checkRoot' invoked from 'traverseDirs'
+  if (!root) {
+    throw new Error("The 'root' must be explicitly set, and may not be the empty string.")
+  }
+
   // check for confliction options
   if (atDepth === true && depth === undefined) {
     throw new Error("Must provide an explicit 'depth' when 'atDepth' is 'true'.")
