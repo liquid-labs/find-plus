@@ -28,62 +28,71 @@ const fifoPath = fsPath.join(fifoDir, 'fifoA')
 const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink') + fsPath.sep
 
 describe('find', () => {
-  test.each([
-    [
-      { root : dirAAPath },
-      'everything',
-      [dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path]
-    ],
-    // begin 'onlyFiles: true'
-    [
-      { onlyFiles : true, root : dirAPath },
-      'basic files only',
-      [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
-    ],
-    // begin 'onlyDirs: true' tests
-    [
-      { onlyDirs : true, root : dirAPath },
-      'basic dirs only',
-      [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
-    ],
-    [
-      { onlyDirs : true, excludeRoot : true, root : dirAPath },
-      'basic dirs only, excluding root',
-      [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
-    ],
-    [{ depth : 1, onlyDirs : true, root : dirAPath }, 'limit to depth 1', [dirAPath, dirAAPath, dirABPath]],
-    [
-      { depth : 1, onlyDirs : true, excludeRoot : true, root : dirAPath },
-      'limit to depth 1 aand exclude root',
-      [dirAAPath, dirABPath]],
-    [
-      { atDepth : true, depth : 1, onlyDirs : true, root : dirAPath },
-      "limit to dirs 'atDepth' 1",
-      [dirAAPath, dirABPath]
-    ],
-    [
-      { atDepth : true, depth : 2, onlyDirs : true, root : dirAPath },
-      "limit to dirs to 'atDepth' 2",
-      [dirAAAPath, dirAABPath, dirABAPath]
-    ],
-    // noDirs
-    [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
-    // noFiles
-    [{ noFiles : true, root : dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
-    // sorting tests
-    [
-      { sort : 'depth', onlyFiles : true, root : dirAPath },
-      'basic files only',
-      [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
-    ],
-    [
-      { sort : 'alpha', onlyFiles : true, root : dirAPath },
-      'basic files only',
-      [fileAAAA1Path, fileAAB1Path, fileABA1Path, fileAB1Path, fileA1Path]
-    ]
-  ])('%p %s', async(options, description, expected) => {
-    const files = await find(options)
-    expect(files).toEqual(expected)
+  describe('non-path search options', () => {
+    test.each([
+      [
+        { root : dirAAPath },
+        'everything',
+        [dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path]
+      ],
+      // begin 'onlyFiles: true'
+      [
+        { onlyFiles : true, root : dirAPath },
+        'basic files only',
+        [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
+      ],
+      // begin 'onlyDirs: true' tests
+      [
+        { onlyDirs : true, root : dirAPath },
+        'basic dirs only',
+        [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
+      ],
+      [
+        { onlyDirs : true, excludeRoot : true, root : dirAPath },
+        'basic dirs only, excluding root',
+        [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
+      ],
+      [{ depth : 1, onlyDirs : true, root : dirAPath }, 'limit to depth 1', [dirAPath, dirAAPath, dirABPath]],
+      [
+        { depth : 1, onlyDirs : true, excludeRoot : true, root : dirAPath },
+        'limit to depth 1 aand exclude root',
+        [dirAAPath, dirABPath]
+      ],
+      // leavesOnly
+      [
+        { leavesOnly : true, depth : 0, onlyDirs : true, root : dirAPath },
+        "limit to dirs 'leavesOnly' 0",
+        [dirAPath]
+      ],
+      [
+        { leavesOnly : true, depth : 1, onlyDirs : true, root : dirAPath },
+        "limit to dirs 'leavesOnly' 1",
+        [dirAAPath, dirABPath]
+      ],
+      [
+        { leavesOnly : true, depth : 2, onlyDirs : true, root : dirAPath },
+        "limit to dirs to 'leavesOnly' 2",
+        [dirAAAPath, dirAABPath, dirABAPath]
+      ],
+      // noDirs
+      [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
+      // noFiles
+      [{ noFiles : true, root : dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
+      // sorting tests
+      [
+        { sort : 'depth', onlyFiles : true, root : dirAPath },
+        'basic files only',
+        [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
+      ],
+      [
+        { sort : 'alpha', onlyFiles : true, root : dirAPath },
+        'basic files only',
+        [fileAAAA1Path, fileAAB1Path, fileABA1Path, fileAB1Path, fileA1Path]
+      ]
+    ])('%p %s', async(options, description, expected) => {
+      const files = await find(options)
+      expect(files).toEqual(expected)
+    })
   })
 
   describe('absolute paths', () => {
@@ -224,39 +233,41 @@ describe('find', () => {
     test("'noSymbolicLinks' skips symbolic link files", () => expect(nonSymLinksCount).toBe(3))
   })
 
-  test.each([ // error conditions
-    [{ root: undefined }, 'must specify root', /The 'root' must be explicitly set,/],
-    [{ root: null }, 'must specify root', /The 'root' must be explicitly set,/],
-    [{ root: '' }, 'must specify root', /The 'root' must be explicitly set,/],
-    [
-      { root : fsPath.join(__dirname, 'some-random-name') },
-      'must specify extant root',
-      /^Did not find root directory at: .+some-random-name$/
-    ],
-    [
-      { root : fsPath.join(__dirname, 'data', 'dirA', 'dirAB', 'fileAB-1.txt') },
-      'root cannot be a file',
-      /fileAB-1.txt.+?directory as required/
-    ],
-    [
-      { atDepth : true, root : dirAPath },
-      "must specify 'depth' with 'adDepth : true'",
-      /Must provide.*depth.+atDepth/
-    ],
-    [{ onlyFiles : true, onlyDirs : true, root : dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/],
-    [
-      { noSpecials : true, noDirs : true, noFiles : true, noSymbolicLinks : true, root : dirAAPath },
-      'all "no"s are invalid',
-      /all 'no'/
-    ],
-    [{ sort : 'invalid-sort', root : dirAPath }, 'invalid sort detected', /^Invalid sort/]
-  ])('%p %s', async(options, description, regex) => {
-    try {
-      await find(options)
-      throw new Error('did not throw as expected')
-    }
-    catch (e) {
-      expect(e.message).toMatch(regex)
-    }
+  describe('argument errors', () => {
+    test.each([ // error conditions
+      [{ root: undefined }, 'must specify root', /The 'root' must be explicitly set,/],
+      [{ root: null }, 'must specify root', /The 'root' must be explicitly set,/],
+      [{ root: '' }, 'must specify root', /The 'root' must be explicitly set,/],
+      [
+        { root : fsPath.join(__dirname, 'some-random-name') },
+        'must specify extant root',
+        /^Did not find root directory at: .+some-random-name$/
+      ],
+      [
+        { root : fsPath.join(__dirname, 'data', 'dirA', 'dirAB', 'fileAB-1.txt') },
+        'root cannot be a file',
+        /fileAB-1.txt.+?directory as required/
+      ],
+      [
+        { leavesOnly : true, root : dirAPath },
+        "must specify 'depth' with 'leavesOnly : true'",
+        /Must provide.*depth.+leavesOnly/
+      ],
+      [{ onlyFiles : true, onlyDirs : true, root : dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/],
+      [
+        { noSpecials : true, noDirs : true, noFiles : true, noSymbolicLinks : true, root : dirAAPath },
+        'all "no"s are invalid',
+        /all 'no'/
+      ],
+      [{ sort : 'invalid-sort', root : dirAPath }, 'invalid sort detected', /^Invalid sort/]
+    ])('%p %s', async(options, description, regex) => {
+      try {
+        await find(options)
+        throw new Error('did not throw as expected')
+      }
+      catch (e) {
+        expect(e.message).toMatch(regex)
+      }
+    })
   })
 })
