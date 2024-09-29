@@ -11,7 +11,6 @@ const verifyParams = ({
   noFiles,
   noSockets,
   noSymbolicLinks,
-  noTraverseFailed,
   onlyBlockDevices,
   onlyCharacterDevices,
   onlyDirs,
@@ -46,12 +45,6 @@ const verifyParams = ({
   }
   if (onlyCount > 1) {
     throw new Error("Cannot specify multiple 'only' flags; nothing would be selected.")
-  }
-  if (onlyCount > 0 && noTraverseFailed === true && onlyDirs !== true) {
-    throw new Error("Cannot set an 'only' flag (other than 'onlyDirs') and 'noTraverseFailed' true; no directories would be searched.")
-  }
-  if (noDirs === true && noTraverseFailed === true) {
-    throw new Error("Cannot set 'noDirs' and 'noTraverseFailed' both true; nothing would be searched.")
   }
 
   let noCount = 0

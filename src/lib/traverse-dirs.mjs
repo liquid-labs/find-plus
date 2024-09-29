@@ -11,7 +11,6 @@ const traverseDirs = async({
   depth,
   excludePaths,
   excludeRoot = false,
-  noTraverseFailed = false,
   paths,
   root,
   tests
@@ -22,12 +21,12 @@ const traverseDirs = async({
   let currDepth = 0
 
   let frontier = []
-  if (excludeRoot === true && noTraverseFailed === false) { // no need for tests
+  if (excludeRoot === true) { // no need to test root
     frontier.push(rootStat)
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, noTraverseFailed, root, tests })
+    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, root, tests })
   }
   currDepth += 1
 
@@ -45,7 +44,7 @@ const traverseDirs = async({
           file.parentPath = dirPath
         }
 
-        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, noTraverseFailed, paths, root, tests })
+        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, paths, root, tests })
       }
     }
     frontier = newFrontier
@@ -56,10 +55,13 @@ const traverseDirs = async({
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier, noTraverseFailed, paths, root, tests }) => {
+const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier, paths, root, tests }) => {
   const pass = !tests.some((t) => !t(file, currDepth))
+  if (pass === true) {
+    accumulator.push(file)
+  }
   // test if the file is a dir and should be added to frontier
-  if (file.isDirectory() && (pass || noTraverseFailed === false)) {
+  if (file.isDirectory() === true) {
     const fullPath = dirEntToFilePath(file)
     const absRoot = fsPath.resolve(root)
 
@@ -123,10 +125,6 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
       frontier.push(file)
       _traversedDirs?.push(fullPath)
     }
-  }
-  // test if the file passes the test
-  if (pass) {
-    accumulator.push(file)
   }
 }
 

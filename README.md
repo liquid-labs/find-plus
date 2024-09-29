@@ -110,19 +110,3 @@ The `tests` (_array of functions_, _default_: `[]`) option accepts an array of f
 ### Sorting the results
 
 You can use the `sort` (_string_, _default_: 'breadth') option to specify the preferred ordering of the results. Possible options are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk and is primarily useful to speed things slightly when you don't care about the order. In most cases, leaving the option unset or 'none' will result in breadth-first results equivalent to `sort : 'breadth'`, but this is not guaranteed.
-
-### Directory traversal
-
-By default, `find` will traverse directories even if the directories themselves are not included in the results (e.g., when `onlyFiles` is set to `true`). This behavior can be modified by setting the `noTraverseFailed` (_boolean_, _default_: `false`) option to `true`. When `noTraverseFailed` is `true`, then directories which fail the requirements (ignoring [`noDirs`and the `only*`](#selecting-file-types); see next paragraph) are not traversed.
-
-Note, a path a single pattern like 'foo/bar/\*' combined with `noTraverseFailed : true` is pointless because the first 'foo' directory is not itself matched. For that pattern to return any results, you would need to specify a second pattern 'foo/'. With the two patterns specified, the first level directory will match the second pattern, and the first pattern will yield the expected results.
-
-Note that with no further options, this means that the traversed directories will always be included in the results. You could filter the results based on the trailing path separator, but you're better off using `noDirs` and the `only*` options, which will effect the results, but are ignored for the purposes of determining direcotry traversal. E.g., given `$HOME/foo/bar/file1.txt`, `$HOME/foo/bar/file2.txt`, and `$HOME/foo/bar/baz/file3.txt`, to find the normal files directly under `$HOME/foo/bar` (being `file1.txt` and `file2.txt`), we could do the following:
-```js
-const result = await find({
-  root : env.process.HOME,
-  noTraverseFailed : true,
-  onlyFiles : true,
-  paths : ['foo', 'foo/bar/*']
-})
-````

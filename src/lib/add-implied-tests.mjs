@@ -13,7 +13,6 @@ const addImpliedTests = ({
   noDirs,
   noFIFOs,
   noFiles,
-  noTraverseFailed,
   noSockets,
   noSymbolicLinks,
   onlyBlockDevices,

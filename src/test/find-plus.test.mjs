@@ -66,21 +66,6 @@ describe('find', () => {
       "limit to dirs to 'atDepth' 2",
       [dirAAAPath, dirAABPath, dirABAPath]
     ],
-    [
-      { noTraverseFailed : true, root : dirAPath, tests : [(f) => f.name === 'data' || f.name.endsWith('A')] },
-      'traverses passing directories only (custom tests)',
-      [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath]
-    ],
-    [
-      { root : dirAPath, tests : [(f) => f.name.indexOf('B') > -1 ] },
-      'traverses failed directories (custom tests)',
-      [dirAABPath, fileAAB1Path, dirABPath, fileAB1Path, dirABAPath, fileABA1Path]
-    ],
-    [
-      { noTraverseFailed : true, root : dirDataPath, paths: 'dirA/dirAB' },
-      'traverses passing directories only (trivial path fail)',
-      []
-    ],
     // noDirs
     [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
     // noFiles
@@ -259,16 +244,6 @@ describe('find', () => {
       /Must provide.*depth.+atDepth/
     ],
     [{ onlyFiles : true, onlyDirs : true, root : dirAPath }, "cannot specify multilpe 'only' flags", /multiple 'only'/],
-    [
-      { onlyFiles : true, noTraverseFailed : true, root : dirAPath },
-      "cannot specify multilpe 'only' flags",
-      /'only' flag.+?'noTraverseFailed'/
-    ],
-    [
-      { noDirs : true, noTraverseFailed : true, root : dirAPath },
-      "'noDirs' and 'noRecurseFail' invalid combination",
-      /noDirs.+?noTraverseFailed/
-    ],
     [
       { noSpecials : true, noDirs : true, noFiles : true, noSymbolicLinks : true, root : dirAAPath },
       'all "no"s are invalid',
