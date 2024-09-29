@@ -9,7 +9,6 @@ A file finding utility patterned after Linux find.
 - [Extglob pattern syntax](#extglob-pattern-syntax)
 - [Path matching for efficient searching](#path-matching-for-efficient-searches)
 - [Custom tests](#custom-tests)
-- [Sorting results](#sorting-results)
 
 ## Instal
 
