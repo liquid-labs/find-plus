@@ -9,17 +9,15 @@ const addFieldsToFile = (file, { absRoot, depth, parentPath }) => {
   }
 
   file.absPath = resolvePath(parentPath, file.name)
-  if (file.absPath.startsWith(absRoot)) {
-    file.relPath = file.absPath.slice(absRoot.length)
-    if (file.relPath.endsWith('/')) {
-      file.relPath = file.relPath.slice(0, -1)
-    }
-    if (file.relPath === '') {
-      file.relPath = '.'
-    }
+
+  // we can assume that `file.absPath.startsWith(absRoot) === true` because it's simply not possible to match files 
+  // outside of the root
+  file.relPath = file.absPath.slice(absRoot.length)
+  if (file.relPath.startsWith('/')) {
+    file.relPath = file.relPath.slice(1)
   }
-  else {
-    file.relPath = null
+  if (file.relPath === '') {
+    file.relPath = '.'
   }
 
   return file

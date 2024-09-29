@@ -1,6 +1,7 @@
 /* global afterAll beforeAll describe expect test */
-import * as fsPath from 'node:path'
 import * as fs from 'node:fs/promises'
+import * as net from 'node:net'
+import * as fsPath from 'node:path'
 
 import { tryExec } from '@liquid-labs/shell-toolkit'
 
@@ -27,12 +28,20 @@ const fifoPath = fsPath.join(fifoDir, 'fifoA')
 
 const symLinkDir = fsPath.join(dirDataPath, 'dirSymLink') + fsPath.sep
 
+const socketDirPath = fsPath.join(dirDataPath, 'dirSocket') + fsPath.sep
+const socketAPath = fsPath.join(socketDirPath, 'socketA')
+
 describe('find', () => {
   describe('non-path search options', () => {
     test.each([
       [
         { root : dirAAPath },
         'everything',
+        [dirAAPath, dirAAAPath, dirAABPath, dirAAAAPath, fileAAB1Path, fileAAAA1Path]
+      ],
+      [
+        { root : dirAAPath + fsPath.sep },
+        'handles root with trailing ' + fsPath.sep,
         [dirAAPath, dirAAAPath, dirAABPath, dirAAAAPath, fileAAB1Path, fileAAAA1Path]
       ],
       // begin 'onlyFiles: true'
@@ -104,28 +113,30 @@ describe('find', () => {
       [{ paths : ['dirA/'] }, [dirAPath]],
       [{ paths : ['dirA'] }, [dirAPath]],
       [{ paths : ['di?A/'] }, [dirAPath]],
-      [{ paths : ['d*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['d*/'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['d?r*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['d*/'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['d?r*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
       // extglob syntax
-      [{ paths : ['d+(i|r)*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['d@(ir)*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['d*(ir)*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ paths : ['d+([ir])*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d+(i|r)*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['d@(ir)*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['d*(ir)*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ paths : ['d+([ir])*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
       // additional tests with different roots
       [{ root : '.', paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
       [{ root : process.cwd(), paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
-      [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ root : './', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ root : 'test/data/', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ root : 'test/data', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ root : './', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ root : 'test/data/', paths : ['*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
+      [{ root : 'test/data', paths : ['*'] }, [dirAPath, fifoDir, socketDirPath, symLinkDir]],
       // excludePaths
-      [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
+      [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, socketDirPath, symLinkDir]],
       // includes matching paths below excluded directory
       [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs : true }, [dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]],
       // absolute paths
-      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
+      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
+      // handles incongruent root and paths
+      [{ paths: ['/blah/blah/blah/**']}, []]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
@@ -197,10 +208,36 @@ describe('find', () => {
     test("'noFIFO' skips FIFO files", () => expect(nonFIFOsCount).toBe(3))
   })
 
-  // TODO: symLink test; no luck after a little googling
+  describe('finding sockets', () => {
+    let server
+
+    beforeAll(() => {
+      server = net.createServer((c) => {})
+      server.listen(socketAPath, () => {})
+    })
+
+    afterAll(async () => {
+      await server.close()
+    })
+
+    test('counts Socket with all files', async () => {
+      const allFiles = await find({ root: socketDirPath })
+      expect(allFiles).toHaveLength(3) // the root and two files
+    })
+
+    test("'onlySockets' counts only socket files", async () => {
+      const socketFiles = await find({ root: socketDirPath, onlySockets : true })
+      expect(socketFiles).toEqual([socketAPath])
+    })
+
+    test("'noSockets' skips files", async () => {
+      const noSocketFiles = await find({ root: socketDirPath, noSockets : true })
+      expect(noSocketFiles).toEqual([socketDirPath, fsPath.join(socketDirPath, 'fileA.txt')])
+    })
+  })
 
   // symlink test
-  describe('finding Sockets', () => {
+  describe('finding symlinks', () => {
     const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
     const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
     let allFilesCount, nonSymLinksCount, symLinksCount

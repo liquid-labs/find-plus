@@ -14,7 +14,6 @@ const find = async(params = {}) => {
   }
 
   const {
-    root,
     sort = 'breadth',
     tests = []
   } = params
@@ -25,7 +24,7 @@ const find = async(params = {}) => {
   addImpliedTests({ ...params, myTests })
 
   // params need to come first, we override root and tests
-  const matchedFiles = await traverseDirs({ ...params, root, tests : myTests })
+  const matchedFiles = await traverseDirs({ ...params, tests : myTests })
 
   // results in depth-first sort of full directory paths
   if (sort !== 'none') {
