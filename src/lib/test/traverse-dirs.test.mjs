@@ -12,17 +12,18 @@ describe('traverseDirs', () => {
   describe('skips impossible directories', () => {
     test.each([
       // relative path excludes
-      [{ excludePaths : ['dir[F|S]*'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
-      [{ excludePaths : ['dir[F|S]*', 'dirA/dir*'] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
-      [{ excludePaths : ['dir[F|S]*', 'dirA/*/'] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
-      [{ excludePaths : ['dir[F|S]*', 'dirA/dir*/*.txt'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
-      [{ excludePaths : ['dir[F|S]*', 'dirA/*/*.txt'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      [{ excludePaths : ['dir[F|S]*/**'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      [{ excludePaths : ['dir[F|S]*/**', 'dirA/*/**'] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
+      [{ excludePaths : ['dir[F|S]*/**', 'dirA/dir*/*.txt'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      [{ excludePaths : ['dir[F|S]*/**', 'dirA/*/*.txt'] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      // non-excluding paths
+      [{ excludePaths : ['dir[F|S]*'] }, [], ['/dirA', '/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB']],
       // absolute path excludes (note, dirData already has the trailing separator)
-      [{ excludePaths : [`${dirData}dir[F|S]*`] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
-      [{ excludePaths : [`${dirData}dir[F|S]*`, `${dirData}dirA/dir*`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
-      [{ excludePaths : [`${dirData}dir[F|S]*`, `${dirData}dirA/*/`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
-      [{ excludePaths : [`${absDataPattern}dir[F|S]*`] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
-      [{ excludePaths : [`${absDataPattern}dir[F|S]*`, `${absDataPattern}dirA/dir*`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
+      [{ excludePaths : [`${dirData}dir[F|S]*/**`] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      [{ excludePaths : [`${dirData}dir[F|S]*/**`, `${dirData}dirA/dir*/**`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
+      [{ excludePaths : [`${dirData}dir[F|S]*/**`, `${dirData}dirA/*/**`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
+      [{ excludePaths : [`${absDataPattern}dir[F|S]*/**`] }, ['/dirFIFO', '/dirSymLink'], ['/dirA', '/dirAA', '/dirAB']],
+      [{ excludePaths : [`${absDataPattern}dir[F|S]*/**`, `${absDataPattern}dirA/dir*/**`] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
       // exclude based on no possible 'paths' match (relative)
       [{ paths : ['dirA/*.txt'] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
       [{ paths : ['dir?/*.txt'] }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],

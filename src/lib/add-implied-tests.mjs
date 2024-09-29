@@ -3,9 +3,9 @@ import * as fsPath from 'node:path'
 import { minimatch } from 'minimatch'
 
 const addImpliedTests = ({
-  atDepth,
   depth,
   excludePaths,
+  leavesOnly,
   minimatchOptions,
   myTests,
   noBlockDevices,
@@ -13,7 +13,6 @@ const addImpliedTests = ({
   noDirs,
   noFIFOs,
   noFiles,
-  noTraverseFailed,
   noSockets,
   noSymbolicLinks,
   onlyBlockDevices,
@@ -24,10 +23,10 @@ const addImpliedTests = ({
   onlySockets,
   onlySymbolicLinks,
   paths,
-  root = process.cwd()
+  root
 }) => {
-  if (atDepth === true) {
-    myTests.unshift((f, currDepth) => currDepth === depth)
+  if (leavesOnly === true) {
+    myTests.unshift((f) => f.depth === depth)
   }
 
   if (onlyDirs === true) {

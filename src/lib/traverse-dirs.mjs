@@ -3,51 +3,49 @@ import * as fsPath from 'node:path'
 
 import { minimatch } from 'minimatch'
 
+import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
 
-const traverseDirs = async({
-  _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
-  depth,
-  excludePaths,
-  excludeRoot = false,
-  noTraverseFailed = false,
-  paths,
-  root,
-  tests
-}) => {
-  const rootStat = await checkRoot({ root })
+const traverseDirs = async(options) => {
+  const {
+    _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
+    depth,
+    excludeRoot = false,
+    root
+  } = options
+
+  const absRoot = fsPath.resolve(root)
+  const rootStat = await checkRoot({ absRoot, root })
+  // we expect our received options to be independent of the users original 'options' passed to 'find', so it's OK to
+  // modify here TODO: test input options are not modified when 'find()' is called.
+  options.absRoot = absRoot
 
   const accumulator = []
-  let currDepth = 0
 
   let frontier = []
-  if (excludeRoot === true && noTraverseFailed === false) { // no need for tests
+  if (excludeRoot === true) { // no need to test root
     frontier.push(rootStat)
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, noTraverseFailed, root, tests })
+    testForInclusionAndFrontier({ accumulator, file : rootStat, frontier }, options)
   }
-  currDepth += 1
 
+  let currDepth = 1
   // eslint-disable-next-line no-unmodified-loop-condition
   while ((depth === undefined || depth >= currDepth) && frontier.length > 0) {
-    const newFrontier = []
+    const newFrontier = [] // this will gather the directories for the next level
     for (const dirEnt of frontier) {
       const dirPath = fsPath.join(dirEnt.parentPath, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
-        file.depth = currDepth
+        addFieldsToFile(file, { absRoot, depth : currDepth, parentPath : dirPath, root })
 
-        // node 19.x DirEnt's lack parent path
-        if (file.parentPath === undefined) {
-          file.parentPath = dirPath
-        }
-
-        testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, noTraverseFailed, paths, root, tests })
+        testForInclusionAndFrontier({ accumulator, file, frontier : newFrontier }, options)
       }
     }
+    // at this point we have processed all files at the current depth, so we work on the files at the next level
     frontier = newFrontier
 
     currDepth += 1
@@ -56,17 +54,28 @@ const traverseDirs = async({
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier, noTraverseFailed, paths, root, tests }) => {
-  const pass = !tests.some((t) => !t(file, currDepth))
+const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options) => {
+  const {
+    _traversedDirs,
+    excludePaths,
+    paths,
+    root,
+    tests
+  } = options
+
+  const pass = !tests.some((t) => !t(file, options))
+  if (pass === true) {
+    accumulator.push(file)
+  }
   // test if the file is a dir and should be added to frontier
-  if (file.isDirectory() && (pass || noTraverseFailed === false)) {
+  if (file.isDirectory() === true) {
     const fullPath = dirEntToFilePath(file)
     const absRoot = fsPath.resolve(root)
 
     // can we exclude a possible search branch based on the exclude paths?
     let exclude = excludePaths?.some((p) => {
       const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
-      return minimatch(matchPath, p)
+      return minimatch(matchPath, p) && p.endsWith('/**')
     }) || false
 
     // then' let's see if we can exclude the branch based on the paths
@@ -94,13 +103,13 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
         }
 
         let minPrefix = matchPathIsAbsolute === true ? absRoot + fsPath.sep : ''
-        for (let i = 0; i < currDepth && i < matchPathBits.length; i += 1) {
+        for (let i = 0; i < file.depth && i < matchPathBits.length; i += 1) {
           const nextBit = matchPathBits[i]
           if (nextBit === '**') {
             return true
           }
           else if (nextBit.includes('**')) {
-            if (i === currDepth - 1) { // we terminate at the same level
+            if (i === file.depth - 1) { // we terminate at the same level
               // then we can still attempt a match for the current dirs based on the part before the '**'
               minPrefix += nextBit.replace(/\*\*.*/, '')
             }
@@ -123,10 +132,6 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
       frontier.push(file)
       _traversedDirs?.push(fullPath)
     }
-  }
-  // test if the file passes the test
-  if (pass) {
-    accumulator.push(file)
   }
 }
 
