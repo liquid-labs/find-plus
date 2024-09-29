@@ -10,7 +10,7 @@ A file finding utility patterned after Linux find.
 - [Path matching for efficient searching](#path-matching-for-efficient-searches)
 - [Custom tests](#custom-tests)
 
-## Instal
+## Install
 
 ```bash
 npm i find-plus
@@ -32,32 +32,32 @@ console.log(`You have ${files.length} text files under your home directory.`)
 
 `find()` takes the following options (only the `root` option is required):
 - Root options:
-  - `root`: (__required__, _string_) The directory from which the search begins. May be absolute (starts with '/') or relative to `process.cwd()`.[^1]
-  - `excludeRoot`: (_boolean_, default: `false`) If `true`, the root directory is excluded from the results even if it would otherwise be included.
+  - __`root`__: (__required__, _string_) The directory from which the search begins. May be absolute (starts with '/') or relative to `process.cwd()`.[^1]
+  - __`excludeRoot`__: (_boolean_, default: `false`) If `true`, the root directory is excluded from the results even if it would otherwise be included.
 - Path matching (see [extglob patterns](#extglob-pattern-syntax) and [path matching for efficient searching](#path-matching-for-efficient-searches) for additional details):
-  - `paths`: (_string[]_) If defined, then only matching file paths are included in the results. The path is considered absolute if it starts with '/' and is otherwise relative to `root`.
-  - `excludePaths`: (_string[]_) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searching) for guidance. Absolute and relative paths handled as with `paths`.
+  - __`paths`__: (_string[]_) If defined, then only matching file paths are included in the results. The path is considered absolute if it starts with '/' and is otherwise relative to `root`.
+  - __`excludePaths`__: (_string[]_) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searching) for guidance. Absolute and relative paths handled as with `paths`.
 - Limiting depth and leaf results:
-  - `depth`: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negatvie values are equivalent to 0.
-  - `leavesOnly`: (_boolean_, default: `false`) If `true`, then limits the results to leaf files at `depth`. E.g., `depth = 0` will match only the root directory and `depth = 1` will only match those files within the root directory, and so forth.
+  - __`depth`__: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negatvie values are equivalent to 0.
+  - __`leavesOnly`__: (_boolean_, default: `false`) If `true`, then limits the results to leaf files at `depth`. E.g., `depth = 0` will match only the root directory and `depth = 1` will only match those files within the root directory, and so forth.
 - Selecting files types:[^2]
-  - `(onlyBlockDevices)`: (_boolean_, default: `false`) Include only block devices.
-  - `(onlyCharacterDevices)`: (_boolean_, default: `false`) Include only character devices.
-  - `(onlyDirs)`: (_boolean_, default: `false`) Include only directories.
-  - `(onlyFIFOs)`: (_boolean_, default: `false`) Include only FIFOs/pipes.
-  - `(onlyFiles)`: (_boolean_, default: `false`) Include only regular files.
-  - `(onlySockets)`: (_boolean_, default: `false`) Include only sockets.
-  - `(onlySymbolicLinks)`: (_boolean_, default: `false`) Include only symbolic links.
-  - `(noBlockDevices)`: (_boolean_, default: `false`) Exclude block devices.
-  - `(noCharacterDevices)`: (_boolean_, default: `false`) Exclude character devices.
-  - `(noDirs)`: (_boolean_, default: `false`) Exclude directories.
-  - `(noFIFOs)`: (_boolean_, default: `false`) Exclude FIFOs/pipes.
-  - `(noFiles)`: (_boolean_, default: `false`) Exclude regular files.
-  - `(noSockets)`: (_boolean_, default: `false`) Exclude sockets.
-  - `(noSpecial)`: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`,
-  - `(noSymbolicLinks)`: (_boolean_, default: `false`) : Exclude symbolic links.
-- `tests`: (_function[]_) If defined, then each potential file is passed to each test which must all return `true` if the file is to be included in the results. Refer to [custom tests](#custom-tests) for additional information.
-- `sort`: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed.
+  - __`onlyBlockDevices`__: (_boolean_, default: `false`) Include only block devices.
+  - __`onlyCharacterDevices`__: (_boolean_, default: `false`) Include only character devices.
+  - __`onlyDirs`__: (_boolean_, default: `false`) Include only directories.
+  - __`onlyFIFOs`__: (_boolean_, default: `false`) Include only FIFOs/pipes.
+  - __`onlyFiles`__: (_boolean_, default: `false`) Include only regular files.
+  - __`onlySockets`__: (_boolean_, default: `false`) Include only sockets.
+  - __`onlySymbolicLinks`__: (_boolean_, default: `false`) Include only symbolic links.
+  - __`noBlockDevices`__: (_boolean_, default: `false`) Exclude block devices.
+  - __`noCharacterDevices`__: (_boolean_, default: `false`) Exclude character devices.
+  - __`noDirs`__: (_boolean_, default: `false`) Exclude directories.
+  - __`noFIFOs`__: (_boolean_, default: `false`) Exclude FIFOs/pipes.
+  - __`noFiles`__: (_boolean_, default: `false`) Exclude regular files.
+  - __`noSockets`__: (_boolean_, default: `false`) Exclude sockets.
+  - __`noSpecial`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`,
+  - __`noSymbolicLinks`__: (_boolean_, default: `false`) : Exclude symbolic links.
+- __`tests`__: (_function[]_) If defined, then each potential file is passed to each test which must all return `true` if the file is to be included in the results. Refer to [custom tests](#custom-tests) for additional information.
+- __`sort`__: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed.
 
 [^1]: Internally root is always converted to an absolute directory using the internal `path.resolve()` function.
 [^2]: Setting all the `no*` or multiple `only*` file type selectors will result in an error as the search would be trivially empty.
