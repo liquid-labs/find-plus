@@ -62,10 +62,6 @@ console.log(`You have ${files.length} text files under your home directory.`)
 [^1]: Internally root is always converted to an absolute directory using the internal `path.resolve()` function.
 [^2]: Setting all the `no*` or multiple `only*` file type selectors will result in an error as the search would be trivially empty.
 
-### Setting and including the root
-
-If you are using this library in a tool, often the sensible default would be `process.cwd()` or `process.env.PWD`, depending on your environment and use case.
-
 ## Extglob pattern syntax
 
 Path matching uses glob style pattern matching provided by [minimatch](https://github.com/isaacs/minimatch#readme). The "path" matched against is the full file path. Note that when matching a directories specifically, you may include the trailing '/' or not. E.g., searching from the root, the directory `/user/jane` would be matched by '/user/jane', '/user/jane/', '/user/j*', '/user/j*/', and so forth.
