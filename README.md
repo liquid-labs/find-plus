@@ -54,7 +54,7 @@ console.log(`You have ${files.length} text files under your home directory.`)
   - __`noFIFOs`__: (_boolean_, default: `false`) Exclude FIFOs/pipes.
   - __`noFiles`__: (_boolean_, default: `false`) Exclude regular files.
   - __`noSockets`__: (_boolean_, default: `false`) Exclude sockets.
-  - __`noSpecial`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`,
+  - __`noSpecial`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`.
   - __`noSymbolicLinks`__: (_boolean_, default: `false`) : Exclude symbolic links.
 - __`tests`__: (_function[]_) If defined, then each potential file is passed to each test which must all return `true` if the file is to be included in the results. Refer to [custom tests](#custom-tests) for additional information.
 - __`sort`__: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed.
