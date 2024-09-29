@@ -11,15 +11,14 @@ const traverseDirs = async(options) => {
   const {
     _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
     depth,
-    excludePaths,
     excludeRoot = false,
-    paths,
     root,
-    tests
   } = options
 
   const absRoot = fsPath.resolve(root)
   const rootStat = await checkRoot({ absRoot, root })
+  // we expect our received options to be independent of the users original 'options' passed to 'find', so it's OK to 
+  // modify here TODO: test input options are not modified when 'find()' is called.
   options.absRoot = absRoot
 
   const accumulator = []
@@ -30,7 +29,7 @@ const traverseDirs = async(options) => {
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, root, tests })
+    testForInclusionAndFrontier({ accumulator, file : rootStat, frontier }, options)
   }
 
   let currDepth = 1
@@ -43,7 +42,7 @@ const traverseDirs = async(options) => {
       for (const file of files) {
         addFieldsToFile(file, { absRoot, depth: currDepth, parentPath: dirPath, root })
 
-        testForInclusionAndFrontier({ _traversedDirs, accumulator, excludePaths, file, frontier : newFrontier, paths, root, tests })
+        testForInclusionAndFrontier({ accumulator, file, frontier : newFrontier }, options)
       }
     }
     // at this point we have processed all files at the current depth, so we work on the files at the next level
@@ -55,8 +54,16 @@ const traverseDirs = async(options) => {
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, excludePaths, file, frontier, paths, root, tests }) => {
-  const pass = !tests.some((t) => !t(file, {}))
+const testForInclusionAndFrontier = ({ accumulator, file, frontier, }, options) => {
+  const {
+    _traversedDirs,
+    excludePaths,
+    paths,
+    root,
+    tests
+  } = options
+
+  const pass = !tests.some((t) => !t(file, options))
   if (pass === true) {
     accumulator.push(file)
   }
