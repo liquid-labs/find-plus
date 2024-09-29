@@ -7,7 +7,7 @@ import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
 
 const traverseDirs = async({
-  _traversedDirs,
+  _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
   depth,
   excludePaths,
   excludeRoot = false,
