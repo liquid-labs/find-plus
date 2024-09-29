@@ -26,7 +26,7 @@ const addImpliedTests = ({
   root
 }) => {
   if (leavesOnly === true) {
-    myTests.unshift((f, currDepth) => currDepth === depth)
+    myTests.unshift((f) => f.depth === depth)
   }
 
   if (onlyDirs === true) {

@@ -28,7 +28,7 @@ const traverseDirs = async({
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, file : rootStat, frontier, root, tests })
+    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, root, tests })
   }
   currDepth += 1
 
@@ -53,8 +53,8 @@ const traverseDirs = async({
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier, paths, root, tests }) => {
-  const pass = !tests.some((t) => !t(file, currDepth))
+const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, excludePaths, file, frontier, paths, root, tests }) => {
+  const pass = !tests.some((t) => !t(file, {}))
   if (pass === true) {
     accumulator.push(file)
   }
@@ -94,13 +94,13 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
         }
 
         let minPrefix = matchPathIsAbsolute === true ? absRoot + fsPath.sep : ''
-        for (let i = 0; i < currDepth && i < matchPathBits.length; i += 1) {
+        for (let i = 0; i < file.depth && i < matchPathBits.length; i += 1) {
           const nextBit = matchPathBits[i]
           if (nextBit === '**') {
             return true
           }
           else if (nextBit.includes('**')) {
-            if (i === currDepth - 1) { // we terminate at the same level
+            if (i === file.depth - 1) { // we terminate at the same level
               // then we can still attempt a match for the current dirs based on the part before the '**'
               minPrefix += nextBit.replace(/\*\*.*/, '')
             }
