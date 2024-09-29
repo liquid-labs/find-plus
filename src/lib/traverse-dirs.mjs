@@ -7,17 +7,20 @@ import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
 
-const traverseDirs = async({
-  _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
-  depth,
-  excludePaths,
-  excludeRoot = false,
-  paths,
-  root,
-  tests
-}) => {
+const traverseDirs = async(options) => {
+  const {
+    _traversedDirs, // this is for unit testing; so we can verify that we're actually skipping dirs
+    depth,
+    excludePaths,
+    excludeRoot = false,
+    paths,
+    root,
+    tests
+  } = options
+
   const absRoot = fsPath.resolve(root)
   const rootStat = await checkRoot({ absRoot, root })
+  options.absRoot = absRoot
 
   const accumulator = []
 
