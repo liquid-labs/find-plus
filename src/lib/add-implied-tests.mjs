@@ -3,9 +3,9 @@ import * as fsPath from 'node:path'
 import { minimatch } from 'minimatch'
 
 const addImpliedTests = ({
-  atDepth,
   depth,
   excludePaths,
+  leavesOnly,
   minimatchOptions,
   myTests,
   noBlockDevices,
@@ -25,7 +25,7 @@ const addImpliedTests = ({
   paths,
   root
 }) => {
-  if (atDepth === true) {
+  if (leavesOnly === true) {
     myTests.unshift((f, currDepth) => currDepth === depth)
   }
 

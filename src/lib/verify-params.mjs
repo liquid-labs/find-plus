@@ -2,8 +2,8 @@ const validSorts = ['alpha', 'breadth', 'depth', 'none']
 
 const verifyParams = ({
   root,
-  atDepth,
   depth,
+  leavesOnly,
   noBlockDevices,
   noCharacterDevices,
   noDirs,
@@ -26,8 +26,8 @@ const verifyParams = ({
   }
 
   // check for confliction options
-  if (atDepth === true && depth === undefined) {
-    throw new Error("Must provide an explicit 'depth' when 'atDepth' is 'true'.")
+  if (leavesOnly === true && depth === undefined) {
+    throw new Error("Must provide an explicit 'depth' when 'leavesOnly' is 'true'.")
   }
   let onlyCount = 0
   for (const flag of [
