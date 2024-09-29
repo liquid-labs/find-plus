@@ -26,20 +26,20 @@ const traverseDirs = async({
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ _traversedDirs, accumulator, file : rootStat, frontier, root, tests })
+    testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, file : rootStat, frontier, root, tests })
   }
   currDepth += 1
 
   // eslint-disable-next-line no-unmodified-loop-condition
   while ((depth === undefined || depth >= currDepth) && frontier.length > 0) {
-    const newFrontier = []
+    const newFrontier = [] // this will gather the directories for the next level
     for (const dirEnt of frontier) {
       const dirPath = fsPath.join(dirEnt.parentPath, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
         file.depth = currDepth
 
-        // node 19.x DirEnt's lack parent path
+        // node 19.x DirEnt's lack parentPath
         if (file.parentPath === undefined) {
           file.parentPath = dirPath
         }
@@ -47,6 +47,7 @@ const traverseDirs = async({
         testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, paths, root, tests })
       }
     }
+    // at this point we have processed all files at the current depth, so we work on the files at the next level
     frontier = newFrontier
 
     currDepth += 1
