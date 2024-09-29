@@ -68,13 +68,18 @@ describe('find', () => {
     ],
     [
       { noTraverseFailed : true, root : dirAPath, tests : [(f) => f.name === 'data' || f.name.endsWith('A')] },
-      'traverses passing directories only',
+      'traverses passing directories only (custom tests)',
       [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath]
     ],
     [
-      { onlyDirs : true, root : dirAPath, tests : [(f) => f.name.indexOf('B') > -1] },
-      'traverses failed directories',
-      [dirAABPath, dirABPath, dirABAPath]
+      { root : dirAPath, tests : [(f) => f.name.indexOf('B') > -1 ] },
+      'traverses failed directories (custom tests)',
+      [dirAABPath, fileAAB1Path, dirABPath, fileAB1Path, dirABAPath, fileABA1Path]
+    ],
+    [
+      { noTraverseFailed : true, root : dirDataPath, paths: 'dirA/dirAB' },
+      'traverses passing directories only (trivial path fail)',
+      []
     ],
     // noDirs
     [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
@@ -110,6 +115,13 @@ describe('find', () => {
     test.each([
       // regular '**', '*', and '?' glob matching
       [{ paths : ['**/dirA/*.txt'] }, [fileA1Path]],
+      [{ paths : ['**/dirA/'] }, [dirAPath]],
+      [{ paths : ['**/dirA'] }, [dirAPath]],
+      [{ paths : ['dirA/'] }, [dirAPath]],
+      [{ paths : ['dirA'] }, [dirAPath]],
+      [{ paths : ['di?A/'] }, [dirAPath]],
+      [{ paths : ['d*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ paths : ['d*/'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
       [{ paths : ['d?r*'] }, [dirAPath, fifoDir, symLinkDir]],
@@ -121,7 +133,10 @@ describe('find', () => {
       // additional tests with different roots
       [{ root : '.', paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
       [{ root : process.cwd(), paths : ['test/data/dirA/*.txt'] }, [fileA1Path]],
-      [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]]
+      [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ root : './', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ root : 'test/data/', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
+      [{ root : 'test/data', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
@@ -225,7 +240,9 @@ describe('find', () => {
   })
 
   test.each([ // error conditions
-    [undefined, 'must specify root', /Must provide 'root'/],
+    [{ root: undefined }, 'must specify root', /The 'root' must be explicitly set,/],
+    [{ root: null }, 'must specify root', /The 'root' must be explicitly set,/],
+    [{ root: '' }, 'must specify root', /The 'root' must be explicitly set,/],
     [
       { root : fsPath.join(__dirname, 'some-random-name') },
       'must specify extant root',
