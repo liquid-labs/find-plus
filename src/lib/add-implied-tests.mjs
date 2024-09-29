@@ -24,7 +24,7 @@ const addImpliedTests = ({
   onlySockets,
   onlySymbolicLinks,
   paths,
-  root = process.cwd()
+  root
 }) => {
   if (atDepth === true) {
     myTests.unshift((f, currDepth) => currDepth === depth)
