@@ -136,7 +136,7 @@ describe('find', () => {
       // absolute paths
       [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
       // handles incongruent root and paths
-      [{ paths: ['/blah/blah/blah/**']}, []]
+      [{ paths : ['/blah/blah/blah/**'] }, []]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
@@ -216,22 +216,22 @@ describe('find', () => {
       server.listen(socketAPath, () => {})
     })
 
-    afterAll(async () => {
+    afterAll(async() => {
       await server.close()
     })
 
-    test('counts Socket with all files', async () => {
-      const allFiles = await find({ root: socketDirPath })
+    test('counts Socket with all files', async() => {
+      const allFiles = await find({ root : socketDirPath })
       expect(allFiles).toHaveLength(3) // the root and two files
     })
 
-    test("'onlySockets' counts only socket files", async () => {
-      const socketFiles = await find({ root: socketDirPath, onlySockets : true })
+    test("'onlySockets' counts only socket files", async() => {
+      const socketFiles = await find({ root : socketDirPath, onlySockets : true })
       expect(socketFiles).toEqual([socketAPath])
     })
 
-    test("'noSockets' skips files", async () => {
-      const noSocketFiles = await find({ root: socketDirPath, noSockets : true })
+    test("'noSockets' skips files", async() => {
+      const noSocketFiles = await find({ root : socketDirPath, noSockets : true })
       expect(noSocketFiles).toEqual([socketDirPath, fsPath.join(socketDirPath, 'fileA.txt')])
     })
   })

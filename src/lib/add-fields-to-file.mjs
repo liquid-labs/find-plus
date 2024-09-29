@@ -10,7 +10,7 @@ const addFieldsToFile = (file, { absRoot, depth, parentPath }) => {
 
   file.absPath = resolvePath(parentPath, file.name)
 
-  // we can assume that `file.absPath.startsWith(absRoot) === true` because it's simply not possible to match files 
+  // we can assume that `file.absPath.startsWith(absRoot) === true` because it's simply not possible to match files
   // outside of the root
   file.relPath = file.absPath.slice(absRoot.length)
   if (file.relPath.startsWith('/')) {
