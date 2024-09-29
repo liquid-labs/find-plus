@@ -3,6 +3,7 @@ import * as fsPath from 'node:path'
 
 import { minimatch } from 'minimatch'
 
+import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
 
@@ -15,7 +16,8 @@ const traverseDirs = async({
   root,
   tests
 }) => {
-  const rootStat = await checkRoot({ root })
+  const absRoot = fsPath.resolve(root)
+  const rootStat = await checkRoot({ absRoot, root })
 
   const accumulator = []
   let currDepth = 0
@@ -37,12 +39,7 @@ const traverseDirs = async({
       const dirPath = fsPath.join(dirEnt.parentPath, dirEnt.name)
       const files = await fs.readdir(dirPath, { withFileTypes : true })
       for (const file of files) {
-        file.depth = currDepth
-
-        // node 19.x DirEnt's lack parentPath
-        if (file.parentPath === undefined) {
-          file.parentPath = dirPath
-        }
+        addFieldsToFile(file, { absRoot, depth: currDepth, parentPath: dirPath, root })
 
         testForInclusionAndFrontier({ _traversedDirs, accumulator, currDepth, excludePaths, file, frontier : newFrontier, paths, root, tests })
       }

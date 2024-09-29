@@ -1,7 +1,9 @@
 import { stat } from 'node:fs/promises'
 import * as fsPath from 'node:path'
 
-const checkRoot = async({ root }) => {
+import { addFieldsToFile } from './add-fields-to-file'
+
+const checkRoot = async({ absRoot, root }) => {
   let rootStat
   try {
     rootStat = await stat(root, { throwIfNoEntry : false })
@@ -19,9 +21,8 @@ const checkRoot = async({ root }) => {
     throw new Error(`Root '${root}' does not point to a directory as required.`)
   }
 
-  rootStat.parentPath = fsPath.dirname(root)
-  rootStat.name = fsPath.basename(root)
-  rootStat.depth = 0
+  rootStat.name = fsPath.basename(absRoot)
+  addFieldsToFile(rootStat, { absRoot, depth: 0, parentPath: fsPath.dirname(absRoot) })
 
   return rootStat
 }
