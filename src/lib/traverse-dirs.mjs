@@ -69,7 +69,7 @@ const testForInclusionAndFrontier = ({ _traversedDirs, accumulator, currDepth, e
     // can we exclude a possible search branch based on the exclude paths?
     let exclude = excludePaths?.some((p) => {
       const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
-      return minimatch(matchPath, p)
+      return minimatch(matchPath, p) && p.endsWith('/**')
     }) || false
 
     // then' let's see if we can exclude the branch based on the paths

@@ -36,7 +36,7 @@ console.log(`You have ${files.length} text files under your home directory.`)
   - `excludeRoot`: (_boolean_, default: `false`) If `true`, the root directory is excluded from the results even if it would otherwise be included.
 - Path matching (see [extglob patterns](#extglob-pattern-syntax) and [path matching for efficient searching](#path-matching-for-efficient-searches) for additional details):
   - `paths`: (_string[]_) If defined, then only matching file paths are included in the results. The path is considered absolute if it starts with '/' and is otherwise relative to `root`.
-  - `excludePaths`: (_string[]_) If defined, then any matching file paths are excluded from the results, but still may be traversed. E.g., the pattern 'foo/' would exclude directory 'foo' from the results, but not 'foo/bar.txt'. Absolute and relative paths handled as with `paths`.
+  - `excludePaths`: (_string[]_) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searching) for guidance. Absolute and relative paths handled as with `paths`.
 - Limiting depth and leaf results:
   - `depth`: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negatvie values are equivalent to 0.
   - `leavesOnly`: (_boolean_, default: `false`) If `true`, then limits the results to leaf files at `depth`. E.g., `depth = 0` will match only the root directory and `depth = 1` will only match those files within the root directory, and so forth.
@@ -88,9 +88,11 @@ The 'or' constructs can be combined with other special patterns; e.g., '+([abc]|
 
 ## Path matching for efficient searches
 
-Note, that when either `excludePaths` or `paths` are defined, the algorithm will skip searching impossible directories.[^3] It can therefore be beneficial and result in faster results to define `excludePaths` or `paths` where possible, even where not strictly necessary for the logic. I.e., consider using these options to optimize and reduce search times as well as for functional purposes.
+Note, that when either `excludePaths` or `paths` are defined, the algorithm will skip searching impossible directories.[^3] It can therefore be beneficial and result in faster results to define `excludePaths` or `paths` where possible, even where not strictly necessary for the logic. Consider using these options to optimize and reduce search times as well as for functional purposes.
 
 [^3]: There are some edge cases where additional directories are searched, but for the most part the logic pretty good about excluding impossible branches from the search.
+
+When using `excludePaths`, remember that the pattern does not prevent `find()` from searching within and below the directory unless the patterns ends in '/**'. E.g., `excludePaths = ['foo/']` would exclude directory `foo/` from the results, but not `foo/bar.txt`. `excludePaths = ['foo/**']` would skip searching `foo/` and any sub-directories altogether.
 
 ## Custom tests
 

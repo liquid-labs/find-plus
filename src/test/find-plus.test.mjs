@@ -95,16 +95,6 @@ describe('find', () => {
     })
   })
 
-  describe('absolute paths', () => {
-    test.each([
-      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]]
-    ])('%p finds %p', async(options, expected) => {
-      options.root = dirDataPath
-      const files = await find(options)
-      expect(files).toEqual(expected)
-    })
-  })
-
   describe('path matching', () => {
     test.each([
       // regular '**', '*', and '?' glob matching
@@ -117,7 +107,6 @@ describe('find', () => {
       [{ paths : ['d*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ paths : ['d*/'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
       [{ paths : ['d?r*'] }, [dirAPath, fifoDir, symLinkDir]],
       // extglob syntax
       [{ paths : ['d+(i|r)*'] }, [dirAPath, fifoDir, symLinkDir]],
@@ -130,7 +119,13 @@ describe('find', () => {
       [{ root : '.', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ root : './', paths : ['**/test/data/*'] }, [dirAPath, fifoDir, symLinkDir]],
       [{ root : 'test/data/', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
-      [{ root : 'test/data', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]]
+      [{ root : 'test/data', paths : ['*'] }, [dirAPath, fifoDir, symLinkDir]],
+      // excludePaths
+      [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
+      // includes matching paths below excluded directory
+      [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs: true }, [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]],
+      // absolute paths
+      [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
