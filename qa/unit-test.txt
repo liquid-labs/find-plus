@@ -1,0 +1,24 @@
+Test git rev: c617b8f3a5cbb3d93a869ee684106bfe0a4187ab
+PASS test/find-plus.test.js
+PASS lib/test/traverse-dirs.test.js
+---------------------------|---------|----------|---------|---------|-------------------
+File                       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------------------|---------|----------|---------|---------|-------------------
+All files                  |    99.2 |    94.69 |     100 |   99.13 |                   
+ src                       |     100 |       80 |     100 |     100 |                   
+  find-plus.mjs            |     100 |       80 |     100 |     100 | 7                 
+ src/lib                   |   99.12 |    95.27 |     100 |   99.03 |                   
+  add-fields-to-file.mjs   |     100 |      100 |     100 |     100 |                   
+  add-implied-tests.mjs    |     100 |      100 |     100 |     100 |                   
+  check-root.mjs           |   94.44 |      100 |     100 |   94.11 | 17                
+  dir-ent-to-file-path.mjs |     100 |      100 |     100 |     100 |                   
+  sorters.mjs              |   95.45 |    72.22 |     100 |   95.23 | 5                 
+  traverse-dirs.mjs        |     100 |    98.03 |     100 |     100 | 29                
+  verify-params.mjs        |     100 |      100 |     100 |     100 |                   
+---------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 2 passed, 2 total
+Tests:       89 passed, 89 total
+Snapshots:   0 total
+Time:        0.436 s, estimated 1 s
+Ran all test suites.
