@@ -1,4 +1,4 @@
-const validSorts = ['alpha', 'breadth', 'depth', 'none']
+import { validSorts } from './sorters'
 
 const verifyParams = ({
   root,
@@ -58,8 +58,8 @@ const verifyParams = ({
     throw new Error("Cannot set all 'no' flags to true; nothing would be searched.")
   }
 
-  if (sort !== undefined && !validSorts.includes(sort)) {
-    throw new Error(`Invalid sort '${sort}'; must be one of: '${validSorts.join("', '")}'`)
+  if (sort !== undefined && !(sort in validSorts)) {
+    throw new Error(`Invalid sort '${sort}'; must be one of: '${Object.keys(validSorts).join("', '")}'`)
   }
 }
 

@@ -1,6 +1,6 @@
 import { addImpliedTests } from './lib/add-implied-tests'
 import { dirEntToFilePath } from './lib/dir-ent-to-file-path'
-import { alphaSorter, breadthFirstSorter, depthFirstSorter } from './lib/sorters'
+import { validSorts } from './lib/sorters'
 import { traverseDirs } from './lib/traverse-dirs'
 import { verifyParams } from './lib/verify-params'
 
@@ -15,7 +15,7 @@ const find = async(params = {}) => {
 
   const {
     root,
-    sort,
+    sort = 'breadth',
     tests = []
   } = params
 
@@ -29,11 +29,7 @@ const find = async(params = {}) => {
 
   // results in depth-first sort of full directory paths
   if (sort !== 'none') {
-    const sorter = sort === 'depth' === true
-      ? depthFirstSorter
-      : sort === 'alpha'
-        ? alphaSorter
-        : /* default */ breadthFirstSorter
+    const sorter = validSorts[sort]
     matchedFiles.sort(sorter)
   }
 

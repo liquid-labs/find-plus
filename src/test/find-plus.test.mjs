@@ -33,24 +33,24 @@ describe('find', () => {
       [
         { root : dirAAPath },
         'everything',
-        [dirAAPath, dirAAAPath, dirAAAAPath, fileAAAA1Path, dirAABPath, fileAAB1Path]
+        [dirAAPath, dirAAAPath, dirAABPath, dirAAAAPath, fileAAB1Path, fileAAAA1Path]
       ],
       // begin 'onlyFiles: true'
       [
         { onlyFiles : true, root : dirAPath },
         'basic files only',
-        [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
+        [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path,]
       ],
       // begin 'onlyDirs: true' tests
       [
         { onlyDirs : true, root : dirAPath },
         'basic dirs only',
-        [dirAPath, dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
+        [dirAPath, dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]
       ],
       [
         { onlyDirs : true, excludeRoot : true, root : dirAPath },
         'basic dirs only, excluding root',
-        [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]
+        [dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]
       ],
       [{ depth : 1, onlyDirs : true, root : dirAPath }, 'limit to depth 1', [dirAPath, dirAAPath, dirABPath]],
       [
@@ -75,14 +75,14 @@ describe('find', () => {
         [dirAAAPath, dirAABPath, dirABAPath]
       ],
       // noDirs
-      [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAAA1Path, fileAAB1Path]],
+      [{ noDirs : true, root : dirAAPath }, "'noDirs' test", [fileAAB1Path, fileAAAA1Path]],
       // noFiles
-      [{ noFiles : true, root : dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath]],
+      [{ noFiles : true, root : dirAAPath }, "'noFiles' test", [dirAAPath, dirAAAPath, dirAABPath, dirAAAAPath]],
       // sorting tests
       [
         { sort : 'depth', onlyFiles : true, root : dirAPath },
         'basic files only',
-        [fileA1Path, fileAB1Path, fileAAB1Path, fileABA1Path, fileAAAA1Path]
+        [fileA1Path, fileAAAA1Path, fileAAB1Path, fileAB1Path, fileABA1Path]
       ],
       [
         { sort : 'alpha', onlyFiles : true, root : dirAPath },
@@ -123,7 +123,7 @@ describe('find', () => {
       // excludePaths
       [{ excludePaths : ['**/dirA/**'], paths : ['*'] }, [fifoDir, symLinkDir]],
       // includes matching paths below excluded directory
-      [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs: true }, [dirAAPath, dirAAAPath, dirAAAAPath, dirAABPath, dirABPath, dirABAPath]],
+      [{ excludePaths : ['dirA/'], paths : ['dirA/**'], onlyDirs: true }, [dirAAPath, dirABPath, dirAAAPath, dirAABPath, dirABAPath, dirAAAAPath]],
       // absolute paths
       [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
     ])('%p matches %p', async(options, expected) => {
