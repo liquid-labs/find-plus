@@ -14,7 +14,7 @@ const find = async(params = {}) => {
   }
 
   const {
-    root = throw new Error("Must provide 'root' to find."),
+    root,
     sort,
     tests = []
   } = params
