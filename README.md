@@ -47,6 +47,7 @@ console.log(`You have ${files.length} text files under your home directory.`)
   - __`onlyFIFOs`__: (_boolean_, default: `false`) Include only FIFOs/pipes.
   - __`onlyFiles`__: (_boolean_, default: `false`) Include only regular files.
   - __`onlySockets`__: (_boolean_, default: `false`) Include only sockets.
+  - __`onlySpecials`__: (_boolean_, default: `false`) Equivalent to `noDirs`, `noFiles`, and `noSymbolicLinks`.
   - __`onlySymbolicLinks`__: (_boolean_, default: `false`) Include only symbolic links.
   - __`noBlockDevices`__: (_boolean_, default: `false`) Exclude block devices.
   - __`noCharacterDevices`__: (_boolean_, default: `false`) Exclude character devices.
