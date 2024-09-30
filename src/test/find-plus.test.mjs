@@ -181,45 +181,45 @@ describe('find', () => {
     })
   }
 
-  // fifo test
-  describe('finding FIFOs', () => {
-    let allFilesCount, fifosCount, nonFIFOsCount
+  describe('file types', () => {
+    let server
+    const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
+    const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
 
     beforeAll(async() => {
       tryExec('mkfifo ' + fifoPath)
 
-      const allFiles = await find({ root : fifoDir, sort : 'none' })
-      const fifos = await find({ onlyFIFOs : true, root : fifoDir, sort : 'none' })
-      const nonFIFOs = await find({ noFIFOs : true, root : fifoDir, sort : 'none' })
+      server = net.createServer((c) => {})
+      server.listen(socketAPath, () => {})
 
-      allFilesCount = allFiles.length
-      fifosCount = fifos.length
-      nonFIFOsCount = nonFIFOs.length
+      await fs.symlink(fileAPath, symLinkPath)
     })
 
     afterAll(async() => {
       await fs.rm(fifoPath)
-    })
 
-    test('counts FIFO with all files', () => expect(allFilesCount).toBe(4))
-
-    test("'onlyFIFO' counts only FIFO files", () => expect(fifosCount).toBe(1))
-
-    test("'noFIFO' skips FIFO files", () => expect(nonFIFOsCount).toBe(3))
-  })
-
-  describe('finding sockets', () => {
-    let server
-
-    beforeAll(() => {
-      server = net.createServer((c) => {})
-      server.listen(socketAPath, () => {})
-    })
-
-    afterAll(async() => {
       await server.close()
+
+      await fs.rm(symLinkPath)
     })
 
+    // fifo test
+    test('counts FIFO with all files', async() => {
+      const allFiles = await find({ root : fifoDir, sort : 'none' })
+      expect(allFiles).toHaveLength(4)
+    })
+
+    test("'onlyFIFO' counts only FIFO files", async() => {
+      const fifos = await find({ onlyFIFOs : true, root : fifoDir, sort : 'none' })
+      expect(fifos).toHaveLength(1)
+    })
+
+    test("'noFIFO' skips FIFO files", async() => {
+      const nonFIFOs = await find({ noFIFOs : true, root : fifoDir, sort : 'none' })
+      expect(nonFIFOs).toHaveLength(3)
+    })
+
+    // socket tests
     test('counts Socket with all files', async() => {
       const allFiles = await find({ root : socketDirPath })
       expect(allFiles).toHaveLength(3) // the root and two files
@@ -234,35 +234,27 @@ describe('find', () => {
       const noSocketFiles = await find({ root : socketDirPath, noSockets : true })
       expect(noSocketFiles).toEqual([socketDirPath, fsPath.join(socketDirPath, 'fileA.txt')])
     })
-  })
 
-  // symlink test
-  describe('finding symlinks', () => {
-    const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
-    const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
-    let symLinksCount
-
-    beforeAll(async() => {
-      await fs.symlink(fileAPath, symLinkPath)
-    })
-
-    afterAll(async() => {
-      await fs.rm(symLinkPath)
-    })
-
-    test('counts symbolic links with all files', async () => {
+    // symlink test
+    test('counts symbolic links with all files', async() => {
       const allFiles = await find({ root : symLinkDir, sort : 'none' })
       expect(allFiles).toHaveLength(4)
     })
 
-    test("'onlySymbolicLinks' counts only symbolic links", async () => {
+    test("'onlySymbolicLinks' counts only symbolic links", async() => {
       const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sort : 'none' })
       expect(symLinks).toHaveLength(1)
     })
 
-    test("'noSymbolicLinks' skips symbolic link files", async () => {
+    test("'noSymbolicLinks' skips symbolic link files", async() => {
       const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sort : 'none' })
       expect(nonSymLinks).toHaveLength(3)
+    })
+
+    // onlySpecials test
+    test("'onlySpecials' ignores dirs, files, and symlinks", async() => {
+      const onlySpecials = await find({ root : dirDataPath, excludePaths : ['dirA/**'], onlySpecials : true })
+      expect(onlySpecials).toEqual([fifoPath, socketAPath])
     })
   })
 
