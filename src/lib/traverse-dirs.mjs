@@ -20,6 +20,9 @@ const traverseDirs = async(options) => {
   // we expect our received options to be independent of the users original 'options' passed to 'find', so it's OK to
   // modify here TODO: test input options are not modified when 'find()' is called.
   options.absRoot = absRoot
+  const testOptions = Object.assign({}, options)
+  delete testOptions.tests
+  delete testOptions._traversedDirs
 
   const accumulator = []
 
@@ -29,7 +32,7 @@ const traverseDirs = async(options) => {
     _traversedDirs?.push(dirEntToFilePath(rootStat))
   }
   else {
-    testForInclusionAndFrontier({ accumulator, file : rootStat, frontier }, options)
+    testForInclusionAndFrontier({ accumulator, file : rootStat, frontier }, options, testOptions)
   }
 
   let currDepth = 1
@@ -42,7 +45,7 @@ const traverseDirs = async(options) => {
       for (const file of files) {
         addFieldsToFile(file, { absRoot, depth : currDepth, parentPath : dirPath, root })
 
-        testForInclusionAndFrontier({ accumulator, file, frontier : newFrontier }, options)
+        testForInclusionAndFrontier({ accumulator, file, frontier : newFrontier }, options, testOptions)
       }
     }
     // at this point we have processed all files at the current depth, so we work on the files at the next level
@@ -54,7 +57,8 @@ const traverseDirs = async(options) => {
   return accumulator
 }
 
-const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options) => {
+// we take test options so that we're not cloning the options every single time
+const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, testOptions) => {
   const {
     _traversedDirs,
     excludePaths,
@@ -63,7 +67,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options) =
     tests
   } = options
 
-  const pass = !tests.some((t) => !t(file, options))
+  const pass = !tests.some((t) => !t(file, testOptions))
   if (pass === true) {
     accumulator.push(file)
   }

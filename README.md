@@ -93,7 +93,7 @@ When using `excludePaths`, remember that the pattern does not prevent `find()` f
 
 ## Custom tests
 
-When specifying custom `tests`, each function takes two arguments: `file` and `options`. The `file` is a is a [`fs.DirEnt`](https://nodejs.org/api/fs.html#class-fsdirent) or [`fs.Stats`](https://nodejs.org/api/fs.html#class-fsstats) object[^4] with `name`, `parentPath`, `absPath`, `relPath`, and `depth` properties added. The `options` object a copy of the options object passed to `find()` with `absRoot` added for convenience.
+When specifying custom `tests`, each function takes two arguments: `file` and `options`. The `file` is a is a [`fs.DirEnt`](https://nodejs.org/api/fs.html#class-fsdirent) or [`fs.Stats`](https://nodejs.org/api/fs.html#class-fsstats) object[^4] with `name`, `parentPath`, `absPath`, `relPath`, and `depth` properties added. The `options` object a copy of the options object passed to `find()` with `absRoot` added for convenience and the `tests` property removed. The test functions must return `true` or `false` to indicate the file in question should be included (if all other requirements are met) or must be excluded from the results, respectively.
 
 [^4]: Both `DirEnt` and `Stat` objects provide a matching set of type identifier functions like`isDirectory()`, `isFIFO()`, `isSocket()`, etc.
 
