@@ -12,6 +12,11 @@ const find = async(params = {}) => {
     params.noFIFOs = true
     params.noSockets = true
   }
+  if (params.onlySpecials === true) {
+    params.noDirs = true
+    params.noFiles = true
+    params.noSymbolicLinks = true
+  }
 
   const {
     sort = 'breadth',

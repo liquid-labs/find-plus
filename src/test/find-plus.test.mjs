@@ -240,29 +240,30 @@ describe('find', () => {
   describe('finding symlinks', () => {
     const symLinkPath = fsPath.join(symLinkDir, 'symLinkA')
     const fileAPath = fsPath.join(symLinkDir, 'fileA.txt')
-    let allFilesCount, nonSymLinksCount, symLinksCount
+    let symLinksCount
 
     beforeAll(async() => {
       await fs.symlink(fileAPath, symLinkPath)
-
-      const allFiles = await find({ root : symLinkDir, sort : 'none' })
-      const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sort : 'none' })
-      const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sort : 'none' })
-
-      allFilesCount = allFiles.length
-      symLinksCount = symLinks.length
-      nonSymLinksCount = nonSymLinks.length
     })
 
     afterAll(async() => {
       await fs.rm(symLinkPath)
     })
 
-    test('counts symbolic links with all files', () => expect(allFilesCount).toBe(4))
+    test('counts symbolic links with all files', async () => {
+      const allFiles = await find({ root : symLinkDir, sort : 'none' })
+      expect(allFiles).toHaveLength(4)
+    })
 
-    test("'onlySymbolicLinks' counts only symbolic links", () => expect(symLinksCount).toBe(1))
+    test("'onlySymbolicLinks' counts only symbolic links", async () => {
+      const symLinks = await find({ onlySymbolicLinks : true, root : symLinkDir, sort : 'none' })
+      expect(symLinks).toHaveLength(1)
+    })
 
-    test("'noSymbolicLinks' skips symbolic link files", () => expect(nonSymLinksCount).toBe(3))
+    test("'noSymbolicLinks' skips symbolic link files", async () => {
+      const nonSymLinks = await find({ noSymbolicLinks : true, root : symLinkDir, sort : 'none' })
+      expect(nonSymLinks).toHaveLength(3)
+    })
   })
 
   describe('argument errors', () => {
