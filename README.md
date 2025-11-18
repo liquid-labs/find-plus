@@ -81,7 +81,7 @@ Extglob syntax:
 - ___@(a|b)___: matches exactly one of the patterns
 - ___!(a|b)___: matches anything except the patterns
 
-The 'or' constructs can be combined with other special patterns; e.g., '+([abc]|zz)' would match 'abccba', 'abczzcba'. 'zzzz', but NOT match 'abczcba', 'z', or 'zz'.
+The 'or' constructs can be combined with other special patterns; e.g., '+([abc]|zz)' would match 'a', 'aa', 'abccba', 'azz', 'abczzcba'. 'zz', or 'zzzz', but NOT match 'az', 'abczcba', 'z', or 'zzz'.
 
 ## Path matching for efficient searches
 
