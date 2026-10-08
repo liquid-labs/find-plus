@@ -18,18 +18,14 @@ items:
         - plan/phase:followups-burndown
         - effort:unspecified
       text: 'src/lib/is-included.mjs (~line 36): the isPrunedByExcludePaths call for ancestor directories does not pass minimatchOptions, although find()''s traverse-dirs now does. With options such as dot or nocase and a pruning ''/**'' exclude, isIncluded and find() can disagree on ancestor pruning, contradicting the documented parity. Pass minimatchOptions in that call and add an isIncluded test using nocase or dot with a pruning ''/**'' exclude.'
-    - title: Hoist escapeGlob(absRoot) out of hot loop
-      id: qYVo
-      date: "2026-10-08"
-      tags:
-        - type:optimization
-        - priority:low
-        - plan/phase:followups-burndown
-        - effort:unspecified
-      text: src/lib/path-match.mjs rootGlob calls escapeGlob(absRoot) for every relative glob on every file test, and src/lib/traverse-dirs.mjs (~line 108) does the same per directory per absolute pattern. The result depends only on absRoot and options, so it is loop-invariant. Compute it once (in addImpliedTests / at the start of traverseDirs) or memoize on absRoot. Modest constant-factor cost; low priority.
 closed:
     - id: diAW
       title: Record breadth sort change in CHANGELOG
       disposition: dismissed
       reason: 'Not actionable within this plan: the breadth sort change ships in a new major release (user-confirmed) and CHANGELOG/release notes are written at release time, outside this plan.'
+      date: "2026-10-08"
+    - id: qYVo
+      title: Hoist escapeGlob(absRoot) out of hot loop
+      disposition: promoted
+      ref: qYVo
       date: "2026-10-08"
