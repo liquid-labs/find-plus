@@ -1,5 +1,23 @@
 import { validSorts } from './sorters'
 
+const verifyPathEntries = (name, entries) => {
+  if (entries === undefined) {
+    return
+  }
+  if (!Array.isArray(entries)) {
+    throw new Error(`'${name}' must be an array.`)
+  }
+  entries.forEach((entry, i) => {
+    const valid = typeof entry === 'string'
+      || (entry !== null && typeof entry === 'object' && !Array.isArray(entry)
+        && typeof entry.path === 'string' && entry.path !== ''
+        && (entry.literal === undefined || typeof entry.literal === 'boolean'))
+    if (!valid) {
+      throw new Error(`Invalid '${name}' entry at index ${i}; must be a string or { path: string, literal?: boolean }.`)
+    }
+  })
+}
+
 const verifyParams = ({
   root,
   depth,
@@ -18,6 +36,7 @@ const verifyParams = ({
   onlyFiles,
   onlySockets,
   onlySymbolicLinks,
+  excludePaths,
   paths,
   sort
 }) => {
@@ -59,20 +78,8 @@ const verifyParams = ({
     throw new Error("Cannot set all 'no' flags to true; nothing would be searched.")
   }
 
-  if (paths !== undefined) {
-    if (!Array.isArray(paths)) {
-      throw new Error("'paths' must be an array.")
-    }
-    paths.forEach((entry, i) => {
-      const valid = typeof entry === 'string'
-        || (entry !== null && typeof entry === 'object' && !Array.isArray(entry)
-          && typeof entry.path === 'string' && entry.path !== ''
-          && (entry.literal === undefined || typeof entry.literal === 'boolean'))
-      if (!valid) {
-        throw new Error(`Invalid 'paths' entry at index ${i}; must be a string or { path: string, literal?: boolean }.`)
-      }
-    })
-  }
+  verifyPathEntries('paths', paths)
+  verifyPathEntries('excludePaths', excludePaths)
 
   if (sort !== undefined && !(sort in validSorts)) {
     throw new Error(`Invalid sort '${sort}'; must be one of: '${Object.keys(validSorts).join("', '")}'`)

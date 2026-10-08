@@ -16,3 +16,9 @@ Resolves followup JC6t. `paths` accepts `{ path, literal: true }` entries (norma
 
 - All pre-existing tests pass unchanged; `make lint` passes.
 - New tests fail before and pass after; string-only `excludePaths` behavior is unchanged.
+
+## Status
+
+- Outcome: succeeded (2026-10-08).
+- Validation: 210 tests pass; only the 4 known pre-existing failures remain (Socket/onlySockets/onlySpecials/'must specify extant root'); `make lint` passes.
+- Changed: `src/find-plus.mjs`, `src/lib/verify-params.mjs`, `src/lib/is-included.mjs`, `src/test/find-plus.test.mjs`, `src/test/is-included.test.mjs`, plus lint fix (`expect` global) in `src/lib/test/traverse-dirs.test.mjs`.
