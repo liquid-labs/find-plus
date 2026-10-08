@@ -36,3 +36,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 4
+          slug: literal-exclude-paths
+          title: Accept Literal Entries In excludePaths
+          path: phase-01-followups-burndown/004-literal-exclude-paths.md
+          done: false
+          tier: sonnet-med
+          git:
+            branch: null
+            commit: []
+            merge: null
