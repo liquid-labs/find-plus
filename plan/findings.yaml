@@ -40,4 +40,12 @@ items:
         - priority:unspecified
         - effort:unspecified
       text: 'README.md: the excludePaths option bullet links to #path-matching-for-efficient-searching but the heading is ''Path matching for efficient searches'' (anchor #path-matching-for-efficient-searches); the options list documents `noSpecial` while the code (src/find-plus.mjs) reads `noSpecials`; also ''noBlockDevcies'' and ''Negatvie'' typos, and the Usage example is missing a closing paren on the find({...}) call.'
+    - title: Literal entries for excludePaths
+      id: JC6t
+      date: "2026-10-08"
+      tags:
+        - type:enhancement
+        - priority:unspecified
+        - effort:unspecified
+      text: 'find() paths accepts { path, literal: true } object entries (normalized via normalizePaths/escapeGlob in src/lib/path-match.mjs), but excludePaths remains string-glob only; callers must call escapeGlob themselves to exclude a metacharacter-named path. Consider accepting the same entry forms in excludePaths for symmetry (normalize before addImpliedTests and traverseDirs pruning, which checks p.endsWith(''/**'')).'
 closed: []
