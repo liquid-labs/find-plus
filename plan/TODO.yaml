@@ -47,7 +47,7 @@ phases:
           slug: literal-exclude-paths
           title: Accept Literal Entries In excludePaths
           path: phase-01-followups-burndown/004-literal-exclude-paths.md
-          done: false
+          done: true
           tier: sonnet-med
           digest: Added literal entry support to excludePaths matching paths; validation, find() and isIncluded share the same normalization. Also fixed the make lint expect-global error in traverse-dirs.test.mjs.
           git:
