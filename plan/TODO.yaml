@@ -63,7 +63,8 @@ phases:
           digest: Documented union semantics, literal entries, escapeGlob, isIncluded and minimatchOptions in README; created CHANGELOG.md with 3.0.0 entry and BREAKING flags.
           git:
             branch: plan/find-paths-union-literal-01-005
-            commit: []
+            commit:
+                - 261ab3e
             merge: null
     - number: 2
       slug: doc-updates
