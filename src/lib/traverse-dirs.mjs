@@ -6,7 +6,7 @@ import { minimatch } from 'minimatch'
 import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
-import { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths } from './path-match'
+import { absOrRelPathForMatch, escapeRoot, isPrunedByExcludePaths } from './path-match'
 
 const traverseDirs = async(options) => {
   const {
@@ -105,7 +105,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
           }
         }
 
-        let minPrefix = matchPathIsAbsolute === true ? escapeGlob(absRoot, minimatchOptions ?? {}) + fsPath.sep : ''
+        let minPrefix = matchPathIsAbsolute === true ? escapeRoot(absRoot, minimatchOptions ?? {}) + fsPath.sep : ''
         for (let i = 0; i < file.depth && i < matchPathBits.length; i += 1) {
           const nextBit = matchPathBits[i]
           if (nextBit === '**') {

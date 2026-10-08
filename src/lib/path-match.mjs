@@ -4,7 +4,7 @@ import { escape, minimatch } from 'minimatch'
 
 // Relative globs are anchored at the root; the root is a literal path, so its glob metacharacters are escaped.
 const rootGlob = (glob, absRoot, { windowsPathsNoEscape } = {}) =>
-  glob.startsWith('/') ? glob : `${escapeGlob(absRoot, { windowsPathsNoEscape })}/${glob}`
+  glob.startsWith('/') ? glob : `${escapeRoot(absRoot, { windowsPathsNoEscape })}/${glob}`
 
 const firstMatchIndex = (fullPath, globs, { absRoot, minimatchOptions }) =>
   globs.findIndex((glob) => minimatch(fullPath, rootGlob(glob, absRoot, minimatchOptions ?? {}), minimatchOptions))
@@ -23,6 +23,16 @@ const escapeGlob = (str, { windowsPathsNoEscape } = {}) => {
   return windowsPathsNoEscape === true
     ? escaped.replace(/[{}]/g, '[$&]')
     : escaped.replace(/[{}]/g, '\\$&')
+}
+
+// The escaped root is loop-invariant for a given root and mode, so memoize the most recent result (a find() call uses
+// a single root).
+let lastEscapedRoot
+const escapeRoot = (absRoot, { windowsPathsNoEscape } = {}) => {
+  if (lastEscapedRoot?.absRoot !== absRoot || lastEscapedRoot.windowsPathsNoEscape !== windowsPathsNoEscape) {
+    lastEscapedRoot = { absRoot, windowsPathsNoEscape, escaped : escapeGlob(absRoot, { windowsPathsNoEscape }) }
+  }
+  return lastEscapedRoot.escaped
 }
 
 // Maps each 'paths' entry to a glob string. Literal entries are expressed as '{ path, literal: true }' objects within
@@ -59,4 +69,4 @@ const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths, minimatchOpti
     return minimatch(matchPath, p, minimatchOptions) && p.endsWith('/**')
   }) || false
 
-export { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }
+export { absOrRelPathForMatch, escapeGlob, escapeRoot, isPrunedByExcludePaths, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }
