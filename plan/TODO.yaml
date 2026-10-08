@@ -101,5 +101,6 @@ phases:
             - uhXy
           git:
             branch: plan/followups-burndown-fixes-02-002
-            commit: []
+            commit:
+                - bce39e1
             merge: null
