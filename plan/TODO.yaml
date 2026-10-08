@@ -3,7 +3,7 @@ version: 1
 title: ""
 remediation:
     rounds: 1
-    tasks_added: 1
+    tasks_added: 2
 phases:
     - number: 1
       slug: followups-burndown
@@ -83,6 +83,18 @@ phases:
           tier: sonnet-low
           findings:
             - fobB
+          git:
+            branch: null
+            commit: []
+            merge: null
+        - number: 2
+          slug: pass-minimatch-options-in-is-included-prune
+          title: Pass minimatchOptions to isIncluded Ancestor Pruning
+          path: phase-02-remediation-01/002-pass-minimatch-options-in-is-included-prune.md
+          done: false
+          tier: sonnet-med
+          findings:
+            - uhXy
           git:
             branch: null
             commit: []
