@@ -39,7 +39,8 @@ phases:
           digest: Added escapeGlob and normalizePaths, paths entry validation, and {path, literal:true} entries; escapeGlob exported; temp-fixture tests for bracketed names, literal dirs, mixed and nonexistent literals.
           git:
             branch: plan/find-paths-union-literal-01-003
-            commit: []
+            commit:
+                - 3fe65f7
             merge: null
         - number: 4
           slug: is-included-function
