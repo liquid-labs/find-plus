@@ -205,7 +205,12 @@ describe('find', () => {
       tryExec('mkfifo ' + fifoPath)
 
       server = net.createServer((c) => {})
-      server.listen(socketAPath, () => {})
+      // Unix socket paths are limited (~104 bytes on macOS), which deep checkouts such as worktrees exceed; bind via
+      // a path relative to the cwd (jest runs from the staging dir) so the socket still lands at 'socketAPath'.
+      await new Promise((resolve, reject) => {
+        server.once('error', reject)
+        server.listen(fsPath.relative(process.cwd(), socketAPath), resolve)
+      })
 
       await fs.symlink(fileAPath, symLinkPath)
     })
@@ -213,7 +218,7 @@ describe('find', () => {
     afterAll(async() => {
       await fs.rm(fifoPath)
 
-      await server.close()
+      await new Promise((resolve) => server.close(resolve))
 
       await fs.rm(symLinkPath)
     })
