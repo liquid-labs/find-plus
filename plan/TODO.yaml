@@ -22,7 +22,7 @@ phases:
           slug: shared-path-match-and-union
           title: Shared Path-Match Helper And Paths Union
           path: phase-01-paths-union-literal-is-included/002-shared-path-match-and-union.md
-          done: false
+          done: true
           tier: sonnet-med
           digest: Moved paths/excludePaths matching into src/lib/path-match.mjs; addImpliedTests adds one combined test so multiple paths entries are a union; sort none orders by first matching entry. Union rows pass.
           git:
