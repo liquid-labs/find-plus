@@ -20,3 +20,7 @@ Resolves followup fHeL (README typos and anchors) and the documentation resoluti
 - Grep `README.md` for `noSpecial\b`, `Devcies`, `Negatvie`, and `searching)` anchors; none remain.
 - Every in-document anchor link resolves to an existing heading.
 - The Usage example parses as balanced code (paren count).
+
+## Status
+
+Outcome: succeeded (2026-10-08). Edited `README.md` only: typos (`noSpecials`, `noBlockDevices`, `Negative`), Usage paren, `excludePaths` type and literal-entry wording, windowsPathsNoEscape brace limitation (stated irrelevant for `/` patterns), and a root-with-glob-characters note (task 003). Anchors: all in-document links use `#path-matching-for-efficient-searches` (TOC already did). `onlySpecials` documented consistently with `src/find-plus.mjs`. Validation greps clean.
