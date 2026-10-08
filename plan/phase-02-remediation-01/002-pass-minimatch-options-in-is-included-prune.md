@@ -18,3 +18,7 @@ Remediates finding uhXy: `src/lib/is-included.mjs` calls `isPrunedByExcludePaths
 ## References
 
 - Finding `uhXy` in this plan's `plan/findings.yaml`.
+
+## Status
+
+Outcome: succeeded (2026-10-08). Passed `minimatchOptions` to the ancestor `isPrunedByExcludePaths` call in `src/lib/is-included.mjs`; added two nocase tests in `src/test/is-included.test.mjs` (both fail without the fix, pass with it). Full suite: 4 known environmental failures only; `make lint` passes.

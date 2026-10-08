@@ -82,6 +82,13 @@ describe('isIncluded', () => {
     expect(isIncluded(path, { root : '/proj', excludePaths : ['src/**'] })).toBe(expected)
   })
 
+  test("ancestor pruning by an excludePaths '/**' pattern honors minimatchOptions (nocase)", () => {
+    const options = { root : '/proj', excludePaths : ['SRC/**'], minimatchOptions : { nocase : true } }
+    expect(isIncluded('src/.hidden/y.js', options)).toBe(false)
+    expect(isIncluded('src/.hidden/', options)).toBe(false)
+    expect(isIncluded('other/.hidden/y.js', options)).toBe(true)
+  })
+
   test('works with nonexistent paths and does not touch the filesystem', () => {
     const root = `/definitely/not/a/real/dir-${Math.random()}`
     expect(isIncluded('nope/a.js', { root, paths : ['nope/*.js'] })).toBe(true)
@@ -134,6 +141,15 @@ describe('isIncluded', () => {
       { paths : [`${dir}/src/*.js`, 'b{c,d}.js'], excludePaths : ['**/bc.js'] },
       { paths : ['src/', 'src/*'], excludePaths : ['**/.hidden/**'] }
     ]
+
+    test('agrees with find() on ancestor pruning under nocase', async() => {
+      const criteria = { excludePaths : ['SRC/**'], minimatchOptions : { nocase : true } }
+      const got = new Set(await find({ root : tmpDir, ...criteria }))
+      expect(got.has(fsPath.join(tmpDir, 'src/.hidden/y.js'))).toBe(false)
+      for (const f of entries) {
+        expect({ f, inc : isIncluded(f, { root : tmpDir, ...criteria }) }).toEqual({ f, inc : got.has(f) })
+      }
+    })
 
     test('every criteria set agrees for absolute and relative subjects', async() => {
       expect(entries.length).toBeGreaterThan(10)
