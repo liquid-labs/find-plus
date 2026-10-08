@@ -1,4 +1,4 @@
-/* global describe test */ // TODO: this should not be necessary; verify fixed in next format and lint upgrade and remove
+/* global describe expect test */ // TODO: this should not be necessary; verify fixed in next format and lint upgrade and remove
 import * as fs from 'node:fs/promises'
 import * as os from 'node:os'
 import { dirname, join as pathJoin, sep as pathSep } from 'node:path'

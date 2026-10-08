@@ -24,7 +24,8 @@ const isIncluded = (path, options = {}) => {
     throw new Error("The 'path' to test must be a non-empty string.")
   }
 
-  const { minimatchOptions, excludePaths } = options
+  const { minimatchOptions } = options
+  const excludePaths = normalizePaths(options.excludePaths, minimatchOptions)
   const absRoot = fsPath.resolve(options.root)
   const isDir = path.endsWith('/') || path.endsWith(fsPath.sep)
   const fullPath = fsPath.resolve(absRoot, path) + (isDir ? fsPath.sep : '')
