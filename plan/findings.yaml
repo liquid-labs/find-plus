@@ -1,14 +1,5 @@
 version: 2
 items:
-    - title: README brace sentence truncated
-      id: fobB
-      date: "2026-10-08"
-      tags:
-        - type:documentation
-        - priority:high
-        - plan/phase:followups-burndown
-        - effort:unspecified
-      text: 'README.md line ~86, in ''Literal paths and escapeGlob'': the sentence on names with braces under windowsPathsNoEscape ends mid-sentence (''(e.g., `a{b,c}.js`) are '' with no predicate and a trailing space). The brace limitation is therefore not actually documented. Complete it, e.g. ''are a known limitation: brace expansion still applies and escapeGlob cannot make them match literally.'' (Reviewer-reported; verified by reading the line.)'
     - title: isIncluded prune omits minimatchOptions
       id: uhXy
       date: "2026-10-08"
@@ -28,4 +19,10 @@ closed:
       title: Hoist escapeGlob(absRoot) out of hot loop
       disposition: promoted
       ref: qYVo
+      date: "2026-10-08"
+    - id: fobB
+      title: README brace sentence truncated
+      disposition: dismissed
+      reason: 'Fixed in remediation task phase-02-remediation-01/001 (merge 94e9ec4); manager reviewed the diff: sentence now complete.'
+      ref: 94e9ec44ce845c253ac7067016fff2f444b9c82e
       date: "2026-10-08"
