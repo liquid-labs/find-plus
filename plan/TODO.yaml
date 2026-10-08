@@ -40,7 +40,8 @@ phases:
           digest: rootGlob now escapes the root with escapeGlob when anchoring relative globs, so roots with glob metacharacters match their children; also escaped the absRoot interpolation in traverse-dirs absolute-pattern pruning. Tests added.
           git:
             branch: plan/followups-burndown-fixes-01-003
-            commit: []
+            commit:
+                - b42a321
             merge: null
         - number: 4
           slug: literal-exclude-paths
