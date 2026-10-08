@@ -61,6 +61,7 @@ phases:
           path: phase-01-followups-burndown/005-readme-fixes.md
           done: false
           tier: sonnet-low
+          digest: 'README-only fixes: typos, anchors, Usage paren, excludePaths type and literal wording, brace limitation note, root-glob note.'
           git:
             branch: null
             commit: []
