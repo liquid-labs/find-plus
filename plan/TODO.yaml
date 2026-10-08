@@ -28,7 +28,8 @@ phases:
           digest: Passed minimatchOptions through directory pruning (paths and excludePaths) so nocase/dot no longer drop results. Added unit and end-to-end tests that fail before and pass after.
           git:
             branch: plan/followups-burndown-fixes-01-002
-            commit: []
+            commit:
+                - 2e54435
             merge: null
         - number: 3
           slug: escape-root-in-rootglob
