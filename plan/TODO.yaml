@@ -103,4 +103,4 @@ phases:
             branch: plan/followups-burndown-fixes-02-002
             commit:
                 - bce39e1
-            merge: null
+            merge: 8739f85e183fc533c5d4750a110380ecbd0d9c86
