@@ -63,6 +63,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
   const {
     _traversedDirs,
     excludePaths,
+    minimatchOptions,
     paths,
     root,
     tests
@@ -78,7 +79,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
     const absRoot = fsPath.resolve(root)
 
     // can we exclude a possible search branch based on the exclude paths?
-    let exclude = isPrunedByExcludePaths({ fullPath, absRoot, excludePaths })
+    let exclude = isPrunedByExcludePaths({ fullPath, absRoot, excludePaths, minimatchOptions })
 
     // then' let's see if we can exclude the branch based on the paths
     if (exclude === false && paths?.length > 0) {
@@ -98,7 +99,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
             if (matchPathBit.includes('**')) {
               return true
             }
-            if (minimatch(rootBit, matchPathBit) === false) {
+            if (minimatch(rootBit, matchPathBit, minimatchOptions) === false) {
               return false
             }
           }
@@ -126,7 +127,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
 
         minPrefix += '**'
 
-        return minimatch(matchPath, minPrefix)
+        return minimatch(matchPath, minPrefix, minimatchOptions)
       })
     }
 

@@ -148,7 +148,10 @@ describe('find', () => {
       [{ paths : ['dirA/*.txt', 'dirA/dirAB/*.txt'], excludePaths : ['**/fileAB-1.txt'] }, [fileA1Path]],
       [{ paths : ['**/dirAAAA/*.txt', 'dirA/*.txt'], sort : 'none' }, [fileAAAA1Path, fileA1Path]],
       [{ paths : ['no/such', 'also/nothing'] }, []],
-      [{ paths : ['dirA/*.txt', '**/fileA-1.txt'] }, [fileA1Path]]
+      [{ paths : ['dirA/*.txt', '**/fileA-1.txt'] }, [fileA1Path]],
+      // minimatchOptions are honored by directory pruning
+      [{ paths : ['DIRA/*.txt'], minimatchOptions : { nocase : true } }, [fileA1Path]],
+      [{ paths : ['DIRA/*.txt'] }, []]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)

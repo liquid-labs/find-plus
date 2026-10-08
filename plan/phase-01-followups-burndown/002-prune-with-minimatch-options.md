@@ -16,3 +16,7 @@ Resolves followup cTaj. Directory pruning ignores the caller's `minimatchOptions
 
 - All pre-existing tests pass unchanged; `make lint` passes.
 - New nocase (and dot, if feasible) tests fail before the change and pass after.
+
+## Status
+
+Succeeded, 2026-10-08. `minimatchOptions` now passed to the `paths` pruning `minimatch` calls in `src/lib/traverse-dirs.mjs` and to `isPrunedByExcludePaths` in `src/lib/path-match.mjs`. Added nocase/dot tests in `src/lib/test/traverse-dirs.test.mjs` (dot via temp dir) and an end-to-end nocase case in `src/test/find-plus.test.mjs`. New tests fail before and pass after; lint passes; only the 4 pre-existing failures remain.
