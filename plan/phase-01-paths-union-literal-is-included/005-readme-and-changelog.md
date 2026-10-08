@@ -52,3 +52,7 @@ Files: `README.md` (modify) and `CHANGELOG.md` (create).
 
 - [API design note](../notes/api-design.md): the final API, breaking-change list, and version recommendation to document.
 - [minimatch escape behavior](../notes/minimatch-escape-behavior.md): the source for the `escapeGlob` brace note and the negation note.
+
+## Status
+
+Succeeded 2026-10-08. Updated `README.md` (usage, `paths`, `minimatchOptions`, `sort`, two new sections, TOC) and created `CHANGELOG.md` (3.0.0 recommended, BREAKING flagged). `package.json` untouched. Tests: 181 pass; 4 failures are environmental (unix socket path too long in worktree path, plus the known extant-root test); lint clean.
