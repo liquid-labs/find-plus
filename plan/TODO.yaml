@@ -51,7 +51,8 @@ phases:
           digest: Added isIncluded sharing find()'s matching and exclude-prune logic via path-match.mjs (isPrunedByExcludePaths extracted from traverse-dirs); agrees with find() on all 10 criteria sets.
           git:
             branch: plan/find-paths-union-literal-01-004
-            commit: []
+            commit:
+                - 6d60a52
             merge: null
         - number: 5
           slug: readme-and-changelog
