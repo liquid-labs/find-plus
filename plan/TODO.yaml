@@ -41,7 +41,7 @@ phases:
             branch: plan/find-paths-union-literal-01-003
             commit:
                 - 3fe65f7
-            merge: null
+            merge: 70ed35f581ccbb7f8637b03b6522270a9dbbe64c
         - number: 4
           slug: is-included-function
           title: Add isIncluded Literal-Subject Matcher
