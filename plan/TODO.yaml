@@ -15,7 +15,8 @@ phases:
           digest: Added ten union test rows to the path-matching table; eight fail as TDD red state requires, two guard rows pass.
           git:
             branch: plan/find-paths-union-literal-01-001
-            commit: []
+            commit:
+                - 61f9892
             merge: null
         - number: 2
           slug: shared-path-match-and-union
