@@ -1,3 +1,5 @@
+import * as fsPath from 'node:path'
+
 import { escape, minimatch } from 'minimatch'
 
 const rootGlob = (glob, absRoot) =>
@@ -34,4 +36,26 @@ const normalizePaths = (paths, minimatchOptions) =>
         ? entry
         : entry.literal === true ? escapeGlob(entry.path, minimatchOptions ?? {}) : entry.path)
 
-export { escapeGlob, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }
+const absOrRelPathForMatch = ({ absRoot, fullPath, matchPath }) => {
+  if (matchPath.startsWith('/')) {
+    return fullPath
+  } // else
+
+  let relPath = fullPath.slice(absRoot.length)
+  if (relPath.startsWith(fsPath.sep)) {
+    relPath = relPath.slice(1)
+  }
+
+  return relPath
+}
+
+// True when 'find()' skips the directory at 'fullPath' (trailing separator) because an 'excludePaths' pattern ending in
+// '/**' matches it; everything beneath is then excluded, dotted entries included. Intentionally ignores
+// 'minimatchOptions', as the traversal always has.
+const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths }) =>
+  excludePaths?.some((p) => {
+    const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
+    return minimatch(matchPath, p) && p.endsWith('/**')
+  }) || false
+
+export { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }

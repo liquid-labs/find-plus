@@ -70,6 +70,15 @@ describe('isIncluded', () => {
     expect(isIncluded(path, { root : '/proj', paths })).toBe(expected)
   })
 
+  test.each([
+    ['src/.hidden/y.js', false],
+    ['src/.hidden/', false],
+    ['src/x.js', false],
+    ['other/.hidden/y.js', true]
+  ])("excludePaths ending in '/**' prunes dotted descendants: %s -> %s", (path, expected) => {
+    expect(isIncluded(path, { root : '/proj', excludePaths : ['src/**'] })).toBe(expected)
+  })
+
   test('works with nonexistent paths and does not touch the filesystem', () => {
     const root = `/definitely/not/a/real/dir-${Math.random()}`
     expect(isIncluded('nope/a.js', { root, paths : ['nope/*.js'] })).toBe(true)
@@ -115,6 +124,7 @@ describe('isIncluded', () => {
       { paths : [{ path : 'a[1].js', literal : true }] },
       { paths : [{ path : 'd[x]{y}', literal : true }, 'src/*.js'] },
       { excludePaths : ['*/.git/*', '.git/'] },
+      { excludePaths : ['src/**'] },
       { excludePaths : ['src/**'] },
       { paths : ['**'], minimatchOptions : { dot : true } },
       { paths : ['!(*.js)'] },
