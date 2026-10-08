@@ -1,13 +1,5 @@
 version: 2
-items:
-    - title: Literal entries for excludePaths
-      id: JC6t
-      date: "2026-10-08"
-      tags:
-        - type:enhancement
-        - priority:unspecified
-        - effort:unspecified
-      text: 'find() paths accepts { path, literal: true } object entries (normalized via normalizePaths/escapeGlob in src/lib/path-match.mjs), but excludePaths remains string-glob only; callers must call escapeGlob themselves to exclude a metacharacter-named path. Consider accepting the same entry forms in excludePaths for symmetry (normalize before addImpliedTests and traverseDirs pruning, which checks p.endsWith(''/**'')).'
+items: []
 closed:
     - id: JFJX
       title: breadthFirstSorter paretPath typo
@@ -33,4 +25,9 @@ closed:
       title: README anchor and noSpecial typos
       disposition: promoted
       ref: fHeL
+      date: "2026-10-08"
+    - id: JC6t
+      title: Literal entries for excludePaths
+      disposition: promoted
+      ref: JC6t
       date: "2026-10-08"
