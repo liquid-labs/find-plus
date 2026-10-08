@@ -49,3 +49,9 @@ Files: `src/lib/path-match.mjs` (add `escapeGlob` and `normalizePaths`), `src/li
 - After adding `escapeGlob`, `normalizePaths`, and their unit tests.
 - After adding `verifyParams` validation and the argument-error rows.
 - After wiring normalization into `find()` and adding the temp-fixture literal tests.
+
+## Status
+
+- Outcome: succeeded (2026-10-08).
+- Validation: `npm run lint` passes; `npm test` (short-path copy) 149/150, the one failure being the pre-existing "must specify extant root" error-message test. `escapeGlob` exported from `src/find-plus.mjs`; `minimatch` imported only in `src/lib/path-match.mjs` and `src/lib/traverse-dirs.mjs`; no metacharacter fixtures committed.
+- Files: `src/lib/path-match.mjs`, `src/lib/verify-params.mjs`, `src/find-plus.mjs`, `src/lib/test/path-match.test.mjs`, `src/test/find-plus.test.mjs`.
