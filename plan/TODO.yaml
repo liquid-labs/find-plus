@@ -52,7 +52,8 @@ phases:
           digest: Added literal entry support to excludePaths matching paths; validation, find() and isIncluded share the same normalization. Also fixed the make lint expect-global error in traverse-dirs.test.mjs.
           git:
             branch: plan/followups-burndown-fixes-01-004
-            commit: []
+            commit:
+                - 67eac65
             merge: null
         - number: 5
           slug: readme-fixes
