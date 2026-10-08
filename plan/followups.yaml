@@ -1,14 +1,5 @@
 version: 2
 items:
-    - title: escapeGlob braces in windows-noescape mode
-      id: 5wTv
-      date: "2026-10-08"
-      tags:
-        - type:enhancement
-        - priority:unspecified
-        - effort:unspecified
-        - plan/slug:find-paths-union-literal
-      text: 'minimatch 9.0.3''s escape() does not escape { }. escapeGlob (src/lib/path-match.mjs) adds backslash brace escaping in default mode, but with minimatchOptions.windowsPathsNoEscape the bracket form [{] / [}] does not stop brace expansion: a literal name like ''a{b,c}.js'' fails to match itself. Options: pass nobrace for literal-only matching, upgrade minimatch to a version whose escape handles braces (check Node engine compatibility; package.json engines is node >=18), or document as unsupported. Low impact since find-plus builds all patterns with ''/''.'
     - title: README anchor and noSpecial typos
       id: fHeL
       date: "2026-10-08"
