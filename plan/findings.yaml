@@ -9,4 +9,13 @@ items:
         - plan/phase:followups-burndown
         - effort:unspecified
       text: 'README.md line ~86, in ''Literal paths and escapeGlob'': the sentence on names with braces under windowsPathsNoEscape ends mid-sentence (''(e.g., `a{b,c}.js`) are '' with no predicate and a trailing space). The brace limitation is therefore not actually documented. Complete it, e.g. ''are a known limitation: brace expansion still applies and escapeGlob cannot make them match literally.'' (Reviewer-reported; verified by reading the line.)'
+    - title: isIncluded prune omits minimatchOptions
+      id: uhXy
+      date: "2026-10-08"
+      tags:
+        - type:bug
+        - priority:medium
+        - plan/phase:followups-burndown
+        - effort:unspecified
+      text: 'src/lib/is-included.mjs (~line 36): the isPrunedByExcludePaths call for ancestor directories does not pass minimatchOptions, although find()''s traverse-dirs now does. With options such as dot or nocase and a pruning ''/**'' exclude, isIncluded and find() can disagree on ancestor pruning, contradicting the documented parity. Pass minimatchOptions in that call and add an isIncluded test using nocase or dot with a pruning ''/**'' exclude.'
 closed: []
