@@ -63,6 +63,6 @@ phases:
           tier: sonnet-low
           digest: 'README-only fixes: typos, anchors, Usage paren, excludePaths type and literal wording, brace limitation note, root-glob note.'
           git:
-            branch: null
+            branch: plan/followups-burndown-fixes-01-005
             commit: []
             merge: null
