@@ -6,6 +6,7 @@ import { minimatch } from 'minimatch'
 import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
+import { absOrRelPathForMatch, isPrunedByExcludePaths } from './path-match'
 
 const traverseDirs = async(options) => {
   const {
@@ -77,10 +78,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
     const absRoot = fsPath.resolve(root)
 
     // can we exclude a possible search branch based on the exclude paths?
-    let exclude = excludePaths?.some((p) => {
-      const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
-      return minimatch(matchPath, p) && p.endsWith('/**')
-    }) || false
+    let exclude = isPrunedByExcludePaths({ fullPath, absRoot, excludePaths })
 
     // then' let's see if we can exclude the branch based on the paths
     if (exclude === false && paths?.length > 0) {
@@ -137,19 +135,6 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
       _traversedDirs?.push(fullPath)
     }
   }
-}
-
-const absOrRelPathForMatch = ({ absRoot, fullPath, matchPath }) => {
-  if (matchPath.startsWith('/')) {
-    return fullPath
-  } // else
-
-  let relPath = fullPath.slice(absRoot.length)
-  if (relPath.startsWith(fsPath.sep)) {
-    relPath = relPath.slice(1)
-  }
-
-  return relPath
 }
 
 export { traverseDirs }

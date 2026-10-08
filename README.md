@@ -6,6 +6,8 @@ A file finding utility patterned after Linux find.
 - [Install](#install)
 - [Usage](#usage)
 - [Options](#options)
+- [Literal paths and escapeGlob](#literal-paths-and-escapeglob)
+- [Testing a single path with isIncluded](#testing-a-single-path-with-isincluded)
 - [Extglob pattern syntax](#extglob-pattern-syntax)
 - [Path matching for efficient searching](#path-matching-for-efficient-searches)
 - [Custom tests](#custom-tests)
@@ -28,6 +30,12 @@ const files = await find({ onlyFiles: true, root: process.env.HOME, tests: [isaT
 console.log(`You have ${files.length} text files under your home directory.`)
 ```
 
+The package also exports `escapeGlob` and `isIncluded`:
+
+```javascript
+import { escapeGlob, find, isIncluded } from 'find-plus'
+```
+
 ## Options
 
 `find()` takes the following options (only the `root` option is required):
@@ -35,8 +43,9 @@ console.log(`You have ${files.length} text files under your home directory.`)
   - __`root`__: (__required__, _string_) The directory from which the search begins. May be absolute (starts with '/') or relative to `process.cwd()`.[^1]
   - __`excludeRoot`__: (_boolean_, default: `false`) If `true`, the root directory is excluded from the results even if it would otherwise be included.
 - Path matching (see [extglob patterns](#extglob-pattern-syntax) and [path matching for efficient searching](#path-matching-for-efficient-searches) for additional details):
-  - __`paths`__: (_string[]_) If defined, then only matching file paths are included in the results. The path is considered absolute if it starts with '/' and is otherwise relative to `root`.
+  - __`paths`__: (`(string | { path: string, literal?: boolean })[]`) If defined and non-empty, then only file paths matching **any** entry are included in the results (union semantics), and then only if no `excludePaths` entry matches. A file matched by several entries appears once. An entry matching nothing does not affect the others; the result is empty only when no entry matches anything. Multiple entries were an intersection before 3.0.0. A string entry is a glob, considered absolute if it starts with '/' and otherwise relative to `root`. A `{ path, literal: true }` entry names that exact file or directory, so metacharacters such as `[ ] * ? { } ( )` are matched literally; a nonexistent literal matches nothing. A literal names the path itself, not its descendants; use `escapeGlob(dir) + '/**'` for the contents. Literal and glob entries can be mixed (see [literal paths and escapeGlob](#literal-paths-and-escapeglob)). An empty array means no path filtering. Malformed values throw.
   - __`excludePaths`__: (_string[]_) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searching) for guidance. Absolute and relative paths handled as with `paths`.
+  - __`minimatchOptions`__: (_object_) Options passed to [minimatch](https://github.com/isaacs/minimatch#readme) when matching `paths` and `excludePaths` (for example `{ dot: true }` lets `*` and `**` match dotfiles). Also used by `isIncluded()` and by `escapeGlob()` (which reads only `windowsPathsNoEscape`).
 - Limiting depth and leaf results:
   - __`depth`__: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negatvie values are equivalent to 0.
   - __`leavesOnly`__: (_boolean_, default: `false`) If `true`, then limits the results to leaf files at `depth`. E.g., `depth = 0` will match only the root directory and `depth = 1` will only match those files within the root directory, and so forth.
@@ -58,10 +67,38 @@ console.log(`You have ${files.length} text files under your home directory.`)
   - __`noSpecial`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`.
   - __`noSymbolicLinks`__: (_boolean_, default: `false`) : Exclude symbolic links.
 - __`tests`__: (_function[]_) If defined, then each potential file is passed to each test which must all return `true` if the file is to be included in the results. Refer to [custom tests](#custom-tests) for additional information.
-- __`sort`__: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed.
+- __`sort`__: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed. With 'none' and more than one `paths` entry, results are ordered by the first matching entry (entry order), then discovery order within an entry. Other sorts order the whole result set as before.
 
 [^1]: Internally root is always converted to an absolute directory using the internal `path.resolve()` function.
 [^2]: Setting all the `no*` or multiple `only*` file type selectors will result in an error as the search would be trivially empty.
+
+## Literal paths and escapeGlob
+
+Plain `paths` strings are globs, so a file such as `a[1].js` cannot be named directly. A single ordered `paths` list accepts both forms, rather than a separate option, so that entry order is well defined for union and for `sort: 'none'` ordering:
+
+```javascript
+const files = await find({
+  root : '/proj',
+  paths : [{ path : 'a[1].js', literal : true }, 'src/**/*.mjs']
+})
+```
+
+`escapeGlob(str[, minimatchOptions])` returns a glob that matches exactly `str` with `find()`'s engine. It escapes braces as well as the characters `minimatch.escape` handles. In `windowsPathsNoEscape` mode, names with braces containing a comma or range (e.g., `a{b,c}.js`) are a known limitation.
+
+## Testing a single path with isIncluded
+
+`isIncluded(path, options) => boolean` reports whether one path passes the path criteria of a `find()` options object.
+
+- It is synchronous and does no filesystem access, so it works for nonexistent paths.
+- `path` is a literal path, never a pattern; expand globs yourself. A trailing '/' marks a directory. Relative paths resolve against `root`.
+- `options` takes the same object as `find()`, but only `root` (required), `paths`, `excludePaths`, and `minimatchOptions` are considered. File-type options, `depth`, `leavesOnly`, `excludeRoot`, `tests`, and `sort` are ignored, and the subject is not required to lie under `root`.
+- Like `find()`, it returns `false` when the path, or any ancestor directory, is skipped by an `excludePaths` pattern ending in '/**'.
+- The result agrees with whether `find()` would return that path, given the same criteria and a path that exists under `root`.
+- Whole-pattern '!' negation is not supported; use extglob `!(…)`.
+
+```javascript
+isIncluded('repo/.git/config', { root : '/proj', excludePaths : ['*/.git/*'] }) // false
+```
 
 ## Extglob pattern syntax
 
