@@ -26,3 +26,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 3
+          slug: escape-root-in-rootglob
+          title: Escape Root In Anchored Relative Patterns
+          path: phase-01-followups-burndown/003-escape-root-in-rootglob.md
+          done: false
+          tier: sonnet-med
+          git:
+            branch: null
+            commit: []
+            merge: null
