@@ -58,7 +58,7 @@ phases:
           slug: readme-and-changelog
           title: Update README And Create CHANGELOG
           path: phase-01-paths-union-literal-is-included/005-readme-and-changelog.md
-          done: false
+          done: true
           tier: sonnet-med
           digest: Documented union semantics, literal entries, escapeGlob, isIncluded and minimatchOptions in README; created CHANGELOG.md with 3.0.0 entry and BREAKING flags.
           git:
