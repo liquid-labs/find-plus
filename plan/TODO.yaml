@@ -29,7 +29,7 @@ phases:
             branch: plan/find-paths-union-literal-01-002
             commit:
                 - f43b489
-            merge: null
+            merge: 87206b7b285acae1cdbc1731803c1dc4b8efe9e4
         - number: 3
           slug: literal-path-entries-and-escape-glob
           title: Literal Path Entries And escapeGlob
