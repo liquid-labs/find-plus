@@ -6,7 +6,7 @@ import { addFieldsToFile } from './add-fields-to-file'
 const checkRoot = async({ absRoot, root }) => {
   let rootStat
   try {
-    rootStat = await stat(root, { throwIfNoEntry : false })
+    rootStat = await stat(root)
   }
   catch (e) {
     if (e.code === 'ENOENT') {
