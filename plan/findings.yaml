@@ -1,0 +1,12 @@
+version: 2
+items:
+    - title: README brace sentence truncated
+      id: fobB
+      date: "2026-10-08"
+      tags:
+        - type:documentation
+        - priority:high
+        - plan/phase:followups-burndown
+        - effort:unspecified
+      text: 'README.md line ~86, in ''Literal paths and escapeGlob'': the sentence on names with braces under windowsPathsNoEscape ends mid-sentence (''(e.g., `a{b,c}.js`) are '' with no predicate and a trailing space). The brace limitation is therefore not actually documented. Complete it, e.g. ''are a known limitation: brace expansion still applies and escapeGlob cannot make them match literally.'' (Reviewer-reported; verified by reading the line.)'
+closed: []
