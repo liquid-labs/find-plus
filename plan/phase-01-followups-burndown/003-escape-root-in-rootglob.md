@@ -15,3 +15,7 @@ Resolves followup zqI2. `rootGlob` in `src/lib/path-match.mjs` builds `` `${absR
 
 - All pre-existing tests pass unchanged; `make lint` passes.
 - New tests fail before and pass after the change; a root without metacharacters behaves exactly as before.
+
+## Status
+
+Outcome: succeeded (2026-10-08). `rootGlob` now escapes the root via `escapeGlob` (options passed from `firstMatchIndex`; `is-included.mjs` reaches it only through `matchesPathCriteria`, so no change needed there). Verification of pruning found one interpolation: `minPrefix = absRoot + sep` in `src/lib/traverse-dirs.mjs` for absolute patterns; it now uses `escapeGlob(absRoot, minimatchOptions)`. Tests added in `src/lib/test/path-match.test.mjs` and `src/test/find-plus.test.mjs` (fail before, pass after). `make test`: only the 4 known pre-existing failures. `make lint`: single pre-existing error in `src/lib/test/traverse-dirs.test.mjs` (`expect` not defined), identical on baseline.

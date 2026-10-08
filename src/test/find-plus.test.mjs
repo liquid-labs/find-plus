@@ -401,4 +401,36 @@ describe('find', () => {
       expect(paths).toEqual([{ path : 'a[1].js', literal : true }])
     })
   })
+
+  describe('root containing glob metacharacters', () => {
+    let tmpParent
+    let root
+
+    beforeAll(async() => {
+      tmpParent = await fs.mkdtemp(fsPath.join(os.tmpdir(), 'find-plus-'))
+      root = fsPath.join(tmpParent, 'r[1]')
+      await fs.mkdir(fsPath.join(root, 'sub'), { recursive : true })
+      await Promise.all(['a.js', 'b.txt', 'sub/c.js'].map((n) => fs.writeFile(fsPath.join(root, n), '')))
+    })
+
+    afterAll(async() => {
+      await fs.rm(tmpParent, { recursive : true, force : true })
+    })
+
+    const rp = (name) => fsPath.join(root, name)
+
+    test('relative paths match children', async() => {
+      expect(await find({ root, paths : ['*.js'], sort : 'alpha' })).toEqual([rp('a.js')])
+      expect(await find({ root, paths : ['**/*.js'], sort : 'alpha' })).toEqual([rp('a.js'), rp('sub/c.js')])
+    })
+
+    test('relative excludePaths exclude children', async() => {
+      expect(await find({ root, paths : ['**/*.js'], excludePaths : ['sub/**'], sort : 'alpha' })).toEqual([rp('a.js')])
+      expect(await find({ root, paths : ['**/*.js'], excludePaths : ['*.js'], sort : 'alpha' })).toEqual([rp('sub/c.js')])
+    })
+
+    test('escaped absolute paths match children', async() => {
+      expect(await find({ root, paths : [escapeGlob(root) + '/sub/*.js'], sort : 'alpha' })).toEqual([rp('sub/c.js')])
+    })
+  })
 })
