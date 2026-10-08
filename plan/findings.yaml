@@ -1,13 +1,5 @@
 version: 2
 items:
-    - title: Dir pruning ignores minimatchOptions
-      id: cTaj
-      date: "2026-10-08"
-      tags:
-        - type:bug
-        - priority:unspecified
-        - effort:unspecified
-      text: 'src/lib/traverse-dirs.mjs testForInclusionAndFrontier calls minimatch(matchPath, p) and minimatch(rootBit, matchPathBit) without the caller''s minimatchOptions, while the per-file paths/excludePaths tests do pass minimatchOptions. With options such as { nocase: true } or { dot: true }, pruning can skip directories whose contents the per-file criteria would match (e.g. paths [''FOO/*''] with nocase prunes dir ''foo''), so find() silently misses results. Pass minimatchOptions through to the pruning minimatch calls and add traverse-dirs tests covering nocase/dot.'
     - title: Root with glob chars not escaped
       id: zqI2
       date: "2026-10-08"
@@ -45,4 +37,9 @@ closed:
       title: breadthFirstSorter paretPath typo
       disposition: promoted
       ref: JFJX
+      date: "2026-10-08"
+    - id: cTaj
+      title: Dir pruning ignores minimatchOptions
+      disposition: promoted
+      ref: cTaj
       date: "2026-10-08"
