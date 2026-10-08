@@ -51,7 +51,7 @@ phases:
           tier: sonnet-med
           digest: Added literal entry support to excludePaths matching paths; validation, find() and isIncluded share the same normalization. Also fixed the make lint expect-global error in traverse-dirs.test.mjs.
           git:
-            branch: null
+            branch: plan/followups-burndown-fixes-01-004
             commit: []
             merge: null
         - number: 5
