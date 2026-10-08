@@ -1,13 +1,5 @@
 version: 2
 items:
-    - title: breadthFirstSorter paretPath typo
-      id: JFJX
-      date: "2026-10-08"
-      tags:
-        - type:bug
-        - priority:unspecified
-        - effort:unspecified
-      text: 'src/lib/sorters.mjs breadthFirstSorter compares a.parentPath.localeCompare(b.paretPath) (typo: paretPath is always undefined), and the ternary is inverted: when parent paths compare equal it returns 0 instead of comparing names, and when they differ it compares names instead of returning the path comparison. The net effect is that ties at the same depth are ordered by name only, ignoring parent directory. The default find() sort (''breadth'') is affected. Fixing it may reorder results for same-depth entries in different directories (observable change; consider for the next major).'
     - title: Dir pruning ignores minimatchOptions
       id: cTaj
       date: "2026-10-08"
@@ -48,4 +40,9 @@ items:
         - priority:unspecified
         - effort:unspecified
       text: 'find() paths accepts { path, literal: true } object entries (normalized via normalizePaths/escapeGlob in src/lib/path-match.mjs), but excludePaths remains string-glob only; callers must call escapeGlob themselves to exclude a metacharacter-named path. Consider accepting the same entry forms in excludePaths for symmetry (normalize before addImpliedTests and traverseDirs pruning, which checks p.endsWith(''/**'')).'
-closed: []
+closed:
+    - id: JFJX
+      title: breadthFirstSorter paretPath typo
+      disposition: promoted
+      ref: JFJX
+      date: "2026-10-08"
