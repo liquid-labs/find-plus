@@ -136,7 +136,18 @@ describe('find', () => {
       // absolute paths
       [{ paths : [`${dirDataPath}/**/dirA/*.txt`] }, [fileA1Path]],
       // handles incongruent root and paths
-      [{ paths : ['/blah/blah/blah/**'] }, []]
+      [{ paths : ['/blah/blah/blah/**'] }, []],
+      // multiple 'paths' entries are a union
+      [{ paths : ['dirA/fileA-1.txt', 'dirA/dirAB/fileAB-1.txt'] }, [fileA1Path, fileAB1Path]],
+      [{ paths : ['**/dirAB/*.txt', '**/dirAAAA/*.txt'] }, [fileAB1Path, fileAAAA1Path]],
+      [{ paths : ['**/dirAAAA/*.txt', 'dirA/fileA-1.txt'] }, [fileA1Path, fileAAAA1Path]],
+      [{ paths : [`${dirDataPath}dirA/fileA-1.txt`, 'dirA/dirAB/fileAB-1.txt'] }, [fileA1Path, fileAB1Path]],
+      [{ paths : ['dirA/fileA-1.txt', 'no/such/file.txt'] }, [fileA1Path]],
+      [{ paths : ['dirA/dirAA/', 'dirA/dirAB/'], sort : 'alpha' }, [dirAAPath, dirABPath]],
+      [{ paths : ['dirA/*.txt', 'dirA/dirAB/*.txt'], excludePaths : ['**/fileAB-1.txt'] }, [fileA1Path]],
+      [{ paths : ['**/dirAAAA/*.txt', 'dirA/*.txt'], sort : 'none' }, [fileAAAA1Path, fileA1Path]],
+      [{ paths : ['no/such', 'also/nothing'] }, []],
+      [{ paths : ['dirA/*.txt', '**/fileA-1.txt'] }, [fileA1Path]]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
