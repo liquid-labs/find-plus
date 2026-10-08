@@ -36,6 +36,7 @@ phases:
           path: phase-01-paths-union-literal-is-included/003-literal-path-entries-and-escape-glob.md
           done: false
           tier: sonnet-med
+          digest: Added escapeGlob and normalizePaths, paths entry validation, and {path, literal:true} entries; escapeGlob exported; temp-fixture tests for bracketed names, literal dirs, mixed and nonexistent literals.
           git:
             branch: null
             commit: []
