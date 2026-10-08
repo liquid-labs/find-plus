@@ -36,3 +36,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 4
+          slug: is-included-function
+          title: Add isIncluded Literal-Subject Matcher
+          path: phase-01-paths-union-literal-is-included/004-is-included-function.md
+          done: false
+          tier: sonnet-med
+          git:
+            branch: null
+            commit: []
+            merge: null
