@@ -1,14 +1,5 @@
 version: 2
-items:
-    - title: isIncluded prune omits minimatchOptions
-      id: uhXy
-      date: "2026-10-08"
-      tags:
-        - type:bug
-        - priority:medium
-        - plan/phase:followups-burndown
-        - effort:unspecified
-      text: 'src/lib/is-included.mjs (~line 36): the isPrunedByExcludePaths call for ancestor directories does not pass minimatchOptions, although find()''s traverse-dirs now does. With options such as dot or nocase and a pruning ''/**'' exclude, isIncluded and find() can disagree on ancestor pruning, contradicting the documented parity. Pass minimatchOptions in that call and add an isIncluded test using nocase or dot with a pruning ''/**'' exclude.'
+items: []
 closed:
     - id: diAW
       title: Record breadth sort change in CHANGELOG
@@ -25,4 +16,10 @@ closed:
       disposition: dismissed
       reason: 'Fixed in remediation task phase-02-remediation-01/001 (merge 94e9ec4); manager reviewed the diff: sentence now complete.'
       ref: 94e9ec44ce845c253ac7067016fff2f444b9c82e
+      date: "2026-10-08"
+    - id: uhXy
+      title: isIncluded prune omits minimatchOptions
+      disposition: dismissed
+      reason: Fixed in remediation task phase-02-remediation-01/002 (merge 8739f85); minimatchOptions now passed in isIncluded ancestor pruning, with regression tests.
+      ref: 8739f85e183fc533c5d4750a110380ecbd0d9c86
       date: "2026-10-08"
