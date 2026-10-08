@@ -13,6 +13,7 @@ phases:
           path: phase-01-followups-burndown/001-fix-breadth-sorter.md
           done: false
           tier: sonnet-low
+          digest: Fixed the paretPath typo and inverted ternary in breadthFirstSorter; added unit tests for depth, parent and name ordering. 4 pre-existing failures in test/find-plus.test.js are unchanged.
           git:
             branch: null
             commit: []
