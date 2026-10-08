@@ -5,4 +5,14 @@ phases:
     - number: 1
       slug: paths-union-literal-is-included
       title: Paths Union, Literal Entries, and isIncluded
-      tasks: []
+      tasks:
+        - number: 1
+          slug: failing-union-tests
+          title: Write Failing Tests For Multi-Entry Paths Union
+          path: phase-01-paths-union-literal-is-included/001-failing-union-tests.md
+          done: false
+          tier: haiku-med
+          git:
+            branch: null
+            commit: []
+            merge: null
