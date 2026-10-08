@@ -16,3 +16,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 2
+          slug: prune-with-minimatch-options
+          title: Pass minimatchOptions To Directory Pruning
+          path: phase-01-followups-burndown/002-prune-with-minimatch-options.md
+          done: false
+          tier: sonnet-med
+          git:
+            branch: null
+            commit: []
+            merge: null
