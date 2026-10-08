@@ -26,3 +26,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 3
+          slug: literal-path-entries-and-escape-glob
+          title: Literal Path Entries And escapeGlob
+          path: phase-01-paths-union-literal-is-included/003-literal-path-entries-and-escape-glob.md
+          done: false
+          tier: sonnet-med
+          git:
+            branch: null
+            commit: []
+            merge: null
