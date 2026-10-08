@@ -1,11 +1,12 @@
 /* global afterAll beforeAll describe expect test */
 import * as fs from 'node:fs/promises'
 import * as net from 'node:net'
+import * as os from 'node:os'
 import * as fsPath from 'node:path'
 
 import { tryExec } from '@liquid-labs/shell-toolkit'
 
-import { find } from '../find-plus'
+import { escapeGlob, find } from '../find-plus'
 
 const dirDataPath = fsPath.join(__dirname, 'data') + fsPath.sep
 
@@ -295,7 +296,15 @@ describe('find', () => {
         'all "no"s are invalid',
         /all 'no'/
       ],
-      [{ sort : 'invalid-sort', root : dirAPath }, 'invalid sort detected', /^Invalid sort/]
+      [{ sort : 'invalid-sort', root : dirAPath }, 'invalid sort detected', /^Invalid sort/],
+      [{ paths : [42], root : dirAPath }, "'paths' entry must be string or object", /^Invalid 'paths' entry at index 0/],
+      [{ paths : [{}], root : dirAPath }, "'paths' object entry needs 'path'", /^Invalid 'paths' entry at index 0/],
+      [
+        { paths : [{ path : 'x', literal : 'yes' }], root : dirAPath },
+        "'paths' entry 'literal' must be boolean",
+        /^Invalid 'paths' entry at index 0/
+      ],
+      [{ paths : 'dirA', root : dirAPath }, "'paths' must be an array", /'paths' must be an array/]
     ])('%p %s', async(options, description, regex) => {
       try {
         await find(options)
@@ -304,6 +313,89 @@ describe('find', () => {
       catch (e) {
         expect(e.message).toMatch(regex)
       }
+    })
+  })
+
+  describe('literal paths', () => {
+    const isWin = process.platform === 'win32'
+    let tmpDir
+    const p = (name) => fsPath.join(tmpDir, name)
+
+    beforeAll(async() => {
+      tmpDir = await fs.mkdtemp(fsPath.join(os.tmpdir(), 'find-plus-'))
+      const names = ['a[1].js', 'a1.js', 'b{c,d}.js', 'bc.js', 'x(y).js']
+      if (!isWin) {
+        names.push('q?.js', 'qq.js', 's*.js', 'st.js')
+      }
+      await Promise.all(names.map((n) => fs.writeFile(p(n), '')))
+      await fs.mkdir(p('d[x]{y}'))
+      await fs.writeFile(p('d[x]{y}/f.txt'), '')
+    })
+
+    afterAll(async() => {
+      await fs.rm(tmpDir, { recursive : true, force : true })
+    })
+
+    const run = (paths, extra = {}) => find({ root : tmpDir, paths, sort : 'alpha', ...extra })
+
+    test('literal vs glob brackets', async() => {
+      expect(await run([{ path : 'a[1].js', literal : true }])).toEqual([p('a[1].js')])
+      expect(await run(['a[1].js'])).toEqual([p('a1.js')])
+    })
+
+    test('no literal flag behaves as glob', async() => {
+      expect(await run([{ path : 'a[1].js' }])).toEqual([p('a1.js')])
+    })
+
+    test.each([
+      ['b{c,d}.js', 'b{c,d}.js'],
+      ['x(y).js', 'x(y).js']
+    ])('literal %s', async(name, expected) => {
+      expect(await run([{ path : name, literal : true }])).toEqual([p(expected)])
+    })
+
+    const testPosix = isWin ? test.skip : test
+
+    testPosix('literal ? and * names', async() => {
+      expect(await run([{ path : 'q?.js', literal : true }])).toEqual([p('q?.js')])
+      expect(await run([{ path : 's*.js', literal : true }])).toEqual([p('s*.js')])
+    })
+
+    test('literal directory', async() => {
+      const dir = p('d[x]{y}') + fsPath.sep
+      expect(await run([{ path : 'd[x]{y}', literal : true }])).toEqual([dir])
+      expect(await run([{ path : 'd[x]{y}/', literal : true }])).toEqual([dir])
+    })
+
+    test('literal nested file within escaped directory', async() => {
+      expect(await run([{ path : 'd[x]{y}/f.txt', literal : true }])).toEqual([p('d[x]{y}/f.txt')])
+    })
+
+    test('escapeGlob directory contents', async() => {
+      expect(await run([escapeGlob('d[x]{y}') + '/**'])).toEqual([p('d[x]{y}') + fsPath.sep, p('d[x]{y}/f.txt')])
+    })
+
+    test('mixed literal and glob', async() => {
+      const entries = [{ path : 'a[1].js', literal : true }, 'b?.js']
+      expect(await run(entries)).toEqual([p('a[1].js'), p('bc.js')])
+      expect(await run(entries, { sort : 'none' })).toEqual([p('a[1].js'), p('bc.js')])
+      expect(await run([...entries].reverse(), { sort : 'none' })).toEqual([p('bc.js'), p('a[1].js')])
+    })
+
+    test('literal absolute path', async() => {
+      expect(await run([{ path : `${tmpDir}/a[1].js`, literal : true }])).toEqual([p('a[1].js')])
+    })
+
+    test('nonexistent literal matches nothing', async() => {
+      expect(await run([{ path : 'nope[1].js', literal : true }])).toEqual([])
+      expect(await run([{ path : 'nope[1].js', literal : true }, { path : 'a[1].js', literal : true }]))
+        .toEqual([p('a[1].js')])
+    })
+
+    test('does not mutate params.paths', async() => {
+      const paths = [{ path : 'a[1].js', literal : true }]
+      await run(paths)
+      expect(paths).toEqual([{ path : 'a[1].js', literal : true }])
     })
   })
 })
