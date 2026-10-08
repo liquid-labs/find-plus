@@ -1,4 +1,2 @@
 version: 1
-plans:
-    - slug: followups-burndown-fixes
-      status: working
+plans: []
