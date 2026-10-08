@@ -5,6 +5,7 @@ phases:
     - number: 1
       slug: followups-burndown
       title: Followups Burndown Fixes
+      diff_base: a8f487439e21b3ca40b1d83f16a94c3d642d2be3
       tasks:
         - number: 1
           slug: fix-breadth-sorter
