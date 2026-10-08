@@ -24,4 +24,12 @@ items:
         - priority:unspecified
         - effort:unspecified
       text: Relative paths/excludePaths patterns are anchored as `${fsPath.resolve(root)}/${glob}` (originally in src/lib/add-implied-tests.mjs; anchoring helper moves to src/lib/path-match.mjs rootGlob). The root string is interpolated unescaped, so a root directory whose absolute path contains glob metacharacters ([ ] * ? { } ( )) makes relative patterns mis-match (e.g. root '/tmp/a[1]' never matches its own children). Fix by escaping absRoot with the same escape helper used for literal paths entries (escapeGlob) when building the anchored pattern; this is an observable behavior change for such roots and also affects traverse-dirs.mjs pruning, which compares relative paths separately.
+    - title: escapeGlob braces in windows-noescape mode
+      id: 5wTv
+      date: "2026-10-08"
+      tags:
+        - type:enhancement
+        - priority:unspecified
+        - effort:unspecified
+      text: 'minimatch 9.0.3''s escape() does not escape { }. escapeGlob (src/lib/path-match.mjs) adds backslash brace escaping in default mode, but with minimatchOptions.windowsPathsNoEscape the bracket form [{] / [}] does not stop brace expansion: a literal name like ''a{b,c}.js'' fails to match itself. Options: pass nobrace for literal-only matching, upgrade minimatch to a version whose escape handles braces (check Node engine compatibility; package.json engines is node >=18), or document as unsupported. Low impact since find-plus builds all patterns with ''/''.'
 closed: []
