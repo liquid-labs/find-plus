@@ -82,6 +82,7 @@ phases:
           path: phase-02-remediation-01/001-complete-readme-brace-sentence.md
           done: false
           tier: sonnet-low
+          digest: Completed the truncated README line 86 sentence; no other README changes.
           findings:
             - fobB
           git:
