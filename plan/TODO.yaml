@@ -89,7 +89,7 @@ phases:
             branch: plan/followups-burndown-fixes-02-001
             commit:
                 - 9d5b3ef
-            merge: null
+            merge: 94e9ec44ce845c253ac7067016fff2f444b9c82e
         - number: 2
           slug: pass-minimatch-options-in-is-included-prune
           title: Pass minimatchOptions to isIncluded Ancestor Pruning
