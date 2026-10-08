@@ -50,12 +50,12 @@ const absOrRelPathForMatch = ({ absRoot, fullPath, matchPath }) => {
 }
 
 // True when 'find()' skips the directory at 'fullPath' (trailing separator) because an 'excludePaths' pattern ending in
-// '/**' matches it; everything beneath is then excluded, dotted entries included. Intentionally ignores
-// 'minimatchOptions', as the traversal always has.
-const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths }) =>
+// '/**' matches it; everything beneath is then excluded, dotted entries included. The caller's
+// 'minimatchOptions' (e.g., 'nocase') are applied to the directory match so pruning agrees with the per-file tests.
+const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths, minimatchOptions }) =>
   excludePaths?.some((p) => {
     const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
-    return minimatch(matchPath, p) && p.endsWith('/**')
+    return minimatch(matchPath, p, minimatchOptions) && p.endsWith('/**')
   }) || false
 
 export { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }
