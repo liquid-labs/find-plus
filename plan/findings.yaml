@@ -18,4 +18,13 @@ items:
         - plan/phase:followups-burndown
         - effort:unspecified
       text: 'src/lib/is-included.mjs (~line 36): the isPrunedByExcludePaths call for ancestor directories does not pass minimatchOptions, although find()''s traverse-dirs now does. With options such as dot or nocase and a pruning ''/**'' exclude, isIncluded and find() can disagree on ancestor pruning, contradicting the documented parity. Pass minimatchOptions in that call and add an isIncluded test using nocase or dot with a pruning ''/**'' exclude.'
+    - title: Record breadth sort change in CHANGELOG
+      id: diAW
+      date: "2026-10-08"
+      tags:
+        - type:documentation
+        - priority:low
+        - plan/phase:followups-burndown
+        - effort:unspecified
+      text: The default 'breadth' sort now orders same-depth entries by parent path then name (previously effectively name only due to a typo and inverted ternary). This is an intentional breaking reorder to ship in a new major version; it should be noted in CHANGELOG.md / release notes at release time. README line ~70 ('Other sorts order the whole result set as before') may optionally be reworded.
 closed: []
