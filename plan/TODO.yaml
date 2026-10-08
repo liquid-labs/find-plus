@@ -87,7 +87,8 @@ phases:
             - fobB
           git:
             branch: plan/followups-burndown-fixes-02-001
-            commit: []
+            commit:
+                - 9d5b3ef
             merge: null
         - number: 2
           slug: pass-minimatch-options-in-is-included-prune
