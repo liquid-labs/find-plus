@@ -64,5 +64,6 @@ phases:
           digest: 'README-only fixes: typos, anchors, Usage paren, excludePaths type and literal wording, brace limitation note, root-glob note.'
           git:
             branch: plan/followups-burndown-fixes-01-005
-            commit: []
+            commit:
+                - 6e97c06
             merge: null
