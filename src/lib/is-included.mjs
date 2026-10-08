@@ -35,7 +35,7 @@ const isIncluded = (path, options = {}) => {
     let dir = isDir ? fullPath : fsPath.dirname(fullPath)
     for (;;) {
       const dirPath = dir.endsWith(fsPath.sep) ? dir : dir + fsPath.sep
-      if (isPrunedByExcludePaths({ fullPath : dirPath, absRoot, excludePaths })) {
+      if (isPrunedByExcludePaths({ fullPath : dirPath, absRoot, excludePaths, minimatchOptions })) {
         return false
       }
       const parent = fsPath.dirname(dir.endsWith(fsPath.sep) && dir.length > 1 ? dir.slice(0, -1) : dir)
