@@ -17,7 +17,7 @@ phases:
             branch: plan/find-paths-union-literal-01-001
             commit:
                 - 61f9892
-            merge: null
+            merge: e9c791ab637d3af6a8d3719f79e2b82eaf20c245
         - number: 2
           slug: shared-path-match-and-union
           title: Shared Path-Match Helper And Paths Union
