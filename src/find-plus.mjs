@@ -2,6 +2,7 @@ import * as fsPath from 'node:path'
 
 import { addImpliedTests } from './lib/add-implied-tests'
 import { dirEntToFilePath } from './lib/dir-ent-to-file-path'
+import { isIncluded } from './lib/is-included'
 import { escapeGlob, firstMatchIndex, normalizePaths } from './lib/path-match'
 import { validSorts } from './lib/sorters'
 import { traverseDirs } from './lib/traverse-dirs'
@@ -56,4 +57,4 @@ const find = async(params = {}) => {
   return result
 }
 
-export { escapeGlob, find }
+export { escapeGlob, find, isIncluded }

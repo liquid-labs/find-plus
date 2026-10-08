@@ -54,3 +54,9 @@ Files: create `src/lib/is-included.mjs` and `src/test/is-included.test.mjs`, and
 - After `src/lib/is-included.mjs` and its export.
 - After the table-driven unit tests.
 - After the `find()` agreement test.
+
+## Status
+
+- Outcome: blocked (2026-10-08). `src/lib/is-included.mjs`, the `isIncluded` export, and `src/test/is-included.test.mjs` are written; lint passes and all tests pass except the `find()` agreement case for `{ excludePaths : ['src/**'] }`.
+- Cause: `traverse-dirs.mjs` prunes `src/` (exclude `p.endsWith('/**')` matched via `minimatch` without `dot`), so `find()` never walks `src/.hidden/` or `src/.hidden/y.js`. The per-file criteria accept them (`src/**` does not match dot segments without `dot : true`), so `isIncluded` returns `true` while `find()` omits them. Per the task, `isIncluded` was not changed to imitate pruning; the manager decides whether to fix `traverse-dirs.mjs` or file a finding.
+- All other criteria sets agree. Pre-existing failure on `must specify extant root` is unrelated.
