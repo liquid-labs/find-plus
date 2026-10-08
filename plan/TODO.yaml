@@ -24,6 +24,7 @@ phases:
           path: phase-01-paths-union-literal-is-included/002-shared-path-match-and-union.md
           done: false
           tier: sonnet-med
+          digest: Moved paths/excludePaths matching into src/lib/path-match.mjs; addImpliedTests adds one combined test so multiple paths entries are a union; sort none orders by first matching entry. Union rows pass.
           git:
             branch: null
             commit: []
