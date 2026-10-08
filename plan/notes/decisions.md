@@ -2,11 +2,11 @@
 
 ## Purpose and scope
 
-Records the two judgment calls made while planning, so the manager can confirm or override them.
+Records the judgment calls made while planning; both confirmed by the user.
 
 ## JFJX: fix the breadth sorter now
 
-The followup suggests deferring to a major. Decision: fix it in this plan, in its own isolated task (001) so it can be dropped without affecting the rest. The current behavior is an unambiguous bug (`paretPath` is always `undefined`, so the comparison is meaningless and the ternary is inverted), and the correct ordering (depth, then parent path, then name) is deterministic. The reorder is observable only for same-depth entries in different directories. The task must confirm existing tests pass unchanged; if any existing expectation encodes the old order, the task halts and reports rather than editing the test.
+The user confirmed: fix it in this plan (task 001) and ship the resulting observable reorder in a new major release. The correct ordering (depth, then parent path, then name) is deterministic. If any existing test encodes the old order, the task halts and reports rather than editing the test.
 
 ## 5wTv: document as unsupported
 
@@ -19,3 +19,7 @@ Reading `traverse-dirs.mjs`: relative-pattern pruning compares root-relative pat
 ## Architecture docs
 
 The `docs/` directory does not exist, so no architecture or spec files exist for a `doc-updates` phase. The `excludePaths` API extension is documented in the README by task 005; no separate `doc-updates` phase is registered.
+
+## Test environment
+
+The user directed: run `bun i` to install `node_modules` in plan and task worktrees as needed for testing.

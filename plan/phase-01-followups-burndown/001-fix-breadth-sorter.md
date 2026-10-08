@@ -2,7 +2,7 @@
 
 ## Purpose and scope
 
-Resolves followup JFJX. In `src/lib/sorters.mjs`, `breadthFirstSorter` compares `a.parentPath.localeCompare(b.paretPath)` (typo) and the ternary is inverted. Fix so same-depth entries order by parent path, then by name. Touches only `src/lib/sorters.mjs` plus tests. This is an observable reorder of the default `find()` sort for same-depth entries in different directories; see [decisions](../notes/decisions.md).
+Resolves followup JFJX. In `src/lib/sorters.mjs`, `breadthFirstSorter` compares `a.parentPath.localeCompare(b.paretPath)` (typo) and the ternary is inverted. Fix so same-depth entries order by parent path, then by name. Touches only `src/lib/sorters.mjs` plus tests. This is an observable reorder of the default `find()` sort for same-depth entries in different directories; this ships in a new major release (user-confirmed); see [decisions](../notes/decisions.md).
 
 ## Requirements
 
