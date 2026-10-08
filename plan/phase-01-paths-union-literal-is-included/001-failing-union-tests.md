@@ -41,3 +41,24 @@ TDD first step for the union change. Add test cases to `src/test/find-plus.test.
 
 - [API design note](../notes/api-design.md): the union semantics these tests encode.
 - `src/lib/add-implied-tests.mjs`: the per-entry `unshift` loop that causes the current intersection.
+
+## Status
+
+- Outcome: succeeded (TDD red state as intended; `npm test` exits non-zero by design).
+- Date: 2026-10-08
+- Change: added the ten `// multiple 'paths' entries are a union` rows to the `path matching` `test.each` table in `src/test/find-plus.test.mjs`. No other file changed.
+- Validation:
+  - `npm test`: 100 total, 12 failed, 88 passed. Failing union rows (the eight marked "yes"):
+    1. `['dirA/fileA-1.txt', 'dirA/dirAB/fileAB-1.txt']`
+    2. `['**/dirAB/*.txt', '**/dirAAAA/*.txt']`
+    3. `['**/dirAAAA/*.txt', 'dirA/fileA-1.txt']`
+    4. absolute plus relative path
+    5. `['dirA/fileA-1.txt', 'no/such/file.txt']`
+    6. `['dirA/dirAA/', 'dirA/dirAB/']` with `sort : 'alpha'`
+    7. union with `excludePaths`
+    8. `['**/dirAAAA/*.txt', 'dirA/*.txt']` with `sort : 'none'`
+  - Guard rows (`no/such` + `also/nothing`; overlapping `dirA/*.txt` + `**/fileA-1.txt`) pass.
+  - Four failures are pre-existing and environmental, identical on the unmodified test file: socket fixture tests (`counts Socket with all files`, `onlySockets`, `onlySpecials`), the `must specify extant root` error-message test, and the `Test suite failed to run` error (`listen EINVAL` on the socket path, which is too long inside this worktree path). Baseline: 90 total, 4 failed plus the suite error.
+  - Logs: `<worktree>/.flow/validation-logs/00-baseline-npm-test.log`, `01-npm-test.log`.
+  - `npm run lint`: passes. Log: `.flow/validation-logs/02-npm-run-lint.log`.
+- Files touched: `src/test/find-plus.test.mjs`, this task document.
