@@ -3,7 +3,7 @@ version: 1
 title: ""
 remediation:
     rounds: 1
-    tasks_added: 0
+    tasks_added: 1
 phases:
     - number: 1
       slug: followups-burndown
@@ -74,4 +74,16 @@ phases:
       slug: remediation-01
       title: Remediation Round 1
       kind: remediation
-      tasks: []
+      tasks:
+        - number: 1
+          slug: complete-readme-brace-sentence
+          title: Complete README Brace Limitation Sentence
+          path: phase-02-remediation-01/001-complete-readme-brace-sentence.md
+          done: false
+          tier: sonnet-low
+          findings:
+            - fobB
+          git:
+            branch: null
+            commit: []
+            merge: null
