@@ -39,7 +39,7 @@ phases:
           tier: sonnet-med
           digest: rootGlob now escapes the root with escapeGlob when anchoring relative globs, so roots with glob metacharacters match their children; also escaped the absRoot interpolation in traverse-dirs absolute-pattern pruning. Tests added.
           git:
-            branch: null
+            branch: plan/followups-burndown-fixes-01-003
             commit: []
             merge: null
         - number: 4
