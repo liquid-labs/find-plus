@@ -54,7 +54,7 @@ phases:
             branch: plan/followups-burndown-fixes-01-004
             commit:
                 - 67eac65
-            merge: null
+            merge: 9b08c5171cd5625f22242d43d95d70cfbe15c1e9
         - number: 5
           slug: readme-fixes
           title: README Typos Anchors And Limitation Notes
