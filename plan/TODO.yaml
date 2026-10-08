@@ -23,7 +23,7 @@ phases:
           slug: prune-with-minimatch-options
           title: Pass minimatchOptions To Directory Pruning
           path: phase-01-followups-burndown/002-prune-with-minimatch-options.md
-          done: false
+          done: true
           tier: sonnet-med
           digest: Passed minimatchOptions through directory pruning (paths and excludePaths) so nocase/dot no longer drop results. Added unit and end-to-end tests that fail before and pass after.
           git:
