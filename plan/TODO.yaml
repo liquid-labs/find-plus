@@ -18,7 +18,7 @@ phases:
             branch: plan/followups-burndown-fixes-01-001
             commit:
                 - 8e70b48
-            merge: null
+            merge: 6c9c3c6263726358eb0ee28b9e33df4457f32431
         - number: 2
           slug: prune-with-minimatch-options
           title: Pass minimatchOptions To Directory Pruning
