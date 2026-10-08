@@ -10,11 +10,13 @@ phases:
           slug: failing-union-tests
           title: Write Failing Tests For Multi-Entry Paths Union
           path: phase-01-paths-union-literal-is-included/001-failing-union-tests.md
-          done: false
+          done: true
           tier: haiku-med
+          digest: Added ten union test rows to the path-matching table; eight fail as TDD red state requires, two guard rows pass.
           git:
-            branch: null
-            commit: []
+            branch: plan/find-paths-union-literal-01-001
+            commit:
+                - 61f9892
             merge: null
         - number: 2
           slug: shared-path-match-and-union
