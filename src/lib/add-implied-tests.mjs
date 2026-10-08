@@ -1,6 +1,7 @@
 import * as fsPath from 'node:path'
 
-import { minimatch } from 'minimatch'
+import { dirEntToFilePath } from './dir-ent-to-file-path'
+import { matchesPathCriteria } from './path-match'
 
 const addImpliedTests = ({
   depth,
@@ -73,41 +74,12 @@ const addImpliedTests = ({
     myTests.unshift((f) => !f.isSymbolicLink())
   }
 
-  root = fsPath.resolve(root)
+  const absRoot = fsPath.resolve(root)
 
-  if (paths !== undefined) {
-    for (const globMatch of paths) {
-      myTests.unshift((dirEnt) => {
-        const fullPath = makeFullPath(dirEnt)
-        const rootedGlobMatch = globMatch.startsWith('/')
-          ? globMatch
-          : `${root}/${globMatch}`
-        return minimatch(fullPath, rootedGlobMatch, minimatchOptions)
-      })
-    }
+  if (paths?.length > 0 || excludePaths?.length > 0) {
+    myTests.unshift((dirEnt) =>
+      matchesPathCriteria(dirEntToFilePath(dirEnt), { absRoot, paths, excludePaths, minimatchOptions }))
   }
-
-  if (excludePaths !== undefined) {
-    for (const globMatch of excludePaths) {
-      myTests.unshift((dirEnt) => {
-        const fullPath = makeFullPath(dirEnt)
-        const rootedGlobMatch = globMatch.startsWith('/')
-          ? globMatch
-          : `${root}/${globMatch}`
-        return !minimatch(fullPath, rootedGlobMatch, minimatchOptions)
-      })
-    }
-  }
-}
-
-const makeFullPath = (dirEnt) => {
-  const { parentPath, name } = dirEnt
-  let fullPath = fsPath.resolve(parentPath, name)
-  if (dirEnt.isDirectory()) {
-    fullPath += fsPath.sep
-  }
-
-  return fullPath
 }
 
 export { addImpliedTests }

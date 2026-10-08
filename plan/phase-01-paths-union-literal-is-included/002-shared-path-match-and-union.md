@@ -46,3 +46,9 @@ Files: create `src/lib/path-match.mjs` and `src/lib/test/path-match.test.mjs`, a
 - After creating `src/lib/path-match.mjs` and its unit tests.
 - After rewriting `addImpliedTests` (task-001 tests other than the `sort: 'none'` row should now pass).
 - After adding the `sort: 'none'` ordering in `find()`.
+
+## Status
+
+- Outcome: succeeded (2026-10-08).
+- Created `src/lib/path-match.mjs`, `src/lib/test/path-match.test.mjs`; modified `src/lib/add-implied-tests.mjs` (single combined path test, `makeFullPath` removed) and `src/find-plus.mjs` (stable first-match-index ordering for `sort: 'none'` with multiple `paths`).
+- Validation: lint passes; grep checks empty. From a short path (/tmp/fp) all 8 task-001 union rows and everything else pass (114/115); the one failure ("must specify extant root" message) is environmental and unrelated to this change. From the long worktree path the socket-fixture suite cannot start (listen EINVAL), as on baseline.

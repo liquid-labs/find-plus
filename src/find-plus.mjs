@@ -1,5 +1,8 @@
+import * as fsPath from 'node:path'
+
 import { addImpliedTests } from './lib/add-implied-tests'
 import { dirEntToFilePath } from './lib/dir-ent-to-file-path'
+import { firstMatchIndex } from './lib/path-match'
 import { validSorts } from './lib/sorters'
 import { traverseDirs } from './lib/traverse-dirs'
 import { verifyParams } from './lib/verify-params'
@@ -35,6 +38,15 @@ const find = async(params = {}) => {
   if (sort !== 'none') {
     const sorter = validSorts[sort]
     matchedFiles.sort(sorter)
+  }
+  else if (params.paths?.length > 1) {
+    const { minimatchOptions, paths } = params
+    const absRoot = fsPath.resolve(params.root)
+    const opts = { absRoot, minimatchOptions }
+    // stable sort: entry order first, walk order within an entry
+    const keyed = matchedFiles.map((f) => [firstMatchIndex(dirEntToFilePath(f), paths, opts), f])
+    keyed.sort((a, b) => a[0] - b[0])
+    matchedFiles.splice(0, matchedFiles.length, ...keyed.map(([, f]) => f))
   }
 
   const result = matchedFiles.map(dirEntToFilePath)
