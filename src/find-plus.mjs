@@ -31,11 +31,13 @@ const find = async(params = {}) => {
 
   const paths = normalizePaths(params.paths, params.minimatchOptions)
 
+  const excludePaths = normalizePaths(params.excludePaths, params.minimatchOptions)
+
   const myTests = [...tests]
-  addImpliedTests({ ...params, paths, myTests })
+  addImpliedTests({ ...params, paths, excludePaths, myTests })
 
   // params need to come first, we override root and tests
-  const matchedFiles = await traverseDirs({ ...params, paths, tests : myTests })
+  const matchedFiles = await traverseDirs({ ...params, paths, excludePaths, tests : myTests })
 
   // results in depth-first sort of full directory paths
   if (sort !== 'none') {

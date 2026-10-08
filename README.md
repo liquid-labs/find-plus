@@ -25,7 +25,7 @@ import { find } from 'find-plus' // ESM
 // const { find } = require('find-plus')  // CJS
 
 const isaTXTFile = (f) => f.name.endsWith('.txt')
-const files = await find({ onlyFiles: true, root: process.env.HOME, tests: [isaTXTFile] }
+const files = await find({ onlyFiles: true, root: process.env.HOME, tests: [isaTXTFile] })
 
 console.log(`You have ${files.length} text files under your home directory.`)
 ```
@@ -44,10 +44,10 @@ import { escapeGlob, find, isIncluded } from 'find-plus'
   - __`excludeRoot`__: (_boolean_, default: `false`) If `true`, the root directory is excluded from the results even if it would otherwise be included.
 - Path matching (see [extglob patterns](#extglob-pattern-syntax) and [path matching for efficient searching](#path-matching-for-efficient-searches) for additional details):
   - __`paths`__: (`(string | { path: string, literal?: boolean })[]`) If defined and non-empty, then only file paths matching **any** entry are included in the results (union semantics), and then only if no `excludePaths` entry matches. A file matched by several entries appears once. An entry matching nothing does not affect the others; the result is empty only when no entry matches anything. Multiple entries were an intersection before 3.0.0. A string entry is a glob, considered absolute if it starts with '/' and otherwise relative to `root`. A `{ path, literal: true }` entry names that exact file or directory, so metacharacters such as `[ ] * ? { } ( )` are matched literally; a nonexistent literal matches nothing. A literal names the path itself, not its descendants; use `escapeGlob(dir) + '/**'` for the contents. Literal and glob entries can be mixed (see [literal paths and escapeGlob](#literal-paths-and-escapeglob)). An empty array means no path filtering. Malformed values throw.
-  - __`excludePaths`__: (_string[]_) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searching) for guidance. Absolute and relative paths handled as with `paths`.
+  - __`excludePaths`__: (`(string | { path: string, literal?: boolean })[]`) If defined, then any matching file paths are excluded from the results. Matching directories, however, may still be searched; refer to [path matching for efficient searching](#path-matching-for-efficient-searches) for guidance. Entries are handled as with `paths`: strings are globs (absolute if starting with '/', otherwise relative to `root`), and `{ path, literal: true }` entries name that exact file or directory.
   - __`minimatchOptions`__: (_object_) Options passed to [minimatch](https://github.com/isaacs/minimatch#readme) when matching `paths` and `excludePaths` (for example `{ dot: true }` lets `*` and `**` match dotfiles). Also used by `isIncluded()` and by `escapeGlob()` (which reads only `windowsPathsNoEscape`).
 - Limiting depth and leaf results:
-  - __`depth`__: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negatvie values are equivalent to 0.
+  - __`depth`__: (_int_) If defined, will only search the specified number of levels below `root` (which is depth 0). Negative values are equivalent to 0.
   - __`leavesOnly`__: (_boolean_, default: `false`) If `true`, then limits the results to leaf files at `depth`. E.g., `depth = 0` will match only the root directory and `depth = 1` will only match those files within the root directory, and so forth.
 - Selecting files types:[^2]
   - __`onlyBlockDevices`__: (_boolean_, default: `false`) Include only block devices.
@@ -64,12 +64,12 @@ import { escapeGlob, find, isIncluded } from 'find-plus'
   - __`noFIFOs`__: (_boolean_, default: `false`) Exclude FIFOs/pipes.
   - __`noFiles`__: (_boolean_, default: `false`) Exclude regular files.
   - __`noSockets`__: (_boolean_, default: `false`) Exclude sockets.
-  - __`noSpecial`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevcies`, `noCharacterDevices`, `noFIFOs`, and `noSockets`.
+  - __`noSpecials`__: (_boolean_, default: `false`) : Equivalent to `noBlockDevices`, `noCharacterDevices`, `noFIFOs`, and `noSockets`.
   - __`noSymbolicLinks`__: (_boolean_, default: `false`) : Exclude symbolic links.
 - __`tests`__: (_function[]_) If defined, then each potential file is passed to each test which must all return `true` if the file is to be included in the results. Refer to [custom tests](#custom-tests) for additional information.
 - __`sort`__: (_string_, default: 'breadth') Specifies the preferred order of the results. Possible values are 'breadth', 'depth', 'alpha', and 'none'. The 'none' option returns the order in which the files were discovered on disk with no additional sorting. This is generally equivalent to 'breadth', but the order is not guaranteed. With 'none' and more than one `paths` entry, results are ordered by the first matching entry (entry order), then discovery order within an entry. Other sorts order the whole result set as before.
 
-[^1]: Internally root is always converted to an absolute directory using the internal `path.resolve()` function.
+[^1]: Internally root is always converted to an absolute directory using the internal `path.resolve()` function. A `root` containing glob characters (e.g., `[`, `{`) works with relative patterns.
 [^2]: Setting all the `no*` or multiple `only*` file type selectors will result in an error as the search would be trivially empty.
 
 ## Literal paths and escapeGlob
@@ -83,7 +83,7 @@ const files = await find({
 })
 ```
 
-`escapeGlob(str[, minimatchOptions])` returns a glob that matches exactly `str` with `find()`'s engine. It escapes braces as well as the characters `minimatch.escape` handles. In `windowsPathsNoEscape` mode, names with braces containing a comma or range (e.g., `a{b,c}.js`) are a known limitation.
+`escapeGlob(str[, minimatchOptions])` returns a glob that matches exactly `str` with `find()`'s engine. It escapes braces as well as the characters `minimatch.escape` handles. In `windowsPathsNoEscape` mode, names with braces containing a comma or range (e.g., `a{b,c}.js`) are a known limitation, because brace expansion still applies and `escapeGlob` cannot make them match literally.
 
 ## Testing a single path with isIncluded
 

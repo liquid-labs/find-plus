@@ -1,4 +1,6 @@
-/* global describe test */ // TODO: this should not be necessary; verify fixed in next format and lint upgrade and remove
+/* global describe expect test */ // TODO: this should not be necessary; verify fixed in next format and lint upgrade and remove
+import * as fs from 'node:fs/promises'
+import * as os from 'node:os'
 import { dirname, join as pathJoin, sep as pathSep } from 'node:path'
 
 import { addImpliedTests } from '../add-implied-tests'
@@ -68,6 +70,61 @@ describe('traverseDirs', () => {
         if (!_traversedDirs.some((d) => d.includes(dir))) {
           throw new Error(`Did not find expected traversed dir '${dir}'.`)
         }
+      }
+    })
+  })
+  describe('honors minimatchOptions when pruning', () => {
+    test.each([
+      [{ paths : ['DIRA/*.txt'], minimatchOptions : { nocase : true } }, ['/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], ['/dirA']],
+      [{ paths : ['DIRA/*.txt'] }, ['/dirA', '/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], []],
+      [{ paths : ['DIRA/*.txt'], minimatchOptions : undefined }, ['/dirA', '/dirFIFO', '/dirSymLink', '/dirAA', '/dirAB'], []],
+      [{ excludePaths : ['DIRF*/**'], minimatchOptions : { nocase : true } }, ['/dirFIFO'], ['/dirA', '/dirSymLink']],
+      [{ excludePaths : ['DIRF*/**'] }, [], ['/dirA', '/dirFIFO', '/dirSymLink']]
+    ])("options '%j' skips '%j'", async(options, skipped, traversed) => {
+      const _traversedDirs = []
+      options._traversedDirs = _traversedDirs
+      options.root = 'test/data'
+
+      const myTests = []
+      addImpliedTests({ ...options, myTests })
+      options.tests = myTests
+
+      await traverseDirs(options)
+
+      for (const dir of _traversedDirs) {
+        if (skipped.some((s) => dir.includes(s))) {
+          throw new Error(`Dir '${dir}' should have been skipped.`)
+        }
+      }
+
+      for (const dir of traversed) {
+        if (!_traversedDirs.some((d) => d.includes(dir))) {
+          throw new Error(`Did not find expected traversed dir '${dir}'.`)
+        }
+      }
+    })
+
+    test.each([
+      [{ dot : true }, true],
+      [undefined, false]
+    ])("with minimatchOptions '%j' dotted dir traversed: %s", async(minimatchOptions, expectTraversed) => {
+      const tmpRoot = await fs.mkdtemp(pathJoin(os.tmpdir(), 'traverse-dirs-dot-'))
+      try {
+        await fs.mkdir(pathJoin(tmpRoot, '.hidden'))
+        await fs.writeFile(pathJoin(tmpRoot, '.hidden', 'a.txt'), 'x')
+
+        const _traversedDirs = []
+        const options = { _traversedDirs, minimatchOptions, paths : ['*/*.txt'], root : tmpRoot }
+        const myTests = []
+        addImpliedTests({ ...options, myTests })
+        options.tests = myTests
+
+        await traverseDirs(options)
+
+        expect(_traversedDirs.some((d) => d.includes('.hidden'))).toBe(expectTraversed)
+      }
+      finally {
+        await fs.rm(tmpRoot, { force : true, recursive : true })
       }
     })
   })

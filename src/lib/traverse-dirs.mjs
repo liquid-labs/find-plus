@@ -6,7 +6,7 @@ import { minimatch } from 'minimatch'
 import { addFieldsToFile } from './add-fields-to-file'
 import { checkRoot } from './check-root'
 import { dirEntToFilePath } from './dir-ent-to-file-path'
-import { absOrRelPathForMatch, isPrunedByExcludePaths } from './path-match'
+import { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths } from './path-match'
 
 const traverseDirs = async(options) => {
   const {
@@ -63,6 +63,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
   const {
     _traversedDirs,
     excludePaths,
+    minimatchOptions,
     paths,
     root,
     tests
@@ -78,7 +79,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
     const absRoot = fsPath.resolve(root)
 
     // can we exclude a possible search branch based on the exclude paths?
-    let exclude = isPrunedByExcludePaths({ fullPath, absRoot, excludePaths })
+    let exclude = isPrunedByExcludePaths({ fullPath, absRoot, excludePaths, minimatchOptions })
 
     // then' let's see if we can exclude the branch based on the paths
     if (exclude === false && paths?.length > 0) {
@@ -98,13 +99,13 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
             if (matchPathBit.includes('**')) {
               return true
             }
-            if (minimatch(rootBit, matchPathBit) === false) {
+            if (minimatch(rootBit, matchPathBit, minimatchOptions) === false) {
               return false
             }
           }
         }
 
-        let minPrefix = matchPathIsAbsolute === true ? absRoot + fsPath.sep : ''
+        let minPrefix = matchPathIsAbsolute === true ? escapeGlob(absRoot, minimatchOptions ?? {}) + fsPath.sep : ''
         for (let i = 0; i < file.depth && i < matchPathBits.length; i += 1) {
           const nextBit = matchPathBits[i]
           if (nextBit === '**') {
@@ -126,7 +127,7 @@ const testForInclusionAndFrontier = ({ accumulator, file, frontier }, options, t
 
         minPrefix += '**'
 
-        return minimatch(matchPath, minPrefix)
+        return minimatch(matchPath, minPrefix, minimatchOptions)
       })
     }
 

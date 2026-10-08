@@ -2,11 +2,12 @@ import * as fsPath from 'node:path'
 
 import { escape, minimatch } from 'minimatch'
 
-const rootGlob = (glob, absRoot) =>
-  glob.startsWith('/') ? glob : `${absRoot}/${glob}`
+// Relative globs are anchored at the root; the root is a literal path, so its glob metacharacters are escaped.
+const rootGlob = (glob, absRoot, { windowsPathsNoEscape } = {}) =>
+  glob.startsWith('/') ? glob : `${escapeGlob(absRoot, { windowsPathsNoEscape })}/${glob}`
 
 const firstMatchIndex = (fullPath, globs, { absRoot, minimatchOptions }) =>
-  globs.findIndex((glob) => minimatch(fullPath, rootGlob(glob, absRoot), minimatchOptions))
+  globs.findIndex((glob) => minimatch(fullPath, rootGlob(glob, absRoot, minimatchOptions ?? {}), minimatchOptions))
 
 const matchesPathCriteria = (fullPath, { absRoot, paths, excludePaths, minimatchOptions }) => {
   const opts = { absRoot, minimatchOptions }
@@ -50,12 +51,12 @@ const absOrRelPathForMatch = ({ absRoot, fullPath, matchPath }) => {
 }
 
 // True when 'find()' skips the directory at 'fullPath' (trailing separator) because an 'excludePaths' pattern ending in
-// '/**' matches it; everything beneath is then excluded, dotted entries included. Intentionally ignores
-// 'minimatchOptions', as the traversal always has.
-const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths }) =>
+// '/**' matches it; everything beneath is then excluded, dotted entries included. The caller's
+// 'minimatchOptions' (e.g., 'nocase') are applied to the directory match so pruning agrees with the per-file tests.
+const isPrunedByExcludePaths = ({ fullPath, absRoot, excludePaths, minimatchOptions }) =>
   excludePaths?.some((p) => {
     const matchPath = absOrRelPathForMatch({ absRoot, fullPath, matchPath : p })
-    return minimatch(matchPath, p) && p.endsWith('/**')
+    return minimatch(matchPath, p, minimatchOptions) && p.endsWith('/**')
   }) || false
 
 export { absOrRelPathForMatch, escapeGlob, isPrunedByExcludePaths, firstMatchIndex, matchesPathCriteria, normalizePaths, rootGlob }

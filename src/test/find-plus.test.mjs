@@ -148,7 +148,10 @@ describe('find', () => {
       [{ paths : ['dirA/*.txt', 'dirA/dirAB/*.txt'], excludePaths : ['**/fileAB-1.txt'] }, [fileA1Path]],
       [{ paths : ['**/dirAAAA/*.txt', 'dirA/*.txt'], sort : 'none' }, [fileAAAA1Path, fileA1Path]],
       [{ paths : ['no/such', 'also/nothing'] }, []],
-      [{ paths : ['dirA/*.txt', '**/fileA-1.txt'] }, [fileA1Path]]
+      [{ paths : ['dirA/*.txt', '**/fileA-1.txt'] }, [fileA1Path]],
+      // minimatchOptions are honored by directory pruning
+      [{ paths : ['DIRA/*.txt'], minimatchOptions : { nocase : true } }, [fileA1Path]],
+      [{ paths : ['DIRA/*.txt'] }, []]
     ])('%p matches %p', async(options, expected) => {
       options.root = options.root || dirDataPath
       const files = await find(options)
@@ -304,7 +307,15 @@ describe('find', () => {
         "'paths' entry 'literal' must be boolean",
         /^Invalid 'paths' entry at index 0/
       ],
-      [{ paths : 'dirA', root : dirAPath }, "'paths' must be an array", /'paths' must be an array/]
+      [{ paths : 'dirA', root : dirAPath }, "'paths' must be an array", /'paths' must be an array/],
+      [{ excludePaths : [42], root : dirAPath }, "'excludePaths' entry must be string or object", /^Invalid 'excludePaths' entry at index 0/],
+      [{ excludePaths : ['a', {}], root : dirAPath }, "'excludePaths' object entry needs 'path'", /^Invalid 'excludePaths' entry at index 1/],
+      [
+        { excludePaths : [{ path : 'x', literal : 'yes' }], root : dirAPath },
+        "'excludePaths' entry 'literal' must be boolean",
+        /^Invalid 'excludePaths' entry at index 0/
+      ],
+      [{ excludePaths : 'dirA', root : dirAPath }, "'excludePaths' must be an array", /'excludePaths' must be an array/]
     ])('%p %s', async(options, description, regex) => {
       try {
         await find(options)
@@ -337,6 +348,34 @@ describe('find', () => {
     })
 
     const run = (paths, extra = {}) => find({ root : tmpDir, paths, sort : 'alpha', ...extra })
+
+    test('literal excludePaths excludes exactly that path', async() => {
+      const all = await run(['*.js'])
+      const got = await run(['*.js'], { excludePaths : [{ path : 'a[1].js', literal : true }] })
+      expect(got).toEqual(all.filter((f) => f !== p('a[1].js')))
+      expect(got).toContain(p('a1.js'))
+    })
+
+    test('literal excludePaths does not exclude descendants or prune', async() => {
+      const got = await run(['**'], { excludePaths : [{ path : 'd[x]{y}', literal : true }] })
+      expect(got).not.toContain(p('d[x]{y}'))
+      expect(got).toContain(p('d[x]{y}/f.txt'))
+      expect(got).toContain(p('a1.js'))
+    })
+
+    test('mixed string and literal excludePaths', async() => {
+      const got = await run(['*.js'], { excludePaths : [{ path : 'a[1].js', literal : true }, 'b*.js'] })
+      expect(got).not.toContain(p('a[1].js'))
+      expect(got).not.toContain(p('bc.js'))
+      expect(got).not.toContain(p('b{c,d}.js'))
+      expect(got).toContain(p('a1.js'))
+    })
+
+    test('excludePaths input is not mutated', async() => {
+      const excludePaths = [{ path : 'a[1].js', literal : true }]
+      await run(['*.js'], { excludePaths })
+      expect(excludePaths).toEqual([{ path : 'a[1].js', literal : true }])
+    })
 
     test('literal vs glob brackets', async() => {
       expect(await run([{ path : 'a[1].js', literal : true }])).toEqual([p('a[1].js')])
@@ -396,6 +435,38 @@ describe('find', () => {
       const paths = [{ path : 'a[1].js', literal : true }]
       await run(paths)
       expect(paths).toEqual([{ path : 'a[1].js', literal : true }])
+    })
+  })
+
+  describe('root containing glob metacharacters', () => {
+    let tmpParent
+    let root
+
+    beforeAll(async() => {
+      tmpParent = await fs.mkdtemp(fsPath.join(os.tmpdir(), 'find-plus-'))
+      root = fsPath.join(tmpParent, 'r[1]')
+      await fs.mkdir(fsPath.join(root, 'sub'), { recursive : true })
+      await Promise.all(['a.js', 'b.txt', 'sub/c.js'].map((n) => fs.writeFile(fsPath.join(root, n), '')))
+    })
+
+    afterAll(async() => {
+      await fs.rm(tmpParent, { recursive : true, force : true })
+    })
+
+    const rp = (name) => fsPath.join(root, name)
+
+    test('relative paths match children', async() => {
+      expect(await find({ root, paths : ['*.js'], sort : 'alpha' })).toEqual([rp('a.js')])
+      expect(await find({ root, paths : ['**/*.js'], sort : 'alpha' })).toEqual([rp('a.js'), rp('sub/c.js')])
+    })
+
+    test('relative excludePaths exclude children', async() => {
+      expect(await find({ root, paths : ['**/*.js'], excludePaths : ['sub/**'], sort : 'alpha' })).toEqual([rp('a.js')])
+      expect(await find({ root, paths : ['**/*.js'], excludePaths : ['*.js'], sort : 'alpha' })).toEqual([rp('sub/c.js')])
+    })
+
+    test('escaped absolute paths match children', async() => {
+      expect(await find({ root, paths : [escapeGlob(root) + '/sub/*.js'], sort : 'alpha' })).toEqual([rp('sub/c.js')])
     })
   })
 })

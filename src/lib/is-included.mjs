@@ -24,7 +24,8 @@ const isIncluded = (path, options = {}) => {
     throw new Error("The 'path' to test must be a non-empty string.")
   }
 
-  const { minimatchOptions, excludePaths } = options
+  const { minimatchOptions } = options
+  const excludePaths = normalizePaths(options.excludePaths, minimatchOptions)
   const absRoot = fsPath.resolve(options.root)
   const isDir = path.endsWith('/') || path.endsWith(fsPath.sep)
   const fullPath = fsPath.resolve(absRoot, path) + (isDir ? fsPath.sep : '')
@@ -34,7 +35,7 @@ const isIncluded = (path, options = {}) => {
     let dir = isDir ? fullPath : fsPath.dirname(fullPath)
     for (;;) {
       const dirPath = dir.endsWith(fsPath.sep) ? dir : dir + fsPath.sep
-      if (isPrunedByExcludePaths({ fullPath : dirPath, absRoot, excludePaths })) {
+      if (isPrunedByExcludePaths({ fullPath : dirPath, absRoot, excludePaths, minimatchOptions })) {
         return false
       }
       const parent = fsPath.dirname(dir.endsWith(fsPath.sep) && dir.length > 1 ? dir.slice(0, -1) : dir)
