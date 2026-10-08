@@ -12,6 +12,7 @@ phases:
           path: phase-01-paths-union-literal-is-included/001-failing-union-tests.md
           done: false
           tier: haiku-med
+          digest: Added ten union test rows to the path-matching table; eight fail as TDD red state requires, two guard rows pass.
           git:
             branch: null
             commit: []
