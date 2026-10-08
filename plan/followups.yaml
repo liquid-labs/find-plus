@@ -54,3 +54,13 @@ items:
         - effort:unspecified
         - plan/slug:find-paths-union-literal
       text: 'find() paths accepts { path, literal: true } object entries (normalized via normalizePaths/escapeGlob in src/lib/path-match.mjs), but excludePaths remains string-glob only; callers must call escapeGlob themselves to exclude a metacharacter-named path. Consider accepting the same entry forms in excludePaths for symmetry (normalize before addImpliedTests and traverseDirs pruning, which checks p.endsWith(''/**'')).'
+    - title: Hoist escapeGlob(absRoot) out of hot loop
+      id: qYVo
+      date: "2026-10-08"
+      tags:
+        - type:optimization
+        - priority:low
+        - effort:unspecified
+        - plan/phase:followups-burndown
+        - plan/slug:followups-burndown-fixes
+      text: src/lib/path-match.mjs rootGlob calls escapeGlob(absRoot) for every relative glob on every file test, and src/lib/traverse-dirs.mjs (~line 108) does the same per directory per absolute pattern. The result depends only on absRoot and options, so it is loop-invariant. Compute it once (in addImpliedTests / at the start of traverseDirs) or memoize on absRoot. Modest constant-factor cost; low priority.
