@@ -5,4 +5,14 @@ phases:
     - number: 1
       slug: followups-burndown
       title: Followups Burndown Fixes
-      tasks: []
+      tasks:
+        - number: 1
+          slug: fix-breadth-sorter
+          title: Fix Breadth Sorter Typo And Inverted Ternary
+          path: phase-01-followups-burndown/001-fix-breadth-sorter.md
+          done: false
+          tier: sonnet-low
+          git:
+            branch: null
+            commit: []
+            merge: null
