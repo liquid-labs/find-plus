@@ -18,3 +18,7 @@ Remediates finding fobB: the README sentence in "Literal paths and escapeGlob" d
 ## References
 
 - Finding `fobB` in this plan's `plan/findings.yaml`.
+
+## Status
+
+succeeded (2026-10-08). Completed the truncated sentence at README.md line 86. Validation: sentence ends with period, no trailing whitespace; wording consistent with the limitation comment in src/lib/path-match.mjs; git diff touches only that line of README.md.
