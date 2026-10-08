@@ -83,7 +83,7 @@ const files = await find({
 })
 ```
 
-`escapeGlob(str[, minimatchOptions])` returns a glob that matches exactly `str` with `find()`'s engine. It escapes braces as well as the characters `minimatch.escape` handles. In `windowsPathsNoEscape` mode, names with braces containing a comma or range (e.g., `a{b,c}.js`) are 
+`escapeGlob(str[, minimatchOptions])` returns a glob that matches exactly `str` with `find()`'s engine. It escapes braces as well as the characters `minimatch.escape` handles. In `windowsPathsNoEscape` mode, names with braces containing a comma or range (e.g., `a{b,c}.js`) are a known limitation, because brace expansion still applies and `escapeGlob` cannot make them match literally.
 
 ## Testing a single path with isIncluded
 

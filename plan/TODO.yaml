@@ -80,23 +80,27 @@ phases:
           slug: complete-readme-brace-sentence
           title: Complete README Brace Limitation Sentence
           path: phase-02-remediation-01/001-complete-readme-brace-sentence.md
-          done: false
+          done: true
           tier: sonnet-low
+          digest: Completed the truncated README line 86 sentence; no other README changes.
           findings:
             - fobB
           git:
-            branch: null
-            commit: []
-            merge: null
+            branch: plan/followups-burndown-fixes-02-001
+            commit:
+                - 9d5b3ef
+            merge: 94e9ec44ce845c253ac7067016fff2f444b9c82e
         - number: 2
           slug: pass-minimatch-options-in-is-included-prune
           title: Pass minimatchOptions to isIncluded Ancestor Pruning
           path: phase-02-remediation-01/002-pass-minimatch-options-in-is-included-prune.md
-          done: false
+          done: true
           tier: sonnet-med
+          digest: One-line fix passing minimatchOptions to the ancestor isPrunedByExcludePaths call in isIncluded, with two nocase regression tests that fail without it.
           findings:
             - uhXy
           git:
-            branch: null
-            commit: []
+            branch: plan/followups-burndown-fixes-02-002
+            commit:
+                - bce39e1
             merge: null
