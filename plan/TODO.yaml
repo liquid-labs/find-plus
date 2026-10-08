@@ -53,7 +53,7 @@ phases:
             branch: plan/find-paths-union-literal-01-004
             commit:
                 - 6d60a52
-            merge: null
+            merge: a423dd5b24e8e874ff31ba570d9330028ceb3868
         - number: 5
           slug: readme-and-changelog
           title: Update README And Create CHANGELOG
