@@ -8,4 +8,12 @@ items:
         - priority:unspecified
         - effort:unspecified
       text: 'src/lib/sorters.mjs breadthFirstSorter compares a.parentPath.localeCompare(b.paretPath) (typo: paretPath is always undefined), and the ternary is inverted: when parent paths compare equal it returns 0 instead of comparing names, and when they differ it compares names instead of returning the path comparison. The net effect is that ties at the same depth are ordered by name only, ignoring parent directory. The default find() sort (''breadth'') is affected. Fixing it may reorder results for same-depth entries in different directories (observable change; consider for the next major).'
+    - title: Dir pruning ignores minimatchOptions
+      id: cTaj
+      date: "2026-10-08"
+      tags:
+        - type:bug
+        - priority:unspecified
+        - effort:unspecified
+      text: 'src/lib/traverse-dirs.mjs testForInclusionAndFrontier calls minimatch(matchPath, p) and minimatch(rootBit, matchPathBit) without the caller''s minimatchOptions, while the per-file paths/excludePaths tests do pass minimatchOptions. With options such as { nocase: true } or { dot: true }, pruning can skip directories whose contents the per-file criteria would match (e.g. paths [''FOO/*''] with nocase prunes dir ''foo''), so find() silently misses results. Pass minimatchOptions through to the pruning minimatch calls and add traverse-dirs tests covering nocase/dot.'
 closed: []
