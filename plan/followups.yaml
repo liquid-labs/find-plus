@@ -1,14 +1,5 @@
 version: 2
 items:
-    - title: README anchor and noSpecial typos
-      id: fHeL
-      date: "2026-10-08"
-      tags:
-        - type:documentation
-        - priority:unspecified
-        - effort:unspecified
-        - plan/slug:find-paths-union-literal
-      text: 'README.md: the excludePaths option bullet links to #path-matching-for-efficient-searching but the heading is ''Path matching for efficient searches'' (anchor #path-matching-for-efficient-searches); the options list documents `noSpecial` while the code (src/find-plus.mjs) reads `noSpecials`; also ''noBlockDevcies'' and ''Negatvie'' typos, and the Usage example is missing a closing paren on the find({...}) call.'
     - title: Literal entries for excludePaths
       id: JC6t
       date: "2026-10-08"
