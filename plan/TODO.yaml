@@ -48,6 +48,7 @@ phases:
           path: phase-01-paths-union-literal-is-included/004-is-included-function.md
           done: false
           tier: sonnet-med
+          digest: Added isIncluded sharing find()'s matching and exclude-prune logic via path-match.mjs (isPrunedByExcludePaths extracted from traverse-dirs); agrees with find() on all 10 criteria sets.
           git:
             branch: null
             commit: []
