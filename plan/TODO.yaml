@@ -46,3 +46,13 @@ phases:
             branch: null
             commit: []
             merge: null
+        - number: 5
+          slug: readme-fixes
+          title: README Typos Anchors And Limitation Notes
+          path: phase-01-followups-burndown/005-readme-fixes.md
+          done: false
+          tier: sonnet-low
+          git:
+            branch: null
+            commit: []
+            merge: null
