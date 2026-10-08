@@ -42,7 +42,7 @@ phases:
             branch: plan/followups-burndown-fixes-01-003
             commit:
                 - b42a321
-            merge: null
+            merge: c36f9600f4daaa41857bbc835bb320eb16fcd422
         - number: 4
           slug: literal-exclude-paths
           title: Accept Literal Entries In excludePaths
