@@ -35,7 +35,7 @@ phases:
           slug: escape-root-in-rootglob
           title: Escape Root In Anchored Relative Patterns
           path: phase-01-followups-burndown/003-escape-root-in-rootglob.md
-          done: false
+          done: true
           tier: sonnet-med
           digest: rootGlob now escapes the root with escapeGlob when anchoring relative globs, so roots with glob metacharacters match their children; also escaped the absRoot interpolation in traverse-dirs absolute-pattern pruning. Tests added.
           git:
