@@ -1,6 +1,9 @@
 slug: followups-burndown-fixes
 version: 1
 title: ""
+remediation:
+    rounds: 1
+    tasks_added: 0
 phases:
     - number: 1
       slug: followups-burndown
@@ -67,3 +70,8 @@ phases:
             commit:
                 - 6e97c06
             merge: 7cb1541afac3f4c60a16a59f7dd06bb7d032e843
+    - number: 2
+      slug: remediation-01
+      title: Remediation Round 1
+      kind: remediation
+      tasks: []
