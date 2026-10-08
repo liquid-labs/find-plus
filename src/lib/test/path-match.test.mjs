@@ -13,6 +13,13 @@ describe('rootGlob', () => {
   ])('%s -> %s', (glob, expected) => {
     expect(rootGlob(glob, absRoot)).toBe(expected)
   })
+
+  test.each([
+    ['a/*.js', '/tmp/a\\[1\\]/a/*.js'],
+    ['/abs/a.js', '/abs/a.js']
+  ])('root with metacharacters: %s -> %s', (glob, expected) => {
+    expect(rootGlob(glob, '/tmp/a[1]')).toBe(expected)
+  })
 })
 
 describe('firstMatchIndex', () => {
@@ -23,6 +30,11 @@ describe('firstMatchIndex', () => {
     ['/other/a.js', ['*.txt', '/other/*.js'], 1]
   ])('%s in %j -> %d', (fullPath, globs, expected) => {
     expect(firstMatchIndex(fullPath, globs, { absRoot })).toBe(expected)
+  })
+
+  test('relative globs match under a root with metacharacters', () => {
+    expect(firstMatchIndex('/tmp/a[1]/x.js', ['*.txt', '*.js'], { absRoot : '/tmp/a[1]' })).toBe(1)
+    expect(firstMatchIndex('/tmp/a1/x.js', ['*.js'], { absRoot : '/tmp/a[1]' })).toBe(-1)
   })
 })
 

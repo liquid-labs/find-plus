@@ -2,11 +2,12 @@ import * as fsPath from 'node:path'
 
 import { escape, minimatch } from 'minimatch'
 
-const rootGlob = (glob, absRoot) =>
-  glob.startsWith('/') ? glob : `${absRoot}/${glob}`
+// Relative globs are anchored at the root; the root is a literal path, so its glob metacharacters are escaped.
+const rootGlob = (glob, absRoot, { windowsPathsNoEscape } = {}) =>
+  glob.startsWith('/') ? glob : `${escapeGlob(absRoot, { windowsPathsNoEscape })}/${glob}`
 
 const firstMatchIndex = (fullPath, globs, { absRoot, minimatchOptions }) =>
-  globs.findIndex((glob) => minimatch(fullPath, rootGlob(glob, absRoot), minimatchOptions))
+  globs.findIndex((glob) => minimatch(fullPath, rootGlob(glob, absRoot, minimatchOptions ?? {}), minimatchOptions))
 
 const matchesPathCriteria = (fullPath, { absRoot, paths, excludePaths, minimatchOptions }) => {
   const opts = { absRoot, minimatchOptions }
