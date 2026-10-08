@@ -30,7 +30,7 @@ phases:
             branch: plan/followups-burndown-fixes-01-002
             commit:
                 - 2e54435
-            merge: null
+            merge: c7e282863fa9074f71b9482338e9afb2cfd063fe
         - number: 3
           slug: escape-root-in-rootglob
           title: Escape Root In Anchored Relative Patterns
