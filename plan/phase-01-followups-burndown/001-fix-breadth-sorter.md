@@ -16,3 +16,7 @@ Resolves followup JFJX. In `src/lib/sorters.mjs`, `breadthFirstSorter` compares 
 - `make test` (or `npm test`) passes, including all pre-existing tests unchanged.
 - `make lint` passes.
 - New sorter tests fail against the old implementation and pass against the new one.
+
+## Status
+
+Outcome: succeeded (2026-10-08). Fixed `breadthFirstSorter` in `src/lib/sorters.mjs`; added `src/lib/test/sorters.test.mjs`. `make lint` passes; new sorter tests fail on old implementation and pass on new. `make test` has 4 pre-existing failures in `test/find-plus.test.js` (socket/special-file and nonexistent-root cases), identical before and after the change (environmental).

@@ -8,8 +8,8 @@ const breadthFirstSorter = (a, b) => {
     return 1
   }
   else {
-    const pathCompare = a.parentPath.localeCompare(b.paretPath)
-    return pathCompare === 0 ? 0 : a.name.localeCompare(b.name)
+    const pathCompare = a.parentPath.localeCompare(b.parentPath)
+    return pathCompare !== 0 ? pathCompare : a.name.localeCompare(b.name)
   }
 }
 
