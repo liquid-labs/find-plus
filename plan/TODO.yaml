@@ -96,6 +96,7 @@ phases:
           path: phase-02-remediation-01/002-pass-minimatch-options-in-is-included-prune.md
           done: false
           tier: sonnet-med
+          digest: One-line fix passing minimatchOptions to the ancestor isPrunedByExcludePaths call in isIncluded, with two nocase regression tests that fail without it.
           findings:
             - uhXy
           git:
