@@ -59,7 +59,7 @@ phases:
           slug: readme-fixes
           title: README Typos Anchors And Limitation Notes
           path: phase-01-followups-burndown/005-readme-fixes.md
-          done: false
+          done: true
           tier: sonnet-low
           digest: 'README-only fixes: typos, anchors, Usage paren, excludePaths type and literal wording, brace limitation note, root-glob note.'
           git:
