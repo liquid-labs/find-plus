@@ -125,7 +125,6 @@ describe('isIncluded', () => {
       { paths : [{ path : 'd[x]{y}', literal : true }, 'src/*.js'] },
       { excludePaths : ['*/.git/*', '.git/'] },
       { excludePaths : ['src/**'] },
-      { excludePaths : ['src/**'] },
       { paths : ['**'], minimatchOptions : { dot : true } },
       { paths : ['!(*.js)'] },
       { paths : [`${dir}/src/*.js`, 'b{c,d}.js'], excludePaths : ['**/bc.js'] },
