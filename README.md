@@ -11,6 +11,7 @@ A file finding utility patterned after Linux find.
 - [Extglob pattern syntax](#extglob-pattern-syntax)
 - [Path matching for efficient searching](#path-matching-for-efficient-searches)
 - [Custom tests](#custom-tests)
+- [Releasing](#releasing)
 
 ## Install
 
@@ -136,3 +137,6 @@ When specifying custom `tests`, each function takes two arguments: `file` and `o
 
 The custom `tests` are executed after all built in requirements (like `leavesOnly`, `paths`, `onlyFiles`, etc.) are satisfied. Recall that all `tests` must return `true` for the file to pass, so 'or' logic must be implemented within the tests themselves.
 
+## Releasing
+
+Maintainers: see [RELEASING.md](./RELEASING.md) for the release procedure.
