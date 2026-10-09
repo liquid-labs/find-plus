@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-10-08
 
 Recommended version bump: 3.0.0 (major) because of the breaking change below.
 
@@ -19,6 +19,13 @@ Recommended version bump: 3.0.0 (major) because of the breaking change below.
 ### Changed
 
 - The `options` passed to custom `tests` now carry normalized glob strings in `paths` (literal entries appear escaped).
+- Performance: the escaped root glob is now computed once per root (memoized `escapeRoot` in path-match/traverse-dirs) instead of per file test or per directory.
+- Development, CI and release tooling converted from npm to bun (`bun.lock` replaces `package-lock.json`). Added `scripts/release.sh` and `RELEASING.md`.
+
+### Fixed
+
+- A nonexistent `root` reliably throws `Did not find root directory at: ...` on current Node versions. `checkRoot` no longer relies on `throwIfNoEntry: false`, which `fs.promises.stat` honors on newer Node and which caused a `TypeError`.
+- Socket-based tests bind via a short relative path, so they pass inside deep paths and git worktrees.
 
 ### Documentation
 
