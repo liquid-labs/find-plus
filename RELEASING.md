@@ -1,17 +1,19 @@
 # Releasing find-plus
 
-Agents are the primary audience of this file; human operators can follow the same steps by hand. There is no release script: the steps below are run with `npm` and `git`. **Agents never publish, push, or tag**: the publish step is user-run (it may need an interactive one-time code), and agents stop at the dry run.
+The release is driven by [`scripts/release.sh`](./scripts/release.sh) in two stages. Agents are the primary audience of this file; human operators can run the same script by hand. Read the script for the exact steps. **Agents never publish, push, or tag**: the publish step is user-run (npm 2FA needs an interactive one-time code), and agents stop at the dry run.
 
 ## Verification status
 
-This file was drafted from the repository's tooling (`package.json`, `Makefile`, `make/*.mk`, `CHANGELOG.md`, `.github/workflows/`, git tags), not from a recorded release run. Items marked **(unconfirmed)** are inferred and need maintainer confirmation before the first non-dry run. Existing tags (`v1.0.3` ... `v2.0.0`) confirm the `v` tag prefix.
+`scripts/release.sh` has been syntax-checked and its `--print-dist-tag` mode exercised, but it has **not** been run live; no release has been performed with it. Treat the first real run as unverified: do the [dry run](#dry-run) first and confirm each step with the user. Existing tags (`v1.0.3` ... `v2.0.0`) confirm the `v` tag prefix.
+
+Tooling is `npm` for now. A migration to `bun` as the standard tool is planned for the future; it is not in effect, and this procedure and script use npm.
 
 ## Prerequisites
 
-- `node` (>= 18, per `engines`) and `npm` on `PATH`.
-- Credential pre-flight: `npm whoami` must pass (publishing to npm), and `git push` access to `origin` (`git@github.com:liquid-labs/find-plus.git`). If `npm whoami` fails, authenticate in your own terminal (`npm login`) and re-run. Agents never ask for, accept, or store a credential.
-- If npm two-factor authentication is enabled for publish **(unconfirmed)**, the publish command prompts for a one-time code; the user runs it from an interactive terminal.
-- Confirm the exact version and registry with the user before the first non-dry run.
+- `node` (>= 18, per `engines`), `npm`, `git`, and `gh` on `PATH`.
+- Credential pre-flight: `npm whoami` and `gh auth status` must pass, and `git push` access to `origin` (`git@github.com:liquid-labs/find-plus.git`). If either check fails, authenticate in your own terminal (`npm login`; `gh auth login`) and re-run. The script never accepts a code or any secret as an argument.
+- npm 2FA is required for publish. The publish command is run by the user from an interactive terminal; the script never runs it.
+- Confirm the exact version and dist-tag with the user before the first non-dry run.
 
 ## Manifests
 
@@ -20,7 +22,7 @@ This file was drafted from the repository's tooling (`package.json`, `Makefile`,
 
 ## Changelog
 
-[`CHANGELOG.md`](./CHANGELOG.md). Release entries use a `## [<version>]` heading. The in-progress entry is headed `## [3.0.0] - Unreleased`; at release time replace `Unreleased` with the release date **(unconfirmed: the date format; the `2.0.0` entry carries no date)** and commit that change before the bump. The version in the heading must match the version being released: the pending entry recommends a `3.0.0` major bump for its breaking change, so confirm the version with the user.
+[`CHANGELOG.md`](./CHANGELOG.md). Release entries use a `## [<version>] - YYYY-MM-DD` heading. The in-progress entry is `## [3.0.0] - Unreleased`: before the release, replace `Unreleased` with the release date (`YYYY-MM-DD`) and commit. The next release is `3.0.0` (major, because of the breaking `paths` change described in that entry). The release script does not edit the changelog.
 
 ## Build
 
@@ -36,53 +38,71 @@ The published tarball contains `dist/` (main entry `dist/find-plus.js`), `LICENS
 
 ## Tag prefix
 
-`v` (for example `v2.0.0`).
+`v` (for example `v3.0.0`).
 
-## Procedure
+## Tag push
 
-1. **Preconditions (user actions).**
-   1. The working tree is clean and you are on `main`.
-   2. `main` is pushed to `origin` and CI is green. The release does not check CI.
-   3. `CHANGELOG.md` is updated as described in [Changelog](#changelog) and committed.
-   4. `make qa` passes locally.
-2. **Dry run.** See [Dry run](#dry-run). Fix anything it reports.
-3. **Bump, commit, and tag** **(unconfirmed: the project has no recorded convention)**: `npm version <version>`. The `preversion` hook runs `make test && make lint`; npm updates `package.json` and `package-lock.json`, commits, and creates the `v<version>` tag.
-4. **Tag push.** `git push origin main`, then `git push origin refs/tags/v<version>`.
-5. **Publish (user-run).** `npm publish --access public` from an interactive terminal (`prepack` runs `make build`). Run it only after the tag push succeeds. Add `--tag <dist-tag>` for a prerelease (see [Dist-tag](#dist-tag)).
-6. **GitHub release (optional)** **(unconfirmed: whether releases are created; the `v2.0.0` CHANGELOG note says history lives in "the GitHub releases", which suggests yes)**: `gh release create v<version> --verify-tag --title v<version> --notes-file <notes>` (add `--prerelease` for prereleases). Needs `gh auth status` to pass.
-7. **Post-publish verification**, in an empty temporary directory:
-
-   ```bash
-   npm view find-plus dist-tags          # the expected tag points at the new version
-   npm install find-plus@<version>
-   node -e "import('find-plus').then(m => console.log(Object.keys(m)))"   # expect: escapeGlob, find, isIncluded
-   ```
-
-   `npm view` can lag the publish by a short time; retry before assuming failure.
+`npm version <version> -m 'release: %s'` commits the bump and creates the `v<version>` tag; the script then runs `git push origin HEAD` and `git push origin refs/tags/v<version>`.
 
 ## Registries
 
 | Registry | Publish command |
 | --- | --- |
-| npm (`find-plus`, public) | `npm publish --access public` (add `--tag <dist-tag>` for a prerelease) |
+| npm (`find-plus`, public) | `npm publish --access public --tag <dist-tag>` (user-run; see [Procedure](#procedure)) |
 
-The `workspace` git remote (`git@github.com:zanerock/find-plus.git`) is not a release target **(unconfirmed)**.
+The `workspace` git remote (`git@github.com:zanerock/find-plus.git`) is only a working copy, not a release target.
+
+## Credential pre-flight
+
+`npm whoami` and `gh auth status`.
+
+## Procedure
+
+1. **Preconditions (user actions).**
+   1. The working tree is clean and you are on `main` (override with `RELEASE_BRANCH`).
+   2. `main` is pushed to `origin` and CI is green. The script does not check CI.
+   3. `CHANGELOG.md` has its `Unreleased` heading replaced by the date, committed.
+   4. `make qa` passes locally.
+2. **Dry run.** See [Dry run](#dry-run). Fix anything it reports.
+3. **Stage 1: `scripts/release.sh <version>`** (for example `scripts/release.sh 3.0.0`). In order, it:
+   1. Runs the pre-flight: clean tree, on the release branch, `origin` configured, `npm whoami`, `gh auth status`; then `rm -rf node_modules` and `npm ci`.
+   2. Bumps with `npm version <version> -m 'release: %s'`, whose `preversion` hook runs `make test && make lint`; npm commits and creates the `v<version>` tag.
+   3. Pushes the branch and `refs/tags/v<version>` to `origin`.
+   4. **Stops**, printing the publish command. It does not publish.
+4. **Publish (user-run).** From an interactive terminal, run the printed command: `npm publish --access public --tag <dist-tag>` (`prepack` runs `make build`; enter the 2FA code when npm prompts). See [Dist-tag](#dist-tag) for the tag.
+5. **Stage 2: `scripts/release.sh --finish <version>`.** It:
+   1. Checks the version is on the registry and the dist-tag points at it (a prerelease must not have taken `latest`). `npm view` can lag a short time; retry before assuming failure.
+   2. Runs the smoke test: installs `find-plus@<version>` into a temporary directory and checks `import('find-plus')` exposes `escapeGlob`, `find`, and `isIncluded`. A failure exits non-zero and the release is **not** finished; do not unpublish, supersede with a new version.
+   3. Creates the GitHub release for the tag with `gh release create v<version> --verify-tag` (`--prerelease` for prereleases). This step is **required**: every release tag gets exactly one GitHub release. Notes are generated from first-parent git history since the previous `v*` tag, plus a compare link.
 
 ## Dry run
 
 ```bash
-make qa                      # tests and lint
-make build                   # builds dist/
-npm pack --dry-run           # the exact file list the tarball would contain
-npm publish --dry-run --access public
+scripts/release.sh --dry-run <version>           # e.g. 3.0.0 or 3.0.0-rc.1
+scripts/release.sh --print-dist-tag <version>    # only prints the dist-tag; no side effects
+npm pack --dry-run                               # what npm would put in the tarball
+npm publish --dry-run --access public --tag <dist-tag>
 ```
 
-A dry run does not authenticate or contact the publish endpoint, so it proves the file list and the build hook, not the real upload, a 2FA prompt, or dist-tag assignment. Nothing is committed, tagged, pushed, or published.
+`scripts/release.sh --dry-run <version>` runs the pre-flight (missing logins are warnings), a clean `npm ci`, `make qa`, `npm pack --dry-run`, and `npm publish --dry-run`. Nothing is bumped, committed, tagged, pushed, or published. A dry run does not authenticate or contact the publish endpoint, so it proves the file list, the build hook, and the QA run, not the real upload, the 2FA prompt, dist-tag assignment, the smoke test, or the GitHub release.
 
 ## Dist-tag
 
-A normal release (no prerelease part, such as `3.0.0`) publishes under `latest`. A prerelease (such as `3.0.0-rc.1`) must publish with an explicit `--tag` (for example `rc`) so it never becomes `latest`. If a tag is wrong after the fact, fix it with `npm dist-tag add find-plus@<version> <tag>` (a user action; needs credentials). Never unpublish a version; supersede it with a new one.
+The script computes the dist-tag from the version (`dist_tag_for`; inspect with `--print-dist-tag`):
+
+| Version | Dist-tag | GitHub release |
+| --- | --- | --- |
+| `3.0.0` (no prerelease part) | `latest` | normal |
+| `3.0.0-rc.1` | `rc` | prerelease |
+| `3.0.1-0` (numeric first identifier) | `next` | prerelease |
+| `3.0.0-latest.1` (reserved word) | `next` | prerelease |
+
+Prereleases never take `latest`; always pass `--tag` explicitly when publishing. If a tag is wrong after the fact, fix it with `npm dist-tag add find-plus@<version> <tag>` (a user action; needs credentials). Never unpublish a version; supersede it.
 
 ## Resuming an interrupted release
 
-Check what already exists: the local tag (`git tag -l v<version>`), the remote tag (`git ls-remote --tags origin v<version>`), the registry version (`npm view find-plus@<version> version`), and the GitHub release (`gh release view v<version>`). Perform only the missing steps, using the same explicit version. If a tag exists but is not at the intended release commit, stop and ask the user; do not move or delete it.
+Re-run stage 1 with the explicit version: an existing tag at `HEAD` skips the bump, and an existing remote tag skips the tag push. A tag that exists but is not at `HEAD` aborts the run; stop and ask the user, and do not move or delete it. Re-running `--finish` skips a GitHub release that already exists.
+
+## Planned changes
+
+Migrate the standard tooling from `npm` to `bun` (as in the sibling project md2x). Not started; do not change tooling as part of a release.
