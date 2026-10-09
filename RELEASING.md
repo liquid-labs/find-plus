@@ -15,12 +15,12 @@ The `bun` release path (`bun pm version`, `bun publish` with the interactive 2FA
 
 ## Manifests
 
-- `package.json` (`version` field) — primary; currently `2.0.0`.
+- `package.json` (`version` field) — primary; the bump rewrites it.
 - `bun.lock` — has no `version` field for the root package and is normally untouched by the bump.
 
 ## Changelog
 
-[`CHANGELOG.md`](./CHANGELOG.md). Release entries use a `## [<version>] - YYYY-MM-DD` heading. The in-progress entry is `## [3.0.0] - Unreleased`: before the release, replace `Unreleased` with the release date (`YYYY-MM-DD`) and commit. The next release is `3.0.0` (major, because of the breaking `paths` change described in that entry). The release script does not edit the changelog.
+[`CHANGELOG.md`](./CHANGELOG.md). Release entries use a `## [<version>] - YYYY-MM-DD` heading. Before a release, the entry for the new version must carry the release date rather than `Unreleased`; commit that first. The release script does not edit the changelog.
 
 ## Build
 
@@ -59,7 +59,7 @@ The `workspace` git remote (`git@github.com:zanerock/find-plus.git`) is only a w
 1. **Preconditions (user actions).**
    1. The working tree is clean and you are on `main` (override with `RELEASE_BRANCH`).
    2. `main` is pushed to `origin` and CI is green. The script does not check CI.
-   3. `CHANGELOG.md` has its `Unreleased` heading replaced by the date, committed.
+   3. `CHANGELOG.md` has the new version's `Unreleased` heading replaced by the date, committed.
    4. `make qa` passes locally.
 2. **Dry run.** See [Dry run](#dry-run). Fix anything it reports.
 3. **Stage 1: `scripts/release.sh <version>`** (for example `scripts/release.sh 3.0.0`). In order, it:
