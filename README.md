@@ -17,6 +17,7 @@ A file finding utility patterned after Linux find.
 
 ```bash
 npm i find-plus
+# or: bun add find-plus
 ```
 
 ## Usage
@@ -138,5 +139,7 @@ When specifying custom `tests`, each function takes two arguments: `file` and `o
 The custom `tests` are executed after all built in requirements (like `leavesOnly`, `paths`, `onlyFiles`, etc.) are satisfied. Recall that all `tests` must return `true` for the file to pass, so 'or' logic must be implemented within the tests themselves.
 
 ## Releasing
+
+Contributors: development uses [bun](https://bun.sh). Run `bun install` once, then `bun run build`, `bun run test`, `bun run lint` (or `bun run qa` for test and lint together); these delegate to the `make` targets.
 
 Maintainers: see [RELEASING.md](./RELEASING.md) for the release procedure.

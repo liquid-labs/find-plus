@@ -2,14 +2,18 @@
 # node. Refer to https://npmjs.com/package/@liquid-labs/catalyst-builder-workflow-
 # local-make-node for further details
 
-CATALYST_BABEL:=npx babel
-CATALYST_BABEL_CONFIG:=$(shell npm explore @liquid-labs/catalyst-resource-babel-and-rollup -- pwd)/dist/babel/babel.config.cjs
+# Locally modified (not regenerated verbatim): bun replaces npm. Package directories resolve through
+# bun, and dev tools run from the lockfile-pinned node_modules/.bin (never fetched via bunx).
+PKG_DIR=$(shell bun -p "require('path').dirname(require.resolve('$(1)/package.json'))")
 
-CATALYST_ROLLUP:=npx rollup
-CATALYST_ROLLUP_CONFIG:=$(shell npm explore @liquid-labs/catalyst-resource-babel-and-rollup -- pwd)/dist/rollup/rollup.config.mjs
+CATALYST_BABEL:=$(CURDIR)/node_modules/.bin/babel
+CATALYST_BABEL_CONFIG:=$(call PKG_DIR,@liquid-labs/catalyst-resource-babel-and-rollup)/dist/babel/babel.config.cjs
 
-CATALYST_JEST:=npx jest
-CATALYST_JEST_CONFIG:=$(shell npm explore @liquid-labs/catalyst-resource-jest -- pwd)/dist/jest.config.js
+CATALYST_ROLLUP:=$(CURDIR)/node_modules/.bin/rollup
+CATALYST_ROLLUP_CONFIG:=$(call PKG_DIR,@liquid-labs/catalyst-resource-babel-and-rollup)/dist/rollup/rollup.config.mjs
 
-CATALYST_ESLINT:=npx eslint
-CATALYST_ESLINT_CONFIG:=$(shell npm explore @liquid-labs/catalyst-resource-eslint -- pwd)/dist/eslint.config.js
+CATALYST_JEST:=$(CURDIR)/node_modules/.bin/jest
+CATALYST_JEST_CONFIG:=$(call PKG_DIR,@liquid-labs/catalyst-resource-jest)/dist/jest.config.js
+
+CATALYST_ESLINT:=$(CURDIR)/node_modules/.bin/eslint
+CATALYST_ESLINT_CONFIG:=$(call PKG_DIR,@liquid-labs/catalyst-resource-eslint)/dist/eslint.config.js
