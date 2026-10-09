@@ -7,7 +7,7 @@
 #        scripts/release.sh --print-dist-tag <X.Y.Z[-pre.N]>   (print the dist-tag; no side effects)
 #
 # Between the stages the user runs the printed 'bun publish' command by hand, in an interactive terminal.
-# Safe to re-run: stage 1 skips a bump/tag/push that already exists; stage 2 skips an existing GitHub release.
+# Safe to re-run: stage 1 fails early if the remote is ahead, skips a bump that is done, tags HEAD if the tag is missing; stage 2 skips an existing GitHub release.
 # Tooling is bun: bun install, bun pm version, bun pm whoami, bun info, bun publish. See RELEASING.md.
 set -euo pipefail
 
@@ -109,6 +109,43 @@ fi
 
 # --- stage 1 ------------------------------------------------------------------
 preflight
+
+# Fail before anything is bumped if the remote branch has commits we lack (behind or diverged).
+say "Checking $REMOTE/$RELEASE_BRANCH against local $RELEASE_BRANCH"
+git fetch "$REMOTE"
+if git rev-parse -q --verify "refs/remotes/$REMOTE/$RELEASE_BRANCH" >/dev/null; then
+  BEHIND=$(git rev-list --count "HEAD..refs/remotes/$REMOTE/$RELEASE_BRANCH")
+  if (( BEHIND > 0 )); then
+    AHEAD=$(git rev-list --count "refs/remotes/$REMOTE/$RELEASE_BRANCH..HEAD")
+    echo "$REMOTE/$RELEASE_BRANCH has $BEHIND commit(s) not in local $RELEASE_BRANCH (local is $AHEAD ahead): behind or diverged." >&2
+    echo "Run 'git pull' (or merge $REMOTE/$RELEASE_BRANCH) first, then re-run this script." >&2
+    exit 1
+  fi
+fi
+
+HEAD_SHA=$(git rev-parse HEAD)
+CURRENT=$(bun -p "require('./package.json').version")
+TAG_EXISTS=0; TAG_SHA=''
+if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+  TAG_EXISTS=1; TAG_SHA=$(git rev-parse "$TAG^{commit}")
+fi
+
+# Resume state: the bump is already done (package.json is at the target and the 'release: <ver>' commit is in HEAD's history).
+BUMPED=0
+if [[ "$CURRENT" == "$VERSION" ]]; then
+  git log --format=%s HEAD | grep -qxF "release: $VERSION" \
+    || { echo "package.json is already $VERSION but no 'release: $VERSION' commit is in HEAD's history. Resolve by hand." >&2; exit 1; }
+  BUMPED=1
+fi
+if (( TAG_EXISTS )); then
+  (( BUMPED )) || { echo "Tag $TAG exists but package.json is $CURRENT, not $VERSION. Resolve by hand; do not move or delete the tag." >&2; exit 1; }
+  [[ "$TAG_SHA" == "$HEAD_SHA" ]] || {
+    echo "Tag $TAG exists at ${TAG_SHA:0:12}, not at HEAD (${HEAD_SHA:0:12}). Not moving it." >&2
+    echo "Decide with the user whether the tag or HEAD is right; if the tag is wrong and unpushed, delete it by hand ('git tag -d $TAG') and re-run." >&2
+    exit 1
+  }
+fi
+
 say "Dist-tag for $VERSION: $DIST_TAG"
 say "Installing exactly what bun.lock pins"
 rm -rf node_modules
@@ -119,21 +156,48 @@ if (( DRY_RUN )); then
   make qa
   bun pm pack --dry-run
   bun publish --dry-run --access public --tag "$DIST_TAG"
-  echo "[dry-run] would run: bun pm version $VERSION -m 'release: %s'; git push $REMOTE HEAD refs/tags/$TAG"
+  if (( BUMPED )); then
+    echo "[dry-run] version is already $VERSION; would skip the bump, then ensure $TAG is at HEAD and push HEAD and $TAG to $REMOTE"
+  else
+    echo "[dry-run] would run: bun pm version $VERSION -m 'release: %s'; verify $TAG is at HEAD; git push $REMOTE HEAD refs/tags/$TAG"
+  fi
   exit 0
 fi
 
-if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-  [[ "$(git rev-parse "$TAG^{commit}")" == "$(git rev-parse HEAD)" ]] || { echo "Tag $TAG exists but is not at HEAD." >&2; exit 1; }
-  say "Resuming: commit and tag $TAG already exist"
+if (( BUMPED )); then
+  say "Resuming: version is already $VERSION; skipping the bump"
 else
   say "Bumping version (runs 'make test && make lint' via preversion), committing, tagging"
   bun pm version "$VERSION" -m 'release: %s'
+  HEAD_SHA=$(git rev-parse HEAD)
+fi
+
+# The tag must land on the exact commit being pushed.
+if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+  [[ "$(git rev-parse "$TAG^{commit}")" == "$HEAD_SHA" ]] || {
+    echo "Tag $TAG is not at HEAD (${HEAD_SHA:0:12}) after the bump. Nothing was pushed." >&2
+    echo "Inspect with 'git log --oneline -3' and 'git show $TAG'; fix by hand (delete the unpushed tag with 'git tag -d $TAG'), then re-run to tag HEAD." >&2
+    exit 1
+  }
+else
+  say "Creating annotated tag $TAG at HEAD"
+  git tag -a "$TAG" -m "release: $VERSION" "$HEAD_SHA"
+fi
+
+REMOTE_TAG_SHA=$(git ls-remote "$REMOTE" "refs/tags/$TAG^{}" | cut -f1)
+[[ -n "$REMOTE_TAG_SHA" ]] || REMOTE_TAG_SHA=$(git ls-remote "$REMOTE" "refs/tags/$TAG" | cut -f1)
+if [[ -n "$REMOTE_TAG_SHA" && "$REMOTE_TAG_SHA" != "$HEAD_SHA" ]]; then
+  echo "$TAG on $REMOTE points at ${REMOTE_TAG_SHA:0:12}, not HEAD (${HEAD_SHA:0:12}). Not overwriting; resolve by hand." >&2
+  exit 1
 fi
 
 say "Pushing branch and $TAG to $REMOTE"
 git push "$REMOTE" HEAD
-git ls-remote --exit-code --tags "$REMOTE" "refs/tags/$TAG" >/dev/null 2>&1 || git push "$REMOTE" "refs/tags/$TAG"
+if [[ -n "$REMOTE_TAG_SHA" ]]; then
+  echo "Tag $TAG is already pushed to $REMOTE at HEAD."
+else
+  git push "$REMOTE" "refs/tags/$TAG"
+fi
 
 cat <<MSG
 
