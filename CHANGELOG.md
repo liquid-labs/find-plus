@@ -24,6 +24,6 @@ Recommended version bump: 3.0.0 (major) because of the breaking change below.
 
 - `minimatchOptions` is now documented.
 
-## [2.0.0]
+## [2.0.0] - 2024-09-30
 
 Earlier history is in the git tags and the GitHub releases.
